@@ -5,12 +5,11 @@ import {
   FolderKanban,
   Factory,
   MessageSquare,
-  Palette,
-  FileText,
-  Package,
+  Wand2,
   Settings,
   ChevronLeft,
   ChevronRight,
+  Plus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,12 +27,10 @@ function WizardHat({ className }: { className?: string }) {
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/projects', label: 'Projects', icon: FolderKanban },
+  { to: '/design', label: 'Design Studio', icon: Wand2 },
   { to: '/manufacturers', label: 'Manufacturers', icon: Factory },
+  { to: '/projects', label: 'Projects', icon: FolderKanban },
   { to: '/communications', label: 'Messages', icon: MessageSquare },
-  { to: '/design', label: 'Design Hub', icon: Palette },
-  { to: '/quotes', label: 'Quotes', icon: FileText },
-  { to: '/samples', label: 'Samples', icon: Package },
 ];
 
 const bottomItems = [
@@ -112,6 +109,24 @@ export function Sidebar() {
           )}
         </Link>
       </div>
+
+      {/* Create Mockup CTA — hide when already on /design */}
+      {!isActive('/design') && (
+        <div className="px-2 pt-3 pb-1">
+          <Link
+            to="/design"
+            className={cn(
+              'flex items-center justify-center gap-2 w-full py-2 rounded-lg text-[13px] font-semibold transition-all duration-200',
+              'bg-sidebar-accent text-[hsl(42,75%,12%)] hover:bg-sidebar-accent/85 shadow-sm',
+              collapsed && 'px-0'
+            )}
+            title={collapsed ? 'Create Mockup' : undefined}
+          >
+            <Plus className="w-4 h-4 shrink-0" strokeWidth={2.2} />
+            {!collapsed && <span>Create Mockup</span>}
+          </Link>
+        </div>
+      )}
 
       {/* Navigation */}
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto sidebar-scroll">
