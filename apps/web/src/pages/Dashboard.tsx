@@ -23,8 +23,8 @@ import { formatRelativeDate, formatDate } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
 const pipelineStages = [
-  { key: 'ideation', label: 'Ideation', color: 'bg-slate-400', textColor: 'text-slate-600' },
-  { key: 'sourcing', label: 'Sourcing', color: 'bg-blue-500', textColor: 'text-blue-600' },
+  { key: 'ideation', label: 'Ideation', color: 'bg-violet-400', textColor: 'text-violet-600' },
+  { key: 'sourcing', label: 'Sourcing', color: 'bg-indigo-500', textColor: 'text-indigo-600' },
   { key: 'sampling', label: 'Sampling', color: 'bg-amber-500', textColor: 'text-amber-600' },
   { key: 'production', label: 'Production', color: 'bg-emerald-500', textColor: 'text-emerald-600' },
   { key: 'shipped', label: 'Shipped', color: 'bg-green-600', textColor: 'text-green-700' },
@@ -216,8 +216,8 @@ export function Dashboard() {
               to="/manufacturers"
               className="flex items-center gap-3 p-3 rounded-lg border border-border/60 bg-muted/20 hover:bg-muted/50 transition-all group"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-500/10">
-                <Factory className="h-4 w-4 text-blue-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-500/10">
+                <Factory className="h-4 w-4 text-indigo-500" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">Browse Manufacturers</p>

@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   X,
   File,
+  ClipboardList,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,14 +20,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/toast';
 import { designAssetsApi, aiApi, type DesignAsset } from '@/lib/api';
 import { formatDate, cn } from '@/lib/utils';
+import { TechPack } from '@/components/design/TechPack';
 
 const typeFilters = [
-  { value: '', label: 'All' },
+  { value: '', label: 'All', icon: undefined },
   { value: 'image', label: 'Images', icon: Image },
   { value: 'document', label: 'Documents', icon: FileText },
   { value: 'cad', label: 'CAD Files', icon: Box },
   { value: 'spec_sheet', label: 'Spec Sheets', icon: FileText },
   { value: 'mood_board', label: 'Mood Boards', icon: Palette },
+];
+
+const designTabs = [
+  { key: 'assets', label: 'Assets', icon: Image },
+  { key: 'techpack', label: 'Tech Packs', icon: ClipboardList },
+  { key: 'moodboard', label: 'Mood Board', icon: Palette },
 ];
 
 function DropZone({ onUpload }: { onUpload: (files: FileList) => void }) {
@@ -59,13 +67,6 @@ function DropZone({ onUpload }: { onUpload: (files: FileList) => void }) {
       <Upload className="h-8 w-8 text-muted-foreground/50 mb-2" />
       <p className="text-sm font-medium">Drag and drop files here</p>
       <p className="text-xs text-muted-foreground mt-0.5">or click to browse</p>
-      <input
-        type="file"
-        multiple
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-        onChange={(e) => e.target.files && onUpload(e.target.files)}
-        style={{ position: 'relative' }}
-      />
       <Button variant="outline" size="sm" className="mt-2.5" asChild>
         <label className="cursor-pointer">
           Browse Files
@@ -83,6 +84,7 @@ function DropZone({ onUpload }: { onUpload: (files: FileList) => void }) {
 
 export function DesignHub() {
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState('assets');
   const [typeFilter, setTypeFilter] = useState('');
   const [insightsOpen, setInsightsOpen] = useState(false);
 
@@ -106,7 +108,6 @@ export function DesignHub() {
     },
   });
 
-  // AI insights for first project (simplified)
   const insightsQuery = useQuery({
     queryKey: ['ai', 'creative-insights'],
     queryFn: () => aiApi.creativeInsights('default'),
@@ -129,7 +130,7 @@ export function DesignHub() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-2xl font-bold tracking-tight">Design Hub</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Manage design assets and creative materials.</p>
+          <p className="text-sm text-muted-foreground mt-0.5">Manage design assets, tech packs, and creative materials.</p>
         </div>
         <Button variant="outline" onClick={() => setInsightsOpen(!insightsOpen)}>
           <Sparkles className="mr-2 h-4 w-4" />
@@ -138,103 +139,136 @@ export function DesignHub() {
         </Button>
       </div>
 
+      {/* Design Hub Tabs */}
+      <div className="flex gap-1 border-b border-border pb-px">
+        {designTabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 text-xs font-heading font-semibold uppercase tracking-wider rounded-t-md transition-colors border-b-2 -mb-px',
+              activeTab === tab.key
+                ? 'border-primary text-foreground bg-card'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+            )}
+          >
+            <tab.icon className="h-3.5 w-3.5" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex gap-5">
         <div className="flex-1 space-y-5">
-          {/* Upload area */}
-          <Card className="animate-in">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">Upload Assets</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DropZone onUpload={(files) => uploadMutation.mutate(files)} />
-              {uploadMutation.isPending && (
-                <div className="mt-2.5 flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                  Uploading...
+          {/* Assets Tab */}
+          {activeTab === 'assets' && (
+            <>
+              {/* Upload area */}
+              <Card className="animate-in">
+                <CardHeader className="pb-3">
+                  <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">Upload Assets</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DropZone onUpload={(files) => uploadMutation.mutate(files)} />
+                  {uploadMutation.isPending && (
+                    <div className="mt-2.5 flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                      Uploading...
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Type filters */}
+              <div className="flex flex-wrap gap-1.5">
+                {typeFilters.map((filter) => (
+                  <Button
+                    key={filter.value}
+                    variant={typeFilter === filter.value ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setTypeFilter(filter.value)}
+                    className="h-7 text-xs"
+                  >
+                    {filter.icon && <filter.icon className="mr-1 h-3 w-3" />}
+                    {filter.label}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Asset gallery */}
+              {assetsQuery.isLoading ? (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={i} className="h-44" />
+                  ))}
+                </div>
+              ) : assets.length === 0 ? (
+                <Card className="animate-in">
+                  <CardContent className="flex flex-col items-center py-10 text-muted-foreground">
+                    <Image className="h-10 w-10 mb-3 text-muted-foreground/40" />
+                    <p className="text-sm">No design assets yet</p>
+                    <p className="text-xs mt-0.5">Upload files to get started</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {assets.map((asset) => {
+                    const Icon = getAssetIcon(asset.type);
+                    return (
+                      <Card key={asset.id} className="group overflow-hidden animate-in hover:border-primary/30 transition-colors">
+                        <div className="relative h-36 bg-muted flex items-center justify-center">
+                          {asset.thumbnailUrl ? (
+                            <img
+                              src={asset.thumbnailUrl}
+                              alt={asset.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <Icon className="h-10 w-10 text-muted-foreground/30" />
+                          )}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
+                        </div>
+                        <CardContent className="p-2.5">
+                          <p className="text-sm font-medium truncate">{asset.name}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <Badge variant="secondary">{asset.type}</Badge>
+                            <span className="text-xs text-muted-foreground data-value">{formatDate(asset.uploadedAt)}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </>
+          )}
 
-          {/* Type filters */}
-          <div className="flex flex-wrap gap-1.5">
-            {typeFilters.map((filter) => (
-              <Button
-                key={filter.value}
-                variant={typeFilter === filter.value ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTypeFilter(filter.value)}
-                className="h-7 text-xs"
-              >
-                {filter.icon && <filter.icon className="mr-1 h-3 w-3" />}
-                {filter.label}
-              </Button>
-            ))}
-          </div>
-
-          {/* Asset gallery */}
-          {assetsQuery.isLoading ? (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-44" />
-              ))}
-            </div>
-          ) : assets.length === 0 ? (
-            <Card className="animate-in">
-              <CardContent className="flex flex-col items-center py-10 text-muted-foreground">
-                <Image className="h-10 w-10 mb-3 text-muted-foreground/40" />
-                <p className="text-sm">No design assets yet</p>
-                <p className="text-xs mt-0.5">Upload files to get started</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {assets.map((asset) => {
-                const Icon = getAssetIcon(asset.type);
-                return (
-                  <Card key={asset.id} className="group overflow-hidden animate-in hover:border-primary/30 transition-colors">
-                    <div className="relative h-36 bg-muted flex items-center justify-center">
-                      {asset.thumbnailUrl ? (
-                        <img
-                          src={asset.thumbnailUrl}
-                          alt={asset.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <Icon className="h-10 w-10 text-muted-foreground/30" />
-                      )}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
-                    </div>
-                    <CardContent className="p-2.5">
-                      <p className="text-sm font-medium truncate">{asset.name}</p>
-                      <div className="flex items-center justify-between mt-1">
-                        <Badge variant="secondary">{asset.type}</Badge>
-                        <span className="text-xs text-muted-foreground data-value">{formatDate(asset.uploadedAt)}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+          {/* Tech Pack Tab */}
+          {activeTab === 'techpack' && (
+            <div className="animate-in">
+              <TechPack />
             </div>
           )}
 
-          {/* Mood Board Builder placeholder */}
-          <Card className="animate-in">
-            <CardHeader className="pb-3">
-              <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                <Palette className="h-4 w-4" /> Mood Board Builder
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex h-56 items-center justify-center rounded-md border-2 border-dashed bg-muted/30 text-muted-foreground">
-                <div className="text-center">
-                  <Palette className="mx-auto mb-2 h-7 w-7 text-muted-foreground/40" />
-                  <p className="text-sm">Canvas area for mood board builder</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Drag assets here to create mood boards</p>
+          {/* Mood Board Tab */}
+          {activeTab === 'moodboard' && (
+            <Card className="animate-in">
+              <CardHeader className="pb-3">
+                <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Palette className="h-4 w-4" /> Mood Board Builder
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex h-56 items-center justify-center rounded-md border-2 border-dashed bg-muted/30 text-muted-foreground">
+                  <div className="text-center">
+                    <Palette className="mx-auto mb-2 h-7 w-7 text-muted-foreground/40" />
+                    <p className="text-sm">Canvas area for mood board builder</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Drag assets here to create mood boards</p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* AI Creative Insights panel */}

@@ -12,7 +12,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['Outfit', 'system-ui', 'sans-serif'],
+        heading: ['Sora', 'system-ui', 'sans-serif'],
         body: ['DM Sans', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
@@ -74,7 +74,8 @@ export default {
       boxShadow: {
         'card': '0 1px 3px hsl(var(--foreground) / 0.04), 0 1px 2px hsl(var(--foreground) / 0.02)',
         'card-hover': '0 4px 12px hsl(var(--foreground) / 0.06), 0 1px 3px hsl(var(--foreground) / 0.04)',
-        'glow': '0 0 20px hsl(var(--primary) / 0.15)',
+        'glow': '0 0 24px hsl(var(--primary) / 0.18)',
+        'glow-gold': '0 0 20px hsl(var(--gold, 45 92% 52%) / 0.15)',
       },
       keyframes: {
         'accordion-down': {

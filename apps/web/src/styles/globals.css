@@ -4,28 +4,28 @@
 
 @layer base {
   :root {
-    /* Manufacturing-grade color system: warm amber + charcoal */
-    --background: 40 20% 97%;
-    --foreground: 220 18% 13%;
+    /* Jace Wizardry color system: deep violet + gold accents */
+    --background: 250 20% 97%;
+    --foreground: 250 25% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 18% 13%;
+    --card-foreground: 250 25% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 18% 13%;
+    --popover-foreground: 250 25% 10%;
 
-    /* Amber/copper primary — feels industrial, warm, premium */
-    --primary: 32 95% 44%;
+    /* Deep violet primary — mystical, premium */
+    --primary: 262 72% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 95%;
-    --secondary-foreground: 220 18% 20%;
+    --secondary: 250 18% 95%;
+    --secondary-foreground: 250 20% 20%;
 
-    --muted: 40 12% 93%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 250 14% 93%;
+    --muted-foreground: 250 12% 46%;
 
-    --accent: 220 14% 95%;
-    --accent-foreground: 220 18% 20%;
+    --accent: 45 92% 52%;
+    --accent-foreground: 45 80% 10%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -36,40 +36,44 @@
     --warning: 38 92% 50%;
     --warning-foreground: 38 80% 10%;
 
-    --border: 40 12% 89%;
-    --input: 40 12% 89%;
-    --ring: 32 95% 44%;
+    --border: 250 14% 89%;
+    --input: 250 14% 89%;
+    --ring: 262 72% 52%;
     --radius: 0.5rem;
 
-    /* Sidebar: dark industrial */
-    --sidebar: 225 25% 9%;
-    --sidebar-foreground: 220 15% 70%;
-    --sidebar-accent: 32 95% 44%;
-    --sidebar-muted: 225 20% 15%;
-    --sidebar-border: 225 20% 15%;
+    /* Gold accent for wizardry highlights */
+    --gold: 45 92% 52%;
+    --gold-foreground: 45 80% 10%;
+
+    /* Sidebar: dark midnight indigo */
+    --sidebar: 252 32% 8%;
+    --sidebar-foreground: 250 15% 65%;
+    --sidebar-accent: 45 92% 52%;
+    --sidebar-muted: 252 25% 14%;
+    --sidebar-border: 252 25% 14%;
   }
 
   .dark {
-    --background: 225 25% 7%;
-    --foreground: 40 15% 90%;
+    --background: 252 30% 6%;
+    --foreground: 250 15% 92%;
 
-    --card: 225 22% 10%;
-    --card-foreground: 40 15% 90%;
+    --card: 252 28% 9%;
+    --card-foreground: 250 15% 92%;
 
-    --popover: 225 22% 10%;
-    --popover-foreground: 40 15% 90%;
+    --popover: 252 28% 9%;
+    --popover-foreground: 250 15% 92%;
 
-    --primary: 32 95% 50%;
+    --primary: 262 72% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 225 20% 15%;
-    --secondary-foreground: 40 15% 85%;
+    --secondary: 252 22% 14%;
+    --secondary-foreground: 250 15% 85%;
 
-    --muted: 225 18% 14%;
-    --muted-foreground: 220 12% 55%;
+    --muted: 252 20% 13%;
+    --muted-foreground: 250 12% 50%;
 
-    --accent: 225 20% 15%;
-    --accent-foreground: 40 15% 85%;
+    --accent: 45 85% 55%;
+    --accent-foreground: 45 80% 10%;
 
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
@@ -80,15 +84,18 @@
     --warning: 38 85% 55%;
     --warning-foreground: 38 80% 10%;
 
-    --border: 225 18% 16%;
-    --input: 225 18% 16%;
-    --ring: 32 95% 50%;
+    --border: 252 20% 15%;
+    --input: 252 20% 15%;
+    --ring: 262 72% 58%;
 
-    --sidebar: 225 28% 6%;
-    --sidebar-foreground: 220 12% 65%;
-    --sidebar-accent: 32 95% 50%;
-    --sidebar-muted: 225 22% 12%;
-    --sidebar-border: 225 22% 12%;
+    --gold: 45 85% 55%;
+    --gold-foreground: 45 80% 10%;
+
+    --sidebar: 252 35% 5%;
+    --sidebar-foreground: 250 12% 60%;
+    --sidebar-accent: 45 85% 55%;
+    --sidebar-muted: 252 25% 10%;
+    --sidebar-border: 252 25% 10%;
   }
 }
 
@@ -104,8 +111,8 @@
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
@@ -133,9 +140,9 @@
   /* Subtle grid pattern for backgrounds */
   .bg-grid {
     background-image:
-      linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
-    background-size: 24px 24px;
+      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
+    background-size: 28px 28px;
   }
 
   /* Noise overlay for texture */
@@ -146,19 +153,20 @@
     content: '';
     position: absolute;
     inset: 0;
-    opacity: 0.03;
+    opacity: 0.02;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 0;
   }
 
-  /* Industrial accent line */
+  /* Mystical accent bar */
   .accent-bar {
     @apply relative;
   }
   .accent-bar::before {
     content: '';
-    @apply absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-primary;
+    @apply absolute left-0 top-0 bottom-0 w-[3px] rounded-full;
+    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--gold)));
   }
 
   /* Stat card hover lift */
@@ -166,8 +174,8 @@
     @apply transition-all duration-200;
   }
   .stat-card:hover {
-    @apply -translate-y-0.5 shadow-md;
-    box-shadow: 0 4px 12px hsl(var(--primary) / 0.08), 0 1px 3px hsl(var(--foreground) / 0.06);
+    @apply -translate-y-0.5;
+    box-shadow: 0 4px 16px hsl(var(--primary) / 0.1), 0 1px 3px hsl(var(--foreground) / 0.04);
   }
 
   /* Pipeline stage indicator */
@@ -185,6 +193,26 @@
   .data-value {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     @apply tabular-nums tracking-tight;
+  }
+
+  /* Gold shimmer effect for special elements */
+  .gold-shimmer {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gold)) 0%,
+      hsl(45 95% 65%) 50%,
+      hsl(var(--gold)) 100%
+    );
+    background-size: 200% 200%;
+    animation: shimmer 3s ease-in-out infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Subtle purple glow for focused/active elements */
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.12), 0 0 6px hsl(var(--primary) / 0.08);
   }
 }
 
@@ -222,4 +250,9 @@
 @keyframes slideInRight {
   from { opacity: 0; transform: translateX(-8px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
