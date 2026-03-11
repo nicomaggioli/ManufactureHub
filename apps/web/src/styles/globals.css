@@ -4,98 +4,98 @@
 
 @layer base {
   :root {
-    /* Jace Wizardry color system: deep violet + gold accents */
-    --background: 250 20% 97%;
-    --foreground: 250 25% 10%;
+    /* Jace "Arcane Workshop" — deep indigo canvas, violet accents, gold filigree */
+    --background: 240 15% 96%;
+    --foreground: 245 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 250 25% 10%;
+    --card-foreground: 245 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 250 25% 10%;
+    --popover-foreground: 245 30% 12%;
 
-    /* Deep violet primary — mystical, premium */
-    --primary: 262 72% 52%;
+    /* Regal violet primary */
+    --primary: 262 68% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 250 18% 95%;
-    --secondary-foreground: 250 20% 20%;
+    --secondary: 245 16% 94%;
+    --secondary-foreground: 245 24% 22%;
 
-    --muted: 250 14% 93%;
-    --muted-foreground: 250 12% 46%;
+    --muted: 240 12% 92%;
+    --muted-foreground: 245 12% 44%;
 
-    --accent: 45 92% 52%;
-    --accent-foreground: 45 80% 10%;
+    /* Gold accent — the wizardry signature */
+    --accent: 42 88% 52%;
+    --accent-foreground: 42 75% 12%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 84% 30%;
+    --success: 152 60% 36%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 38 80% 10%;
+    --warning: 36 92% 50%;
+    --warning-foreground: 36 80% 10%;
 
-    --border: 250 14% 89%;
-    --input: 250 14% 89%;
-    --ring: 262 72% 52%;
-    --radius: 0.5rem;
+    --border: 240 12% 88%;
+    --input: 240 12% 88%;
+    --ring: 262 68% 48%;
+    --radius: 0.625rem;
 
-    /* Gold accent for wizardry highlights */
-    --gold: 45 92% 52%;
-    --gold-foreground: 45 80% 10%;
+    --gold: 42 88% 52%;
+    --gold-foreground: 42 75% 12%;
 
-    /* Sidebar: dark midnight indigo */
-    --sidebar: 252 32% 8%;
-    --sidebar-foreground: 250 15% 65%;
-    --sidebar-accent: 45 92% 52%;
-    --sidebar-muted: 252 25% 14%;
-    --sidebar-border: 252 25% 14%;
+    /* Sidebar: deep midnight */
+    --sidebar: 248 36% 9%;
+    --sidebar-foreground: 240 12% 62%;
+    --sidebar-accent: 42 88% 52%;
+    --sidebar-muted: 248 28% 15%;
+    --sidebar-border: 248 24% 14%;
   }
 
   .dark {
-    --background: 252 30% 6%;
-    --foreground: 250 15% 92%;
+    --background: 248 32% 6%;
+    --foreground: 240 14% 93%;
 
-    --card: 252 28% 9%;
-    --card-foreground: 250 15% 92%;
+    --card: 248 28% 9%;
+    --card-foreground: 240 14% 93%;
 
-    --popover: 252 28% 9%;
-    --popover-foreground: 250 15% 92%;
+    --popover: 248 28% 9%;
+    --popover-foreground: 240 14% 93%;
 
-    --primary: 262 72% 58%;
+    --primary: 262 68% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 252 22% 14%;
-    --secondary-foreground: 250 15% 85%;
+    --secondary: 248 22% 14%;
+    --secondary-foreground: 240 14% 85%;
 
-    --muted: 252 20% 13%;
-    --muted-foreground: 250 12% 50%;
+    --muted: 248 20% 13%;
+    --muted-foreground: 240 10% 48%;
 
-    --accent: 45 85% 55%;
-    --accent-foreground: 45 80% 10%;
+    --accent: 42 82% 54%;
+    --accent-foreground: 42 75% 12%;
 
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 70% 40%;
+    --success: 152 56% 42%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 85% 55%;
-    --warning-foreground: 38 80% 10%;
+    --warning: 36 85% 54%;
+    --warning-foreground: 36 80% 10%;
 
-    --border: 252 20% 15%;
-    --input: 252 20% 15%;
-    --ring: 262 72% 58%;
+    --border: 248 18% 16%;
+    --input: 248 18% 16%;
+    --ring: 262 68% 56%;
 
-    --gold: 45 85% 55%;
-    --gold-foreground: 45 80% 10%;
+    --gold: 42 82% 54%;
+    --gold-foreground: 42 75% 12%;
 
-    --sidebar: 252 35% 5%;
-    --sidebar-foreground: 250 12% 60%;
-    --sidebar-accent: 45 85% 55%;
-    --sidebar-muted: 252 25% 10%;
-    --sidebar-border: 252 25% 10%;
+    --sidebar: 248 38% 5%;
+    --sidebar-foreground: 240 10% 56%;
+    --sidebar-accent: 42 82% 54%;
+    --sidebar-muted: 248 26% 10%;
+    --sidebar-border: 248 26% 10%;
   }
 }
 
@@ -109,7 +109,7 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Custom scrollbar */
+  /* Refined scrollbar */
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
@@ -119,30 +119,35 @@
   }
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
-    border-radius: 3px;
+    border-radius: 100px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.3);
+    background: hsl(var(--muted-foreground) / 0.25);
   }
 
-  /* Sidebar scrollbar */
   .sidebar-scroll::-webkit-scrollbar-thumb {
     background: hsl(var(--sidebar-muted));
   }
 
-  /* Number tabular figures */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
 }
 
 @layer components {
-  /* Subtle grid pattern for backgrounds */
+  /* Parchment texture for card backgrounds — ultra-subtle crosshatch */
+  .bg-parchment {
+    background-image:
+      radial-gradient(circle at 20% 80%, hsl(var(--primary) / 0.015) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(var(--gold) / 0.02) 0%, transparent 50%);
+  }
+
+  /* Subtle grid pattern */
   .bg-grid {
     background-image:
-      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
-    background-size: 28px 28px;
+      linear-gradient(hsl(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.35) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
   /* Noise overlay for texture */
@@ -153,13 +158,13 @@
     content: '';
     position: absolute;
     inset: 0;
-    opacity: 0.02;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 0;
   }
 
-  /* Mystical accent bar */
+  /* Arcane accent bar — vertical gradient glow */
   .accent-bar {
     @apply relative;
   }
@@ -169,13 +174,24 @@
     background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--gold)));
   }
 
-  /* Stat card hover lift */
+  /* Stat card hover lift — subtle and premium */
   .stat-card {
-    @apply transition-all duration-200;
+    @apply relative overflow-hidden transition-all duration-250;
+  }
+  .stat-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-250;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.03) 0%, hsl(var(--gold) / 0.02) 100%);
   }
   .stat-card:hover {
-    @apply -translate-y-0.5;
-    box-shadow: 0 4px 16px hsl(var(--primary) / 0.1), 0 1px 3px hsl(var(--foreground) / 0.04);
+    @apply -translate-y-px;
+    box-shadow:
+      0 1px 2px hsl(var(--foreground) / 0.03),
+      0 4px 16px hsl(var(--primary) / 0.06),
+      0 0 0 1px hsl(var(--primary) / 0.06);
+  }
+  .stat-card:hover::before {
+    @apply opacity-100;
   }
 
   /* Monospace data display */
@@ -184,64 +200,91 @@
     @apply tabular-nums tracking-tight;
   }
 
-  /* Gold shimmer effect for special elements */
+  /* Gold shimmer effect for premium elements */
   .gold-shimmer {
     background: linear-gradient(
-      135deg,
+      120deg,
       hsl(var(--gold)) 0%,
-      hsl(45 95% 65%) 50%,
-      hsl(var(--gold)) 100%
+      hsl(42 95% 68%) 40%,
+      hsl(var(--gold)) 60%,
+      hsl(42 90% 60%) 100%
     );
-    background-size: 200% 200%;
-    animation: shimmer 3s ease-in-out infinite;
+    background-size: 200% auto;
+    animation: shimmer 4s ease-in-out infinite;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* Subtle purple glow for focused/active elements */
+  /* Subtle glow for focused/magical elements */
   .glow-primary {
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.12), 0 0 6px hsl(var(--primary) / 0.08);
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.1), 0 0 4px hsl(var(--primary) / 0.06);
+  }
+  .glow-gold {
+    box-shadow: 0 0 20px hsl(var(--gold) / 0.12), 0 0 4px hsl(var(--gold) / 0.06);
+  }
+
+  /* Magic card — used for hero/featured elements */
+  .magic-card {
+    @apply relative overflow-hidden;
+  }
+  .magic-card::after {
+    content: '';
+    @apply absolute -top-1/2 -right-1/2 w-full h-full rounded-full opacity-0 transition-opacity duration-500;
+    background: radial-gradient(circle, hsl(var(--primary) / 0.06) 0%, transparent 70%);
+  }
+  .magic-card:hover::after {
+    @apply opacity-100;
   }
 }
 
 @layer utilities {
   .animate-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.35s ease-out both;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.4s ease-out;
+    animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .animate-slide-in-right {
-    animation: slideInRight 0.3s ease-out;
+    animation: slideInRight 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  .stagger-1 { animation-delay: 50ms; }
-  .stagger-2 { animation-delay: 100ms; }
-  .stagger-3 { animation-delay: 150ms; }
-  .stagger-4 { animation-delay: 200ms; }
-  .stagger-5 { animation-delay: 250ms; }
-  .stagger-6 { animation-delay: 300ms; }
+  .stagger-1 { animation-delay: 40ms; }
+  .stagger-2 { animation-delay: 80ms; }
+  .stagger-3 { animation-delay: 120ms; }
+  .stagger-4 { animation-delay: 160ms; }
+  .stagger-5 { animation-delay: 200ms; }
+  .stagger-6 { animation-delay: 240ms; }
+  .stagger-7 { animation-delay: 280ms; }
+  .stagger-8 { animation-delay: 320ms; }
+
+  /* Duration utilities */
+  .duration-250 { transition-duration: 250ms; }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(-8px); }
+  from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes shimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%, 100% { background-position: 200% center; }
+  50% { background-position: 0% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }

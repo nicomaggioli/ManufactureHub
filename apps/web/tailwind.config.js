@@ -70,12 +70,13 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        xl: 'calc(var(--radius) + 2px)',
       },
       boxShadow: {
-        'card': '0 1px 3px hsl(var(--foreground) / 0.04), 0 1px 2px hsl(var(--foreground) / 0.02)',
-        'card-hover': '0 4px 12px hsl(var(--foreground) / 0.06), 0 1px 3px hsl(var(--foreground) / 0.04)',
-        'glow': '0 0 24px hsl(var(--primary) / 0.18)',
-        'glow-gold': '0 0 20px hsl(var(--gold, 45 92% 52%) / 0.15)',
+        'card': '0 1px 2px hsl(var(--foreground) / 0.03), 0 0 0 1px hsl(var(--border) / 0.5)',
+        'card-hover': '0 4px 16px hsl(var(--foreground) / 0.05), 0 1px 2px hsl(var(--foreground) / 0.03)',
+        'glow': '0 0 24px hsl(var(--primary) / 0.14)',
+        'glow-gold': '0 0 20px hsl(var(--gold, 42 88% 52%) / 0.12)',
       },
       keyframes: {
         'accordion-down': {
