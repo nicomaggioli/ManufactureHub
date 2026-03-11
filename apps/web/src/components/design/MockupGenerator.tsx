@@ -1,9 +1,8 @@
 import { useState, useRef, useCallback, useEffect, type DragEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Upload, Download, Send, Sparkles, RotateCcw, ZoomIn, Check, ChevronLeft, ChevronRight, Crosshair, Trophy } from 'lucide-react';
+import { Upload, Download, Send, RotateCcw, ZoomIn, Check, ChevronLeft, ChevronRight, Ruler, CircleDot } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Types & constants
@@ -13,16 +12,16 @@ type ProductType = 'tshirt' | 'hoodie' | 'tote' | 'cap' | 'mug' | 'sweatshirt';
 type ProductColor = 'white' | 'black' | 'navy' | 'grey' | 'red' | 'forest';
 type LogoPosition = 'center' | 'left-chest' | 'full-back';
 
-interface ProductOption { key: ProductType; label: string; emoji: string }
+interface ProductOption { key: ProductType; label: string }
 interface ColorOption { key: ProductColor; label: string; hex: string; svgFill: string }
 
 const PRODUCTS: ProductOption[] = [
-  { key: 'tshirt', label: 'T-Shirt', emoji: '👕' },
-  { key: 'hoodie', label: 'Hoodie', emoji: '🧥' },
-  { key: 'tote', label: 'Tote Bag', emoji: '👜' },
-  { key: 'cap', label: 'Cap', emoji: '🧢' },
-  { key: 'mug', label: 'Mug', emoji: '☕' },
-  { key: 'sweatshirt', label: 'Sweater', emoji: '🧶' },
+  { key: 'tshirt', label: 'T-Shirt' },
+  { key: 'hoodie', label: 'Hoodie' },
+  { key: 'tote', label: 'Tote Bag' },
+  { key: 'cap', label: 'Cap' },
+  { key: 'mug', label: 'Mug' },
+  { key: 'sweatshirt', label: 'Sweatshirt' },
 ];
 
 const COLORS: ColorOption[] = [
@@ -34,10 +33,10 @@ const COLORS: ColorOption[] = [
   { key: 'forest', label: 'Forest', hex: '#2D4A2D', svgFill: '#2D4A2D' },
 ];
 
-const POSITIONS: { key: LogoPosition; label: string; icon: string }[] = [
-  { key: 'center', label: 'Center', icon: '◎' },
-  { key: 'left-chest', label: 'Left Chest', icon: '◧' },
-  { key: 'full-back', label: 'Full Back', icon: '▣' },
+const POSITIONS: { key: LogoPosition; label: string }[] = [
+  { key: 'center', label: 'Center' },
+  { key: 'left-chest', label: 'Left Chest' },
+  { key: 'full-back', label: 'Full Back' },
 ];
 
 const LOGO_AREA: Record<LogoPosition, { x: number; y: number; maxScale: number }> = {
@@ -47,7 +46,7 @@ const LOGO_AREA: Record<LogoPosition, { x: number; y: number; maxScale: number }
 };
 
 // ---------------------------------------------------------------------------
-// Product SVGs
+// Product SVGs — clean flat silhouettes
 // ---------------------------------------------------------------------------
 
 const COLOR_MAP: Record<ProductColor, ColorOption> = Object.fromEntries(COLORS.map((c) => [c.key, c])) as Record<ProductColor, ColorOption>;
@@ -109,56 +108,41 @@ function ProductSvg({ product, fill }: { product: ProductType; fill: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Sparkle burst effect
+// Mini product thumbnail for carousel
 // ---------------------------------------------------------------------------
 
-function SparkBurst({ active }: { active: boolean }) {
-  if (!active) return null;
+function ProductThumb({ product, active }: { product: ProductType; active: boolean }) {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-1.5 h-1.5 rounded-full bg-accent"
-          style={{
-            left: '50%',
-            top: '50%',
-            animation: `spark-fly 0.6s ease-out ${i * 0.04}s forwards`,
-            '--spark-angle': `${i * 45}deg`,
-            opacity: 0,
-          } as React.CSSProperties}
-        />
-      ))}
+    <div className={cn(
+      'w-8 h-8 transition-opacity duration-200',
+      active ? 'opacity-90' : 'opacity-30'
+    )}>
+      <ProductSvg product={product} fill={active ? '#6B7280' : '#9CA3AF'} />
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Progress indicator (game-style completion tracker)
+// Step dots — simple, professional
 // ---------------------------------------------------------------------------
 
-function StepTracker({ steps }: { steps: { label: string; done: boolean }[] }) {
+function StepDots({ steps }: { steps: { done: boolean }[] }) {
   const completed = steps.filter((s) => s.done).length;
-  const pct = (completed / steps.length) * 100;
+  const allDone = completed === steps.length;
 
   return (
-    <div className="flex items-center gap-3 px-1">
-      <div className="flex-1 h-2 rounded-full bg-muted/50 overflow-hidden">
+    <div className="flex items-center gap-2">
+      {steps.map((s, i) => (
         <div
-          className="h-full rounded-full transition-all duration-700 ease-out"
-          style={{
-            width: `${pct}%`,
-            background: pct === 100
-              ? 'linear-gradient(90deg, hsl(var(--success)), hsl(152 60% 50%))'
-              : 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))',
-          }}
+          key={i}
+          className={cn(
+            'h-1.5 rounded-full transition-all duration-500',
+            s.done ? 'w-5 bg-primary' : 'w-1.5 bg-border',
+          )}
         />
-      </div>
-      <span className="text-xs font-mono font-bold text-muted-foreground tabular-nums">
-        {completed}/{steps.length}
-      </span>
-      {pct === 100 && (
-        <Trophy className="h-4 w-4 text-accent animate-bounce" />
+      ))}
+      {allDone && (
+        <Check className="h-3.5 w-3.5 text-success ml-0.5" />
       )}
     </div>
   );
@@ -180,23 +164,19 @@ export function MockupGenerator() {
   const [position, setPosition] = useState<LogoPosition>('center');
   const [scale, setScale] = useState(60);
   const [isDragging, setIsDragging] = useState(false);
-  const [sparkProduct, setSparkProduct] = useState(false);
-  const [sparkColor, setSparkColor] = useState(false);
   const [productIndex, setProductIndex] = useState(0);
   const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null);
 
   const activeColor = COLOR_MAP[color];
   const posConfig = LOGO_AREA[position];
 
-  // Track completion for game-style progress
   const steps = [
-    { label: 'Upload logo', done: !!logo },
-    { label: 'Pick product', done: product !== 'tshirt' || !!logo },
-    { label: 'Choose color', done: color !== 'white' },
-    { label: 'Set placement', done: position !== 'center' || scale !== 60 },
+    { done: !!logo },
+    { done: product !== 'tshirt' || !!logo },
+    { done: color !== 'white' },
+    { done: position !== 'center' || scale !== 60 },
   ];
 
-  // Sync productIndex when product changes externally
   useEffect(() => {
     const idx = PRODUCTS.findIndex((p) => p.key === product);
     if (idx >= 0) setProductIndex(idx);
@@ -222,11 +202,10 @@ export function MockupGenerator() {
     if (file) handleFile(file);
   }, [handleFile]);
 
-  // --- Product carousel navigation ---
+  // --- Product carousel ---
   const goProduct = useCallback((dir: 'left' | 'right') => {
     setSlideDir(dir);
-    setSparkProduct(true);
-    setTimeout(() => { setSparkProduct(false); setSlideDir(null); }, 500);
+    setTimeout(() => setSlideDir(null), 400);
     setProductIndex((prev) => {
       const next = dir === 'right'
         ? (prev + 1) % PRODUCTS.length
@@ -234,13 +213,6 @@ export function MockupGenerator() {
       setProduct(PRODUCTS[next].key);
       return next;
     });
-  }, []);
-
-  // --- Color with spark ---
-  const selectColor = useCallback((c: ProductColor) => {
-    setColor(c);
-    setSparkColor(true);
-    setTimeout(() => setSparkColor(false), 500);
   }, []);
 
   // --- Canvas download ---
@@ -254,7 +226,7 @@ export function MockupGenerator() {
     canvas.width = W;
     canvas.height = H;
 
-    ctx.fillStyle = '#0C0A1A';
+    ctx.fillStyle = '#F5F3EE';
     ctx.fillRect(0, 0, W, H);
 
     const svgEl = productRef.current?.querySelector('svg');
@@ -320,91 +292,79 @@ export function MockupGenerator() {
 
   return (
     <div className="space-y-4">
-      {/* Game-style progress bar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex-1">
-          <StepTracker steps={steps} />
-        </div>
+      {/* Progress + reset */}
+      <div className="flex items-center justify-between">
+        <StepDots steps={steps} />
         <Button variant="ghost" size="sm" onClick={reset} className="text-muted-foreground hover:text-foreground">
           <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Reset
         </Button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-        {/* ===== STAGE — immersive preview area ===== */}
-        <div className="relative rounded-2xl overflow-hidden bg-[#0C0A1A] min-h-[520px] flex flex-col">
-          {/* Animated background layers */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] rounded-full blur-[100px] transition-colors duration-700"
-              style={{ backgroundColor: activeColor.hex === '#FFFFFF' ? 'rgba(139,92,246,0.08)' : `${activeColor.hex}22` }}
-            />
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0C0A1A] to-transparent" />
-            {/* Grid floor effect */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 opacity-[0.04]"
-              style={{
-                backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-                backgroundSize: '40px 20px',
-                transform: 'perspective(400px) rotateX(60deg)',
-                transformOrigin: 'bottom',
-              }}
-            />
-          </div>
+      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+        {/* ===== LIGHTBOX — neutral stage, product is the star ===== */}
+        <div className="relative rounded-2xl overflow-hidden bg-[#F5F3EE] dark:bg-[#1C1B22] min-h-[520px] flex flex-col border border-border/50">
+          {/* Subtle texture — like studio paper */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
+            style={{
+              backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)',
+              backgroundSize: '16px 16px',
+            }}
+          />
 
           {/* Product on stage */}
           <div className="flex-1 flex items-center justify-center relative z-10">
             <div
               ref={productRef}
               className={cn(
-                'relative w-[280px] h-[320px] sm:w-[340px] sm:h-[380px] transition-all duration-500 ease-out',
+                'relative w-[280px] h-[320px] sm:w-[340px] sm:h-[380px] transition-all duration-400 ease-out',
                 slideDir === 'right' && 'animate-slide-in-right',
                 slideDir === 'left' && 'animate-slide-in-left',
               )}
             >
-              <div className="transition-transform duration-300 ease-out hover:scale-[1.02] w-full h-full">
-                <ProductSvg product={product} fill={activeColor.svgFill} />
-              </div>
+              <ProductSvg product={product} fill={activeColor.svgFill} />
 
               {/* Logo overlay */}
               {logo && (
                 <img
                   src={logo}
                   alt="Logo preview"
-                  className="absolute pointer-events-none object-contain transition-all duration-500 ease-out drop-shadow-[0_0_12px_rgba(139,92,246,0.3)]"
+                  className="absolute pointer-events-none object-contain transition-all duration-400 ease-out"
                   style={logoStyle}
                 />
               )}
-
-              <SparkBurst active={sparkProduct || sparkColor} />
             </div>
+
+            {/* Soft shadow beneath product — like it's sitting on a surface */}
+            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[6px] rounded-full bg-foreground/[0.06] blur-[6px]" />
           </div>
 
-          {/* Product carousel controls — bottom of stage */}
-          <div className="relative z-10 pb-4 px-4">
-            <div className="flex items-center justify-center gap-3">
+          {/* Product carousel — clean, tactile */}
+          <div className="relative z-10 pb-5 px-4">
+            <div className="flex items-center justify-center gap-4">
               <button
                 onClick={() => goProduct('left')}
-                className="h-9 w-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-white/60 hover:text-white transition-all duration-200 active:scale-90"
+                className="h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-all duration-200 active:scale-90"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
 
-              <div className="flex items-center gap-2 min-w-[160px] justify-center">
-                <span className="text-2xl">{currentProduct.emoji}</span>
-                <span className="text-white font-heading font-semibold text-sm tracking-wide">
+              <div className="flex items-center gap-2.5 min-w-[180px] justify-center">
+                <ProductThumb product={currentProduct.key} active />
+                <span className="font-heading font-semibold text-sm tracking-tight text-foreground dark:text-white">
                   {currentProduct.label}
                 </span>
               </div>
 
               <button
                 onClick={() => goProduct('right')}
-                className="h-9 w-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-white/60 hover:text-white transition-all duration-200 active:scale-90"
+                className="h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-all duration-200 active:scale-90"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
 
-            {/* Dot indicators */}
-            <div className="flex justify-center gap-1.5 mt-2.5">
+            {/* Dot nav */}
+            <div className="flex justify-center gap-1.5 mt-3">
               {PRODUCTS.map((p, i) => (
                 <button
                   key={p.key}
@@ -412,100 +372,94 @@ export function MockupGenerator() {
                   className={cn(
                     'h-1.5 rounded-full transition-all duration-300',
                     i === productIndex
-                      ? 'w-6 bg-primary'
-                      : 'w-1.5 bg-white/20 hover:bg-white/40'
+                      ? 'w-5 bg-foreground/60 dark:bg-white/60'
+                      : 'w-1.5 bg-foreground/15 dark:bg-white/15 hover:bg-foreground/30'
                   )}
                 />
               ))}
             </div>
           </div>
 
-          {/* Floating badges */}
-          <div className="absolute top-3 left-3 z-10">
-            <Badge className="bg-white/10 text-white/80 border-white/10 backdrop-blur-sm text-[11px]">
-              <Sparkles className="h-3 w-3 mr-1 text-accent" />
-              Live Preview
-            </Badge>
+          {/* Minimal label — no badge chrome, no sparkle icon */}
+          <div className="absolute top-3 right-3 z-10">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-foreground/30 dark:text-white/25">
+              Preview
+            </span>
           </div>
         </div>
 
-        {/* ===== CONTROLS PANEL ===== */}
+        {/* ===== CONTROLS ===== */}
         <div className="space-y-3">
-          {/* Upload zone — dramatic, game-like */}
+          {/* Upload zone */}
           <div
             onDragOver={(e) => { e.preventDefault(); if (!isDragging) setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={onDrop}
             onClick={() => fileInputRef.current?.click()}
             className={cn(
-              'relative rounded-xl border-2 border-dashed cursor-pointer transition-all duration-300 overflow-hidden group',
+              'relative rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 overflow-hidden group',
               isDragging
-                ? 'border-primary bg-primary/10 shadow-[0_0_30px_rgba(139,92,246,0.2)]'
+                ? 'border-primary bg-primary/5'
                 : logo
-                  ? 'border-success/40 bg-success/5 hover:bg-success/8'
-                  : 'border-border hover:border-primary/40 hover:bg-muted/30'
+                  ? 'border-success/30 bg-success/[0.03]'
+                  : 'border-border hover:border-primary/40'
             )}
           >
             {logo ? (
               <div className="flex items-center gap-3 p-3">
-                <img src={logo} alt="Logo" className="h-14 w-14 object-contain rounded-lg bg-muted/20 p-1" />
+                <img src={logo} alt="Logo" className="h-12 w-12 object-contain rounded-lg bg-muted/30 p-1" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <Check className="h-3.5 w-3.5 text-success" />
-                    <span className="text-sm font-medium text-success">Logo loaded</span>
+                    <span className="text-sm font-medium">Logo ready</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Click to change</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Click to swap</p>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center py-8 px-4">
+              <div className="flex flex-col items-center py-7 px-4">
                 <div className={cn(
-                  'h-14 w-14 rounded-2xl flex items-center justify-center mb-3 transition-all duration-300',
-                  isDragging
-                    ? 'bg-primary/20 scale-110 rotate-3'
-                    : 'bg-muted/40 group-hover:bg-primary/10 group-hover:scale-105'
+                  'h-12 w-12 rounded-xl border border-dashed border-border flex items-center justify-center mb-2.5 transition-all duration-200',
+                  isDragging ? 'border-primary bg-primary/5 scale-105' : 'group-hover:border-primary/40'
                 )}>
                   <Upload className={cn(
-                    'h-6 w-6 transition-colors duration-200',
-                    isDragging ? 'text-primary' : 'text-muted-foreground/50 group-hover:text-primary/60'
+                    'h-5 w-5 transition-colors duration-150',
+                    isDragging ? 'text-primary' : 'text-muted-foreground/40 group-hover:text-muted-foreground/60'
                   )} />
                 </div>
-                <p className="text-sm font-medium">Drop your logo here</p>
-                <p className="text-[11px] text-muted-foreground mt-1">PNG, SVG, or JPG</p>
+                <p className="text-sm font-medium">Drop your logo</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">PNG, SVG, or JPG</p>
               </div>
-            )}
-            {isDragging && (
-              <div className="absolute inset-0 bg-primary/5 animate-pulse pointer-events-none" />
             )}
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
 
-          {/* Color picker — orbiting swatches */}
+          {/* Color */}
           <div className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Color</span>
-              <span className="text-xs font-medium text-foreground">{activeColor.label}</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Color</span>
+              <span className="text-[11px] font-medium">{activeColor.label}</span>
             </div>
-            <div className="flex gap-2.5 justify-center">
+            <div className="flex gap-2 justify-center">
               {COLORS.map((c) => {
                 const isActive = color === c.key;
                 return (
                   <button
                     key={c.key}
-                    onClick={() => selectColor(c.key)}
+                    onClick={() => setColor(c.key)}
                     title={c.label}
                     className={cn(
-                      'relative h-10 w-10 rounded-xl transition-all duration-300',
+                      'relative h-9 w-9 rounded-lg transition-all duration-200',
                       isActive
-                        ? 'scale-110 ring-2 ring-primary ring-offset-2 ring-offset-card shadow-lg'
-                        : 'hover:scale-105 hover:shadow-md border border-border/50'
+                        ? 'ring-2 ring-foreground/20 ring-offset-2 ring-offset-card scale-105'
+                        : 'hover:scale-105 border border-border/40'
                     )}
                     style={{ backgroundColor: c.hex }}
                   >
                     {isActive && (
                       <Check className={cn(
-                        'absolute inset-0 m-auto h-4 w-4',
-                        c.key === 'white' || c.key === 'grey' ? 'text-foreground/70' : 'text-white/90'
+                        'absolute inset-0 m-auto h-3.5 w-3.5',
+                        c.key === 'white' || c.key === 'grey' ? 'text-foreground/50' : 'text-white/80'
                       )} />
                     )}
                   </button>
@@ -514,73 +468,56 @@ export function MockupGenerator() {
             </div>
           </div>
 
-          {/* Placement — position + scale */}
-          <div className="rounded-xl border bg-card p-4 space-y-4">
+          {/* Placement */}
+          <div className="rounded-xl border bg-card p-4 space-y-3.5">
             <div className="flex items-center gap-2">
-              <Crosshair className="h-3.5 w-3.5 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Placement</span>
+              <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Placement</span>
             </div>
 
-            {/* Position toggle */}
-            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-lg bg-muted/30">
+            <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-muted/30">
               {POSITIONS.map((p) => (
                 <button
                   key={p.key}
                   onClick={() => setPosition(p.key)}
                   className={cn(
-                    'rounded-lg py-2.5 text-center transition-all duration-200 relative',
+                    'rounded-md py-2 text-[11px] font-medium text-center transition-all duration-200',
                     position === p.key
-                      ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
-                  <div className="text-base leading-none">{p.icon}</div>
-                  <div className="text-[10px] font-medium mt-1">{p.label}</div>
+                  {p.label}
                 </button>
               ))}
             </div>
 
-            {/* Scale slider — styled as a game slider */}
-            <div className="space-y-2">
+            {/* Scale */}
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <ZoomIn className="h-3 w-3 text-primary" />
+                  <ZoomIn className="h-3 w-3 text-muted-foreground" />
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Scale</span>
                 </div>
-                <span className="text-sm font-mono font-bold tabular-nums bg-muted/50 rounded-md px-2 py-0.5">
+                <span className="text-[12px] font-mono font-medium tabular-nums text-foreground/70">
                   {scale}%
                 </span>
               </div>
-              <div className="relative">
-                <input
-                  type="range"
-                  min={20}
-                  max={100}
-                  value={scale}
-                  onChange={(e) => setScale(Number(e.target.value))}
-                  className="w-full h-2 rounded-full appearance-none cursor-pointer bg-muted/50 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(139,92,246,0.4)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:transition-shadow [&::-webkit-slider-thumb]:hover:shadow-[0_0_16px_rgba(139,92,246,0.6)]"
-                />
-                {/* Filled track */}
-                <div
-                  className="absolute top-0 left-0 h-2 rounded-full pointer-events-none"
-                  style={{
-                    width: `${((scale - 20) / 80) * 100}%`,
-                    background: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))',
-                  }}
-                />
-              </div>
+              <input
+                type="range"
+                min={20}
+                max={100}
+                value={scale}
+                onChange={(e) => setScale(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-border [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-card [&::-webkit-slider-thumb]:shadow-sm"
+              />
             </div>
           </div>
 
-          {/* Action buttons — dramatic CTA */}
+          {/* Actions */}
           <div className="space-y-2 pt-1">
             <Button
-              className={cn(
-                'w-full h-11 font-heading font-semibold text-sm tracking-wide transition-all duration-300',
-                logo
-                  ? 'shadow-[0_0_20px_rgba(139,92,246,0.2)] hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]'
-                  : ''
-              )}
+              className="w-full h-10"
               onClick={downloadMockup}
               disabled={!logo}
             >
@@ -589,7 +526,7 @@ export function MockupGenerator() {
             </Button>
             <Button
               variant="outline"
-              className="w-full border-primary/20 hover:bg-primary/5 hover:border-primary/40 transition-all duration-200"
+              className="w-full"
               onClick={() => navigate('/communications')}
               disabled={!logo}
             >
@@ -600,7 +537,6 @@ export function MockupGenerator() {
         </div>
       </div>
 
-      {/* Hidden canvas for export */}
       <canvas ref={canvasRef} className="hidden" />
     </div>
   );
