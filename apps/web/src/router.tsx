@@ -11,6 +11,8 @@ import { Quotes } from '@/pages/Quotes';
 import { Samples } from '@/pages/Samples';
 import { Settings } from '@/pages/Settings';
 
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -28,4 +30,4 @@ export const router = createBrowserRouter([
       { path: 'settings', element: <Settings /> },
     ],
   },
-]);
+], { basename });
