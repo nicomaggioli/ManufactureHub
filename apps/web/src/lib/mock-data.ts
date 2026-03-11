@@ -101,7 +101,17 @@ export const mockApi = {
     const status = _params?.status;
     return status ? samples.filter((s) => s.status === status) : [...samples];
   },
-  designAssetsList: async () => [],
+  designAssetsList: async () => [
+    { id: 'da1', projectId: 'p1', name: 'Spring 2026 Color Palette.png', type: 'image', url: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1557683316-973673baf926?w=400&h=300&fit=crop', uploadedAt: '2026-03-01', fileSize: 2400000 },
+    { id: 'da2', projectId: 'p1', name: 'Cotton Fabric Swatches.jpg', type: 'image', url: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=400&h=300&fit=crop', uploadedAt: '2026-03-03', fileSize: 3100000 },
+    { id: 'da3', projectId: 'p2', name: 'Denim Wash Spec Sheet.pdf', type: 'spec_sheet', url: '#', thumbnailUrl: '', uploadedAt: '2026-03-05', fileSize: 890000 },
+    { id: 'da4', projectId: 'p1', name: 'Spring Mood Board.png', type: 'mood_board', url: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop', uploadedAt: '2026-02-28', fileSize: 4500000 },
+    { id: 'da5', projectId: 'p6', name: 'Wallet CAD Model.step', type: 'cad', url: '#', thumbnailUrl: '', uploadedAt: '2026-02-20', fileSize: 12000000 },
+    { id: 'da6', projectId: 'p3', name: 'Jogger Technical Drawing.pdf', type: 'document', url: '#', thumbnailUrl: '', uploadedAt: '2026-03-07', fileSize: 1500000 },
+    { id: 'da7', projectId: 'p1', name: 'Pastel Linen Textures.jpg', type: 'image', url: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1528459105426-b9548367069b?w=400&h=300&fit=crop', uploadedAt: '2026-03-04', fileSize: 2800000 },
+    { id: 'da8', projectId: 'p2', name: 'Selvedge Denim Reference.jpg', type: 'image', url: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=400&h=300&fit=crop', uploadedAt: '2026-03-06', fileSize: 1900000 },
+    { id: 'da9', projectId: 'p7', name: 'Kids Block Print Patterns.png', type: 'image', url: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop', uploadedAt: '2026-03-09', fileSize: 3300000 },
+  ],
   aiGenerateDraft: async () => ({ draft: 'Dear Partner,\n\nThank you for your prompt response regarding our inquiry. We are pleased with the pricing and specifications provided.\n\nWe would like to proceed with a sample order to evaluate the quality firsthand. Could you please confirm the sample lead time and shipping arrangements?\n\nWe look forward to building a strong manufacturing partnership.\n\nBest regards,\nManufactureHub Team' }),
   aiVetManufacturer: async () => ({ overallScore: 82, categories: [{ name: 'Quality', score: 85, notes: 'Consistent quality across product lines' }, { name: 'Reliability', score: 78, notes: 'On-time delivery rate of 92%' }, { name: 'Communication', score: 80, notes: 'Responsive within 24 hours' }, { name: 'Sustainability', score: 88, notes: 'Strong environmental certifications' }], risks: ['Currency fluctuation exposure', 'Single-source dependency risk'], recommendations: ['Request third-party quality audit', 'Negotiate penalty clauses for late delivery'], generatedAt: new Date().toISOString() }),
   aiAnalyzeQuote: async () => ({ competitiveness: 'Above Average', marketComparison: 'This quote is 8% below market average for comparable products in the region.', negotiationTips: ['Request volume discount for orders above 5,000 units', 'Ask about payment terms (NET 30/60)', 'Inquire about bundled shipping rates'], recommendation: 'This is a competitive offer. Consider accepting with a request for extended payment terms.' }),
