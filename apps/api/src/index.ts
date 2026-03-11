@@ -29,9 +29,9 @@ app.use(correlationId);
 // Health check (no auth required)
 // ---------------------------------------------------------------------------
 app.get("/api/health", async (_req, res) => {
-  const checks: Record<string, "ok" | "error"> = {
+  const checks: Record<string, "ok" | "error" | "disabled"> = {
     database: "error",
-    redis: "error",
+    redis: "disabled",
   };
 
   try {
@@ -43,14 +43,16 @@ app.get("/api/health", async (_req, res) => {
 
   try {
     const redis = cache.getClient();
-    if (!redis) throw new Error('Redis not configured');
-    await redis.ping();
-    checks.redis = "ok";
+    if (redis) {
+      await redis.ping();
+      checks.redis = "ok";
+    }
   } catch {
-    // leave as error
+    checks.redis = "error";
   }
 
-  const healthy = Object.values(checks).every((v) => v === "ok");
+  // Server is healthy as long as the database is up; Redis is optional
+  const healthy = checks.database === "ok";
 
   res.status(healthy ? 200 : 503).json({
     success: healthy,

@@ -30,6 +30,9 @@
     "@sendgrid/mail": "^8.1.0",
     "svix": "^1.42.0"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
