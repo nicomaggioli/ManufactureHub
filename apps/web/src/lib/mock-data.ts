@@ -1,6 +1,7 @@
 // Mock data for demo mode (GitHub Pages / no backend)
 
-export const DEMO_MODE = !window.location.hostname.includes('localhost');
+// Use real API if VITE_API_URL is set or running on localhost; otherwise demo mode
+export const DEMO_MODE = !import.meta.env.VITE_API_URL && !window.location.hostname.includes('localhost');
 
 const manufacturers = [
   { id: 'm1', name: 'Shanghai Textile Co.', country: 'China', specialties: ['Cotton', 'Polyester', 'Silk'], certifications: ['ISO 9001', 'OEKO-TEX'], rating: 4.5, verified: true, sustainabilityScore: 72, moqMin: 500, moqMax: 50000, contactEmail: 'info@shanghaitextile.cn', contactPhone: '+86 21 5555 0100', website: 'shanghaitextile.cn', description: 'Leading textile manufacturer with 20+ years of export experience. Specializing in premium cotton and silk blends for fashion brands worldwide.', createdAt: '2024-01-15' },

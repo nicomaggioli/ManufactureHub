@@ -43,6 +43,7 @@ app.get("/api/health", async (_req, res) => {
 
   try {
     const redis = cache.getClient();
+    if (!redis) throw new Error('Redis not configured');
     await redis.ping();
     checks.redis = "ok";
   } catch {

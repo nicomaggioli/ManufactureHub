@@ -11,8 +11,13 @@ import { createReminderWorker, createReminderQueue, REMINDER_QUEUE_NAME } from '
 export async function initWorkers(): Promise<{
   workers: Worker[];
   shutdown: () => Promise<void>;
-}> {
-  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+} | null> {
+  const redisUrl = process.env.REDIS_URL;
+
+  if (!redisUrl) {
+    logger.info('[Workers] REDIS_URL not set – skipping worker initialization');
+    return null;
+  }
 
   const connection = new IORedis(redisUrl, {
     maxRetriesPerRequest: null,

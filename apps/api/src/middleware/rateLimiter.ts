@@ -13,9 +13,10 @@ const WINDOW_SECONDS = 3600; // 1 hour
 
 let redis: Redis | null = null;
 
-function getRedis(): Redis {
+function getRedis(): Redis | null {
+  if (!config.redis.enabled) return null;
   if (!redis) {
-    redis = new Redis(config.redis.url, {
+    redis = new Redis(config.redis.url!, {
       maxRetriesPerRequest: 1,
       enableReadyCheck: false,
     });
@@ -45,6 +46,12 @@ export function rateLimiter(
   const windowStart = now - WINDOW_SECONDS * 1000;
 
   const client = getRedis();
+
+  // If Redis is not available, skip rate limiting
+  if (!client) {
+    next();
+    return;
+  }
 
   client
     .pipeline()

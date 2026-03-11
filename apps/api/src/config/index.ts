@@ -13,8 +13,8 @@ const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().default("postgresql://postgres:postgres@localhost:5432/manufacturehub"),
 
-  // Redis
-  REDIS_URL: z.string().default("redis://localhost:6379"),
+  // Redis (optional – the server works without it; workers just won't run)
+  REDIS_URL: z.string().optional(),
 
   // Anthropic
   ANTHROPIC_API_KEY: z.string().default(""),
@@ -66,6 +66,7 @@ export const config = {
 
   redis: {
     url: env.REDIS_URL,
+    enabled: !!env.REDIS_URL,
   },
 
   anthropic: {

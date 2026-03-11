@@ -4,9 +4,12 @@ import { logger } from "../config/logger";
 
 let client: Redis | null = null;
 
-function getClient(): Redis {
+function getClient(): Redis | null {
+  if (!config.redis.enabled) {
+    return null;
+  }
   if (!client) {
-    client = new Redis(config.redis.url, {
+    client = new Redis(config.redis.url!, {
       maxRetriesPerRequest: 2,
       enableReadyCheck: false,
     });
@@ -19,11 +22,13 @@ function getClient(): Redis {
 
 export const cache = {
   /**
-   * Retrieve a cached value. Returns `null` on miss or Redis failure.
+   * Retrieve a cached value. Returns `null` on miss, Redis failure, or when Redis is disabled.
    */
   async get<T = unknown>(key: string): Promise<T | null> {
     try {
-      const raw = await getClient().get(key);
+      const c = getClient();
+      if (!c) return null;
+      const raw = await c.get(key);
       return raw ? (JSON.parse(raw) as T) : null;
     } catch (err) {
       logger.warn("Cache get failed", { key, error: (err as Error).message });
@@ -37,11 +42,13 @@ export const cache = {
    */
   async set(key: string, value: unknown, ttl?: number): Promise<void> {
     try {
+      const c = getClient();
+      if (!c) return;
       const serialized = JSON.stringify(value);
       if (ttl) {
-        await getClient().set(key, serialized, "EX", ttl);
+        await c.set(key, serialized, "EX", ttl);
       } else {
-        await getClient().set(key, serialized);
+        await c.set(key, serialized);
       }
     } catch (err) {
       logger.warn("Cache set failed", { key, error: (err as Error).message });
@@ -53,8 +60,10 @@ export const cache = {
    */
   async del(...keys: string[]): Promise<void> {
     try {
+      const c = getClient();
+      if (!c) return;
       if (keys.length > 0) {
-        await getClient().del(...keys);
+        await c.del(...keys);
       }
     } catch (err) {
       logger.warn("Cache del failed", { keys, error: (err as Error).message });
@@ -63,7 +72,7 @@ export const cache = {
 
   /**
    * Fetch from cache or execute `fetchFn`, cache the result, and return it.
-   * On Redis failure the fetch function is still called (cache-aside pattern).
+   * On Redis failure (or when disabled) the fetch function is still called.
    */
   async getOrSet<T>(
     key: string,
@@ -81,7 +90,7 @@ export const cache = {
   },
 
   /**
-   * Returns the underlying ioredis client for health checks or advanced ops.
+   * Returns the underlying ioredis client (or null if Redis is disabled).
    */
   getClient,
 };
