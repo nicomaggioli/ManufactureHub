@@ -1,4 +1,5 @@
 import axios, { type AxiosError } from 'axios';
+import { DEMO_MODE, mockApi } from './mock-data';
 
 const api = axios.create({
   baseURL: '/api/v1',
@@ -9,8 +10,6 @@ const api = axios.create({
 
 // Auth token interceptor
 api.interceptors.request.use(async (config) => {
-  // Clerk stores the session token; we retrieve it from the global window object
-  // when the ClerkProvider is initialized
   const token =
     typeof window !== 'undefined'
       ? await (window as any).__clerk_session?.getToken()
@@ -59,14 +58,14 @@ export interface CreateProjectPayload {
 
 export const projectsApi = {
   list: (params?: { status?: string }) =>
-    api.get('/projects', { params }).then((r) => r.data.data.data ?? r.data.data),
+    DEMO_MODE ? mockApi.projectsList(params) : api.get('/projects', { params }).then((r) => r.data.data.data ?? r.data.data),
   get: (id: string) =>
-    api.get<{ data: Project }>(`/projects/${id}`).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.projectsGet(id) : api.get<{ data: Project }>(`/projects/${id}`).then((r) => r.data.data),
   create: (payload: CreateProjectPayload) =>
-    api.post<{ data: Project }>('/projects', payload).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.projectsCreate(payload) : api.post<{ data: Project }>('/projects', payload).then((r) => r.data.data),
   update: (id: string, payload: Partial<CreateProjectPayload>) =>
-    api.patch<{ data: Project }>(`/projects/${id}`, payload).then((r) => r.data.data),
-  delete: (id: string) => api.delete(`/projects/${id}`),
+    DEMO_MODE ? mockApi.projectsCreate(payload) : api.patch<{ data: Project }>(`/projects/${id}`, payload).then((r) => r.data.data),
+  delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/projects/${id}`),
 };
 
 // ── Manufacturer endpoints ─────────────────────────────────────────────
@@ -108,11 +107,11 @@ export interface ManufacturerListResult {
 
 export const manufacturersApi = {
   list: (params?: ManufacturerSearchParams): Promise<ManufacturerListResult> =>
-    api.get('/manufacturers', { params }).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.manufacturersList() : api.get('/manufacturers', { params }).then((r) => r.data.data),
   get: (id: string): Promise<Manufacturer> =>
-    api.get(`/manufacturers/${id}`).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.manufacturersGet(id) as any : api.get(`/manufacturers/${id}`).then((r) => r.data.data),
   search: (params: ManufacturerSearchParams): Promise<ManufacturerListResult> =>
-    api.get('/manufacturers', { params }).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.manufacturersList() : api.get('/manufacturers', { params }).then((r) => r.data.data),
 };
 
 // ── Communication endpoints ────────────────────────────────────────────
@@ -146,11 +145,11 @@ export interface SendMessagePayload {
 
 export const communicationsApi = {
   list: (params?: { projectId?: string; manufacturerId?: string }) =>
-    api.get('/communications', { params }).then((r) => r.data.data.data ?? r.data.data),
+    DEMO_MODE ? mockApi.communicationsList() : api.get('/communications', { params }).then((r) => r.data.data.data ?? r.data.data),
   get: (id: string) =>
-    api.get<{ data: Communication }>(`/communications/${id}`).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.communicationsGet(id) : api.get<{ data: Communication }>(`/communications/${id}`).then((r) => r.data.data),
   send: (payload: SendMessagePayload) =>
-    api.post<{ data: Communication }>('/communications/send', payload).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Communication }>('/communications/send', payload).then((r) => r.data.data),
 };
 
 // ── Reminder endpoints ─────────────────────────────────────────────────
@@ -167,12 +166,12 @@ export interface Reminder {
 
 export const remindersApi = {
   list: (params?: { upcoming?: boolean; days?: number }) =>
-    api.get('/reminders', { params }).then((r) => r.data.data.data ?? r.data.data),
+    DEMO_MODE ? mockApi.remindersList() : api.get('/reminders', { params }).then((r) => r.data.data.data ?? r.data.data),
   create: (payload: Omit<Reminder, 'id'>) =>
-    api.post<{ data: Reminder }>('/reminders', payload).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Reminder }>('/reminders', payload).then((r) => r.data.data),
   update: (id: string, payload: Partial<Reminder>) =>
-    api.patch<{ data: Reminder }>(`/reminders/${id}`, payload).then((r) => r.data.data),
-  delete: (id: string) => api.delete(`/reminders/${id}`),
+    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Reminder }>(`/reminders/${id}`, payload).then((r) => r.data.data),
+  delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/reminders/${id}`),
 };
 
 // ── Design Asset endpoints ─────────────────────────────────────────────
@@ -189,12 +188,12 @@ export interface DesignAsset {
 
 export const designAssetsApi = {
   list: (params?: { projectId?: string; type?: string }) =>
-    api.get('/design-assets', { params }).then((r) => r.data.data.data ?? r.data.data),
+    DEMO_MODE ? mockApi.designAssetsList() : api.get('/design-assets', { params }).then((r) => r.data.data.data ?? r.data.data),
   upload: (formData: FormData) =>
-    api.post<{ data: DesignAsset }>('/design-assets/upload', formData, {
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: DesignAsset }>('/design-assets/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then((r) => r.data.data),
-  delete: (id: string) => api.delete(`/design-assets/${id}`),
+  delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/design-assets/${id}`),
 };
 
 // ── Quote endpoints ────────────────────────────────────────────────────
@@ -216,13 +215,13 @@ export interface Quote {
 
 export const quotesApi = {
   list: (params?: { projectId?: string; status?: string }) =>
-    api.get('/quotes', { params }).then((r) => r.data.data.data ?? r.data.data),
+    DEMO_MODE ? mockApi.quotesList() : api.get('/quotes', { params }).then((r) => r.data.data.data ?? r.data.data),
   get: (id: string) =>
-    api.get<{ data: Quote }>(`/quotes/${id}`).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.quotesGet(id) : api.get<{ data: Quote }>(`/quotes/${id}`).then((r) => r.data.data),
   accept: (id: string) =>
-    api.patch<{ data: Quote }>(`/quotes/${id}/accept`).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Quote }>(`/quotes/${id}/accept`).then((r) => r.data.data),
   reject: (id: string) =>
-    api.patch<{ data: Quote }>(`/quotes/${id}/reject`).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Quote }>(`/quotes/${id}/reject`).then((r) => r.data.data),
 };
 
 // ── Sample endpoints ───────────────────────────────────────────────────
@@ -242,13 +241,13 @@ export interface Sample {
 
 export const samplesApi = {
   list: (params?: { projectId?: string; status?: string }) =>
-    api.get('/samples', { params }).then((r) => r.data.data.data ?? r.data.data),
+    DEMO_MODE ? mockApi.samplesList(params) : api.get('/samples', { params }).then((r) => r.data.data.data ?? r.data.data),
   get: (id: string) =>
-    api.get<{ data: Sample }>(`/samples/${id}`).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.get<{ data: Sample }>(`/samples/${id}`).then((r) => r.data.data),
   updateStatus: (id: string, status: string) =>
-    api.patch<{ data: Sample }>(`/samples/${id}/status`, { status }).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Sample }>(`/samples/${id}/status`, { status }).then((r) => r.data.data),
   uploadPhoto: (id: string, formData: FormData) =>
-    api.post<{ data: Sample }>(`/samples/${id}/photos`, formData, {
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Sample }>(`/samples/${id}/photos`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then((r) => r.data.data),
 };
@@ -285,13 +284,13 @@ export interface AIQuoteAnalysis {
 
 export const aiApi = {
   generateDraft: (payload: AIDraftPayload) =>
-    api.post<{ data: { draft: string } }>('/ai/draft-message', payload).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.aiGenerateDraft() : api.post<{ data: { draft: string } }>('/ai/draft-message', payload).then((r) => r.data.data),
   vetManufacturer: (manufacturerId: string) =>
-    api.get<{ data: AIVettingReport }>(`/ai/vet-manufacturer/${manufacturerId}`).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.aiVetManufacturer() : api.get<{ data: AIVettingReport }>(`/ai/vet-manufacturer/${manufacturerId}`).then((r) => r.data.data),
   creativeInsights: (projectId: string) =>
-    api.get<{ data: AICreativeInsight }>(`/ai/creative-insights/${projectId}`).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({ suggestions: ['Try organic dyes for eco-friendly appeal', 'Consider recycled polyester blends'], trendAnalysis: 'Sustainable materials are trending +34% YoY in your product category.', materialRecommendations: ['Organic Cotton', 'Recycled Nylon', 'Tencel'] }) : api.get<{ data: AICreativeInsight }>(`/ai/creative-insights/${projectId}`).then((r) => r.data.data),
   analyzeQuote: (quoteId: string) =>
-    api.get<{ data: AIQuoteAnalysis }>(`/ai/analyze-quote/${quoteId}`).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.aiAnalyzeQuote() : api.get<{ data: AIQuoteAnalysis }>(`/ai/analyze-quote/${quoteId}`).then((r) => r.data.data),
 };
 
 // ── Dashboard stats ────────────────────────────────────────────────────
@@ -318,9 +317,9 @@ export interface ActivityItem {
 
 export const dashboardApi = {
   stats: () =>
-    api.get<{ data: DashboardStats }>('/dashboard/stats').then((r) => r.data.data),
+    DEMO_MODE ? mockApi.dashboardStats() : api.get<{ data: DashboardStats }>('/dashboard/stats').then((r) => r.data.data),
   recentActivity: () =>
-    api.get<{ data: ActivityItem[] }>('/dashboard/activity').then((r) => r.data.data),
+    DEMO_MODE ? mockApi.dashboardActivity() : api.get<{ data: ActivityItem[] }>('/dashboard/activity').then((r) => r.data.data),
 };
 
 export default api;
