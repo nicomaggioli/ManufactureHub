@@ -1,0 +1,360 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin
+  designer
+  sourcing
+}
+
+enum PlanTier {
+  free
+  pro
+  enterprise
+}
+
+enum ProjectStatus {
+  ideation
+  sourcing
+  sampling
+  production
+  shipped
+}
+
+enum CommunicationDirection {
+  sent
+  received
+}
+
+enum CommunicationStatus {
+  draft
+  sent
+  delivered
+  failed
+  archived
+}
+
+enum ReminderType {
+  follow_up
+  milestone
+  sample_review
+  shipping
+  quote_expiring
+}
+
+enum AssetType {
+  sketch
+  moodboard
+  reference
+  spec_sheet
+  cad
+}
+
+enum MoodboardItemType {
+  image
+  text
+  color
+  shape
+}
+
+enum InsightType {
+  supplier_vetting
+  creative_analysis
+  market_intelligence
+  quote_analysis
+  spec_extraction
+}
+
+enum QuoteStatus {
+  pending
+  accepted
+  rejected
+}
+
+enum SampleStatus {
+  requested
+  in_transit
+  received
+  approved
+  rejected
+}
+
+enum TeamRole {
+  owner
+  editor
+  viewer
+}
+
+enum ManufacturerSource {
+  manual
+  alibaba
+}
+
+model User {
+  id                String       @id @default(uuid())
+  clerkId           String       @unique
+  name              String
+  email             String       @unique
+  role              UserRole     @default(designer)
+  planTier          PlanTier     @default(free)
+  stripeCustomerId  String?
+  emailDigest       String       @default("daily") // daily | weekly | none
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  projects          Project[]
+  reminders         Reminder[]
+  designAssets      DesignAsset[]
+  teamMemberships   TeamMember[]
+  auditLogs         AuditLog[]
+
+  @@map("users")
+}
+
+model Project {
+  id               String        @id @default(uuid())
+  userId           String
+  title            String
+  description      String?
+  status           ProjectStatus @default(ideation)
+  targetLaunchDate DateTime?
+  archived         Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  communications   Communication[]
+  reminders        Reminder[]
+  designAssets     DesignAsset[]
+  aiInsights       AiInsight[]
+  quotes           Quote[]
+  samples          Sample[]
+  teamMembers      TeamMember[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("projects")
+}
+
+model Manufacturer {
+  id                 String             @id @default(uuid())
+  name               String
+  country            String
+  city               String?
+  specialties        String[]
+  certifications     String[]
+  moq                Int?
+  verified           Boolean            @default(false)
+  responseRate       Float?
+  rating             Float?
+  source             ManufacturerSource @default(manual)
+  externalId         String?
+  sustainabilityScore Float?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  contacts           Contact[]
+  communications     Communication[]
+  quotes             Quote[]
+  samples            Sample[]
+
+  @@index([country])
+  @@index([name])
+  @@map("manufacturers")
+}
+
+model Contact {
+  id               String    @id @default(uuid())
+  manufacturerId   String
+  name             String
+  email            String?
+  phone            String?
+  role             String?
+  lastContactedAt  DateTime?
+  preferredLanguage String?  @default("en")
+  createdAt        DateTime  @default(now())
+
+  manufacturer     Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+  communications   Communication[]
+
+  @@index([manufacturerId])
+  @@map("contacts")
+}
+
+model Communication {
+  id               String                  @id @default(uuid())
+  projectId        String
+  manufacturerId   String
+  contactId        String?
+  subject          String?
+  body             String
+  direction        CommunicationDirection
+  status           CommunicationStatus     @default(draft)
+  sentAt           DateTime?
+  followUpDueAt    DateTime?
+  createdAt        DateTime                @default(now())
+
+  project          Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  manufacturer     Manufacturer  @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+  contact          Contact?      @relation(fields: [contactId], references: [id])
+
+  @@index([projectId])
+  @@index([manufacturerId])
+  @@index([followUpDueAt])
+  @@map("communications")
+}
+
+model Reminder {
+  id             String       @id @default(uuid())
+  projectId      String
+  userId         String
+  type           ReminderType
+  title          String?
+  dueAt          DateTime
+  completed      Boolean      @default(false)
+  recurrenceRule String?      // iCal RRULE format
+  snoozeUntil    DateTime?
+  createdAt      DateTime     @default(now())
+
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, dueAt])
+  @@index([projectId])
+  @@map("reminders")
+}
+
+model DesignAsset {
+  id            String    @id @default(uuid())
+  projectId     String
+  userId        String
+  type          AssetType
+  fileName      String?
+  fileUrl       String
+  thumbnailUrl  String?
+  tags          String[]
+  version       Int       @default(1)
+  createdAt     DateTime  @default(now())
+
+  project       Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moodboardItems MoodboardItem[]
+
+  @@index([projectId])
+  @@map("design_assets")
+}
+
+model MoodboardItem {
+  id             String           @id @default(uuid())
+  designAssetId  String
+  sourceUrl      String?
+  notes          String?
+  positionX      Float            @default(0)
+  positionY      Float            @default(0)
+  width          Float            @default(200)
+  height         Float            @default(200)
+  zIndex         Int              @default(0)
+  itemType       MoodboardItemType @default(image)
+  createdAt      DateTime         @default(now())
+
+  designAsset    DesignAsset @relation(fields: [designAssetId], references: [id], onDelete: Cascade)
+
+  @@index([designAssetId])
+  @@map("moodboard_items")
+}
+
+model AiInsight {
+  id             String      @id @default(uuid())
+  projectId      String
+  promptContext  String?
+  responseText   String
+  modelUsed      String
+  tokensUsed     Int
+  insightType    InsightType
+  createdAt      DateTime    @default(now())
+
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("ai_insights")
+}
+
+model Quote {
+  id               String      @id @default(uuid())
+  projectId        String
+  manufacturerId   String
+  unitPrice        Float
+  currency         String      @default("USD")
+  moq              Int?
+  leadTimeDays     Int?
+  validityDate     DateTime?
+  status           QuoteStatus @default(pending)
+  notes            String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  project          Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  manufacturer     Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([manufacturerId])
+  @@map("quotes")
+}
+
+model Sample {
+  id               String       @id @default(uuid())
+  projectId        String
+  manufacturerId   String
+  requestedAt      DateTime     @default(now())
+  receivedAt       DateTime?
+  status           SampleStatus @default(requested)
+  trackingNumber   String?
+  notes            String?
+  photos           String[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  project          Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  manufacturer     Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([manufacturerId])
+  @@map("samples")
+}
+
+model TeamMember {
+  id         String    @id @default(uuid())
+  projectId  String
+  userId     String
+  role       TeamRole  @default(viewer)
+  invitedAt  DateTime  @default(now())
+  acceptedAt DateTime?
+
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("team_members")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  entityType String
+  entityId   String
+  action     String
+  diffJson   Json?
+  createdAt  DateTime @default(now())
+
+  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@map("audit_log")
+}
