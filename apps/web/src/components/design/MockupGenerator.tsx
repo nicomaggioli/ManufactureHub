@@ -1,8 +1,8 @@
-import { useState, useRef, useCallback, useEffect, type DragEvent, type ChangeEvent } from 'react';
+import { useState, useRef, useCallback, useEffect, type DragEvent, type ChangeEvent, type KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Upload, Download, Send, RotateCcw, ZoomIn, Check, ChevronLeft, ChevronRight, Ruler, CircleDot } from 'lucide-react';
+import { Upload, Download, Send, RotateCcw, ZoomIn, Check, ChevronLeft, ChevronRight, Ruler } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Types & constants
@@ -45,6 +45,9 @@ const LOGO_AREA: Record<LogoPosition, { x: number; y: number; maxScale: number }
   'full-back': { x: 0.5, y: 0.45, maxScale: 1.4 },
 };
 
+// Shared focus ring class for custom buttons
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+
 // ---------------------------------------------------------------------------
 // Product SVGs — clean flat silhouettes
 // ---------------------------------------------------------------------------
@@ -52,7 +55,7 @@ const LOGO_AREA: Record<LogoPosition, { x: number; y: number; maxScale: number }
 const COLOR_MAP: Record<ProductColor, ColorOption> = Object.fromEntries(COLORS.map((c) => [c.key, c])) as Record<ProductColor, ColorOption>;
 
 function ProductSvg({ product, fill }: { product: ProductType; fill: string }) {
-  const stroke = fill === '#F8F8F8' ? '#D4D4D8' : 'rgba(255,255,255,0.15)';
+  const stroke = fill === '#F8F8F8' ? '#C8C5BC' : 'rgba(255,255,255,0.15)';
   const common = { fill, stroke, strokeWidth: 1.5, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
 
   switch (product) {
@@ -123,26 +126,27 @@ function ProductThumb({ product, active }: { product: ProductType; active: boole
 }
 
 // ---------------------------------------------------------------------------
-// Step dots — simple, professional
+// Step dots
 // ---------------------------------------------------------------------------
 
-function StepDots({ steps }: { steps: { done: boolean }[] }) {
-  const completed = steps.filter((s) => s.done).length;
-  const allDone = completed === steps.length;
+function StepDots({ steps }: { steps: { label: string; done: boolean }[] }) {
+  const allDone = steps.every((s) => s.done);
 
   return (
-    <div className="flex items-center gap-2">
-      {steps.map((s, i) => (
+    <div className="flex items-center gap-2" role="list" aria-label="Mockup progress">
+      {steps.map((s) => (
         <div
-          key={i}
+          key={s.label}
+          role="listitem"
+          aria-label={`${s.label}: ${s.done ? 'done' : 'pending'}`}
           className={cn(
-            'h-1.5 rounded-full transition-all duration-500',
+            'h-1.5 rounded-full transition-all duration-500 motion-reduce:transition-none',
             s.done ? 'w-5 bg-primary' : 'w-1.5 bg-border',
           )}
         />
       ))}
       {allDone && (
-        <Check className="h-3.5 w-3.5 text-success ml-0.5" />
+        <Check className="h-3.5 w-3.5 text-success ml-0.5" aria-label="All steps complete" />
       )}
     </div>
   );
@@ -171,10 +175,10 @@ export function MockupGenerator() {
   const posConfig = LOGO_AREA[position];
 
   const steps = [
-    { done: !!logo },
-    { done: product !== 'tshirt' || !!logo },
-    { done: color !== 'white' },
-    { done: position !== 'center' || scale !== 60 },
+    { label: 'Upload logo', done: !!logo },
+    { label: 'Pick product', done: product !== 'tshirt' || !!logo },
+    { label: 'Choose color', done: color !== 'white' },
+    { label: 'Set placement', done: position !== 'center' || scale !== 60 },
   ];
 
   useEffect(() => {
@@ -202,10 +206,17 @@ export function MockupGenerator() {
     if (file) handleFile(file);
   }, [handleFile]);
 
+  const onUploadKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInputRef.current?.click();
+    }
+  }, []);
+
   // --- Product carousel ---
   const goProduct = useCallback((dir: 'left' | 'right') => {
     setSlideDir(dir);
-    setTimeout(() => setSlideDir(null), 400);
+    setTimeout(() => setSlideDir(null), 300);
     setProductIndex((prev) => {
       const next = dir === 'right'
         ? (prev + 1) % PRODUCTS.length
@@ -226,7 +237,7 @@ export function MockupGenerator() {
     canvas.width = W;
     canvas.height = H;
 
-    ctx.fillStyle = '#F5F3EE';
+    ctx.fillStyle = '#ECEAE4';
     ctx.fillRect(0, 0, W, H);
 
     const svgEl = productRef.current?.querySelector('svg');
@@ -302,7 +313,7 @@ export function MockupGenerator() {
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         {/* ===== LIGHTBOX — neutral stage, product is the star ===== */}
-        <div className="relative rounded-2xl overflow-hidden bg-[#F5F3EE] dark:bg-[#1C1B22] min-h-[520px] flex flex-col border border-border/50">
+        <div className="relative rounded-2xl overflow-hidden bg-[#ECEAE4] dark:bg-[#1C1B22] min-h-[520px] flex flex-col border border-border/50">
           {/* Subtle texture — like studio paper */}
           <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
             style={{
@@ -316,7 +327,7 @@ export function MockupGenerator() {
             <div
               ref={productRef}
               className={cn(
-                'relative w-[280px] h-[320px] sm:w-[340px] sm:h-[380px] transition-all duration-400 ease-out',
+                'relative w-[280px] h-[320px] sm:w-[340px] sm:h-[380px] transition-all duration-300 ease-out motion-reduce:transition-none',
                 slideDir === 'right' && 'animate-slide-in-right',
                 slideDir === 'left' && 'animate-slide-in-left',
               )}
@@ -328,22 +339,26 @@ export function MockupGenerator() {
                 <img
                   src={logo}
                   alt="Logo preview"
-                  className="absolute pointer-events-none object-contain transition-all duration-400 ease-out"
+                  className="absolute pointer-events-none object-contain transition-all duration-300 ease-out motion-reduce:transition-none"
                   style={logoStyle}
                 />
               )}
             </div>
 
-            {/* Soft shadow beneath product — like it's sitting on a surface */}
-            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[6px] rounded-full bg-foreground/[0.06] blur-[6px]" />
+            {/* Soft shadow beneath product */}
+            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[6px] rounded-full bg-foreground/[0.08] blur-[6px]" />
           </div>
 
-          {/* Product carousel — clean, tactile */}
+          {/* Product carousel */}
           <div className="relative z-10 pb-5 px-4">
             <div className="flex items-center justify-center gap-4">
               <button
+                aria-label="Previous product"
                 onClick={() => goProduct('left')}
-                className="h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-all duration-200 active:scale-90"
+                className={cn(
+                  'h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors duration-200 active:scale-90',
+                  focusRing
+                )}
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -356,21 +371,29 @@ export function MockupGenerator() {
               </div>
 
               <button
+                aria-label="Next product"
                 onClick={() => goProduct('right')}
-                className="h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-all duration-200 active:scale-90"
+                className={cn(
+                  'h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors duration-200 active:scale-90',
+                  focusRing
+                )}
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
 
             {/* Dot nav */}
-            <div className="flex justify-center gap-1.5 mt-3">
+            <div className="flex justify-center gap-1.5 mt-3" role="tablist" aria-label="Product selector">
               {PRODUCTS.map((p, i) => (
                 <button
                   key={p.key}
+                  role="tab"
+                  aria-selected={i === productIndex}
+                  aria-label={p.label}
                   onClick={() => { setProduct(p.key); setProductIndex(i); }}
                   className={cn(
-                    'h-1.5 rounded-full transition-all duration-300',
+                    'h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none',
+                    focusRing,
                     i === productIndex
                       ? 'w-5 bg-foreground/60 dark:bg-white/60'
                       : 'w-1.5 bg-foreground/15 dark:bg-white/15 hover:bg-foreground/30'
@@ -379,25 +402,23 @@ export function MockupGenerator() {
               ))}
             </div>
           </div>
-
-          {/* Minimal label — no badge chrome, no sparkle icon */}
-          <div className="absolute top-3 right-3 z-10">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-foreground/30 dark:text-white/25">
-              Preview
-            </span>
-          </div>
         </div>
 
         {/* ===== CONTROLS ===== */}
         <div className="space-y-3">
-          {/* Upload zone */}
+          {/* C4: Upload zone — now keyboard-accessible with role="button" */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-label={logo ? 'Logo uploaded. Click to change' : 'Upload logo. Drop image or click to browse'}
             onDragOver={(e) => { e.preventDefault(); if (!isDragging) setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={onDrop}
             onClick={() => fileInputRef.current?.click()}
+            onKeyDown={onUploadKeyDown}
             className={cn(
-              'relative rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 overflow-hidden group',
+              'relative rounded-xl border-2 border-dashed cursor-pointer transition-colors duration-200 overflow-hidden group',
+              focusRing,
               isDragging
                 ? 'border-primary bg-primary/5'
                 : logo
@@ -413,14 +434,14 @@ export function MockupGenerator() {
                     <Check className="h-3.5 w-3.5 text-success" />
                     <span className="text-sm font-medium">Logo ready</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Click to swap</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Click to swap</p>
                 </div>
               </div>
             ) : (
               <div className="flex flex-col items-center py-7 px-4">
                 <div className={cn(
-                  'h-12 w-12 rounded-xl border border-dashed border-border flex items-center justify-center mb-2.5 transition-all duration-200',
-                  isDragging ? 'border-primary bg-primary/5 scale-105' : 'group-hover:border-primary/40'
+                  'h-12 w-12 rounded-xl bg-muted/20 flex items-center justify-center mb-2.5 transition-colors duration-200',
+                  isDragging ? 'bg-primary/10' : 'group-hover:bg-muted/40'
                 )}>
                   <Upload className={cn(
                     'h-5 w-5 transition-colors duration-150',
@@ -428,28 +449,31 @@ export function MockupGenerator() {
                   )} />
                 </div>
                 <p className="text-sm font-medium">Drop your logo</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">PNG, SVG, or JPG</p>
+                <p className="text-xs text-muted-foreground mt-0.5">PNG, SVG, or JPG</p>
               </div>
             )}
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
 
           {/* Color */}
-          <div className="rounded-xl border bg-card p-4 space-y-3">
+          <fieldset className="rounded-xl border bg-card p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Color</span>
-              <span className="text-[11px] font-medium">{activeColor.label}</span>
+              <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Color</legend>
+              <span className="text-xs font-medium">{activeColor.label}</span>
             </div>
-            <div className="flex gap-2 justify-center">
+            <div className="flex gap-2 justify-center" role="radiogroup" aria-label="Product color">
               {COLORS.map((c) => {
                 const isActive = color === c.key;
                 return (
                   <button
                     key={c.key}
+                    role="radio"
+                    aria-checked={isActive}
+                    aria-label={c.label}
                     onClick={() => setColor(c.key)}
-                    title={c.label}
                     className={cn(
                       'relative h-9 w-9 rounded-lg transition-all duration-200',
+                      focusRing,
                       isActive
                         ? 'ring-2 ring-foreground/20 ring-offset-2 ring-offset-card scale-105'
                         : 'hover:scale-105 border border-border/40'
@@ -466,24 +490,27 @@ export function MockupGenerator() {
                 );
               })}
             </div>
-          </div>
+          </fieldset>
 
           {/* Placement */}
-          <div className="rounded-xl border bg-card p-4 space-y-3.5">
+          <fieldset className="rounded-xl border bg-card p-4 space-y-3.5">
             <div className="flex items-center gap-2">
               <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Placement</span>
+              <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Placement</legend>
             </div>
 
-            <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-muted/30">
+            <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-muted/30" role="radiogroup" aria-label="Logo position">
               {POSITIONS.map((p) => (
                 <button
                   key={p.key}
+                  role="radio"
+                  aria-checked={position === p.key}
                   onClick={() => setPosition(p.key)}
                   className={cn(
-                    'rounded-md py-2 text-[11px] font-medium text-center transition-all duration-200',
+                    'rounded-md py-2 text-xs font-medium text-center transition-colors duration-200',
+                    focusRing,
                     position === p.key
-                      ? 'bg-card text-foreground shadow-sm'
+                      ? 'bg-card text-foreground shadow-sm border border-border/50'
                       : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
@@ -497,22 +524,23 @@ export function MockupGenerator() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <ZoomIn className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Scale</span>
+                  <label htmlFor="logo-scale" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scale</label>
                 </div>
-                <span className="text-[12px] font-mono font-medium tabular-nums text-foreground/70">
+                <span className="text-xs font-mono font-medium tabular-nums text-foreground/70">
                   {scale}%
                 </span>
               </div>
               <input
+                id="logo-scale"
                 type="range"
                 min={20}
                 max={100}
                 value={scale}
                 onChange={(e) => setScale(Number(e.target.value))}
-                className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-border [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-card [&::-webkit-slider-thumb]:shadow-sm"
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-border [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-card [&::-webkit-slider-thumb]:shadow-sm focus-visible:outline-none [&:focus-visible::-webkit-slider-thumb]:ring-2 [&:focus-visible::-webkit-slider-thumb]:ring-ring [&:focus-visible::-webkit-slider-thumb]:ring-offset-2"
               />
             </div>
-          </div>
+          </fieldset>
 
           {/* Actions */}
           <div className="space-y-2 pt-1">

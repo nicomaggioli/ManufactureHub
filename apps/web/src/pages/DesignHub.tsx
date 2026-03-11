@@ -4,7 +4,7 @@ import {
   Upload,
   Image,
   File,
-  Wand2,
+  PenTool,
   ClipboardList,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -72,7 +72,7 @@ export function DesignHub() {
       >
         <TabsList>
           <TabsTrigger value="mockup">
-            <Wand2 className="h-3.5 w-3.5 mr-1.5" />
+            <PenTool className="h-3.5 w-3.5 mr-1.5" />
             Mockup Studio
           </TabsTrigger>
           <TabsTrigger value="assets">
