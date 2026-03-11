@@ -1,11 +1,8 @@
 import { useState, useRef, useCallback, useEffect, type DragEvent, type ChangeEvent, type KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  Upload, Download, Send, RotateCcw, ZoomIn, Check,
-  ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
-  Ruler, Palette, MapPin, Image as ImageIcon, Layers,
-} from 'lucide-react';
+import { Upload, Download, Send, RotateCcw, ZoomIn, Check, ChevronLeft, ChevronRight, Ruler } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Types & constants
@@ -48,26 +45,14 @@ const LOGO_AREA: Record<LogoPosition, { x: number; y: number; maxScale: number }
   'full-back': { x: 0.5, y: 0.45, maxScale: 1.4 },
 };
 
+// Shared focus ring class for custom buttons
+const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2';
+
+// ---------------------------------------------------------------------------
+// Product SVGs — clean flat silhouettes
+// ---------------------------------------------------------------------------
+
 const COLOR_MAP: Record<ProductColor, ColorOption> = Object.fromEntries(COLORS.map((c) => [c.key, c])) as Record<ProductColor, ColorOption>;
-
-// Chrome tokens
-const c = {
-  panel: 'bg-[#3C3C3C]',
-  panelAlt: 'bg-[#333333]',
-  border: 'border-[#1E1E1E]',
-  borderLight: 'border-[#4A4A4A]',
-  text: 'text-[#CCCCCC]',
-  textDim: 'text-[#8A8A8A]',
-  textBright: 'text-[#E8E8E8]',
-  input: 'bg-[#2B2B2B]',
-  hover: 'hover:bg-[#454545]',
-  active: 'bg-[#4A4A4A]',
-  focusRing: 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5B9BD5]',
-};
-
-// ---------------------------------------------------------------------------
-// Product SVGs
-// ---------------------------------------------------------------------------
 
 function ProductSvg({ product, fill }: { product: ProductType; fill: string }) {
   const stroke = fill === '#F8F8F8' ? '#C8C5BC' : 'rgba(255,255,255,0.15)';
@@ -126,45 +111,42 @@ function ProductSvg({ product, fill }: { product: ProductType; fill: string }) {
 }
 
 // ---------------------------------------------------------------------------
-// Collapsible panel section (like Photoshop properties)
+// Mini product thumbnail for carousel
 // ---------------------------------------------------------------------------
 
-function PanelSection({
-  icon: Icon,
-  title,
-  defaultOpen = true,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
+function ProductThumb({ product, active }: { product: ProductType; active: boolean }) {
+  return (
+    <div className={cn(
+      'w-8 h-8 transition-opacity duration-200',
+      active ? 'opacity-90' : 'opacity-30'
+    )}>
+      <ProductSvg product={product} fill={active ? '#6B7280' : '#9CA3AF'} />
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step dots
+// ---------------------------------------------------------------------------
+
+function StepDots({ steps }: { steps: { label: string; done: boolean }[] }) {
+  const allDone = steps.every((s) => s.done);
 
   return (
-    <div className={cn('border-b', c.border)}>
-      <button
-        onClick={() => setOpen(!open)}
-        className={cn(
-          'flex items-center gap-2 w-full px-3 py-2 text-left transition-colors',
-          c.hover, c.focusRing
-        )}
-      >
-        <Icon className={cn('h-3 w-3 shrink-0', c.textDim)} />
-        <span className={cn('text-[11px] font-semibold uppercase tracking-wider flex-1', c.text)}>
-          {title}
-        </span>
-        {open ? (
-          <ChevronUp className={cn('h-3 w-3', c.textDim)} />
-        ) : (
-          <ChevronDown className={cn('h-3 w-3', c.textDim)} />
-        )}
-      </button>
-      {open && (
-        <div className="px-3 pb-3">
-          {children}
-        </div>
+    <div className="flex items-center gap-2" role="list" aria-label="Mockup progress">
+      {steps.map((s) => (
+        <div
+          key={s.label}
+          role="listitem"
+          aria-label={`${s.label}: ${s.done ? 'done' : 'pending'}`}
+          className={cn(
+            'h-1.5 rounded-full transition-all duration-500 motion-reduce:transition-none',
+            s.done ? 'w-5 bg-primary' : 'w-1.5 bg-border',
+          )}
+        />
+      ))}
+      {allDone && (
+        <Check className="h-3.5 w-3.5 text-success ml-0.5" aria-label="All steps complete" />
       )}
     </div>
   );
@@ -174,7 +156,7 @@ function PanelSection({
 // Main component
 // ---------------------------------------------------------------------------
 
-export function MockupGenerator({ zoom = 100 }: { zoom?: number }) {
+export function MockupGenerator() {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -187,16 +169,24 @@ export function MockupGenerator({ zoom = 100 }: { zoom?: number }) {
   const [scale, setScale] = useState(60);
   const [isDragging, setIsDragging] = useState(false);
   const [productIndex, setProductIndex] = useState(0);
+  const [slideDir, setSlideDir] = useState<'left' | 'right' | null>(null);
 
   const activeColor = COLOR_MAP[color];
   const posConfig = LOGO_AREA[position];
-  const currentProduct = PRODUCTS[productIndex];
+
+  const steps = [
+    { label: 'Upload logo', done: !!logo },
+    { label: 'Pick product', done: product !== 'tshirt' || !!logo },
+    { label: 'Choose color', done: color !== 'white' },
+    { label: 'Set placement', done: position !== 'center' || scale !== 60 },
+  ];
 
   useEffect(() => {
     const idx = PRODUCTS.findIndex((p) => p.key === product);
     if (idx >= 0) setProductIndex(idx);
   }, [product]);
 
+  // --- File handling ---
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
@@ -223,7 +213,10 @@ export function MockupGenerator({ zoom = 100 }: { zoom?: number }) {
     }
   }, []);
 
+  // --- Product carousel ---
   const goProduct = useCallback((dir: 'left' | 'right') => {
+    setSlideDir(dir);
+    setTimeout(() => setSlideDir(null), 300);
     setProductIndex((prev) => {
       const next = dir === 'right'
         ? (prev + 1) % PRODUCTS.length
@@ -233,6 +226,7 @@ export function MockupGenerator({ zoom = 100 }: { zoom?: number }) {
     });
   }, []);
 
+  // --- Canvas download ---
   const downloadMockup = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -296,6 +290,7 @@ export function MockupGenerator({ zoom = 100 }: { zoom?: number }) {
     setProductIndex(0);
   };
 
+  // --- Logo overlay position ---
   const logoSizePct = (scale / 100) * 55 * posConfig.maxScale;
   const logoStyle = {
     width: `${logoSizePct}%`,
@@ -304,287 +299,269 @@ export function MockupGenerator({ zoom = 100 }: { zoom?: number }) {
     transform: 'translate(-50%, -50%)',
   };
 
-  const canvasScale = zoom / 100;
+  const currentProduct = PRODUCTS[productIndex];
 
   return (
-    <div className="flex h-full overflow-hidden">
-      {/* ===== CANVAS WORKSPACE ===== */}
-      <div className="flex-1 overflow-auto relative bg-[#1E1E1E]">
-        {/* Checkerboard pattern (like transparency in Photoshop) */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              'linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%)',
-            backgroundSize: '20px 20px',
-            backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
-          }}
-        />
+    <div className="space-y-4">
+      {/* Progress + reset */}
+      <div className="flex items-center justify-between">
+        <StepDots steps={steps} />
+        <Button variant="ghost" size="sm" onClick={reset} className="text-muted-foreground hover:text-foreground">
+          <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Reset
+        </Button>
+      </div>
 
-        {/* Canvas artboard */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="relative bg-[#ECEAE4] shadow-[0_0_0_1px_rgba(0,0,0,0.3),0_8px_32px_rgba(0,0,0,0.4)] transition-transform duration-200 motion-reduce:transition-none"
+      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+        {/* ===== LIGHTBOX — neutral stage, product is the star ===== */}
+        <div className="relative rounded-2xl overflow-hidden bg-[#ECEAE4] dark:bg-[#1C1B22] min-h-[520px] flex flex-col border border-border/50">
+          {/* Subtle texture — like studio paper */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
             style={{
-              width: 440,
-              height: 500,
-              transform: `scale(${canvasScale})`,
+              backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)',
+              backgroundSize: '16px 16px',
             }}
-          >
-            {/* Product centered on artboard */}
-            <div ref={productRef} className="absolute inset-0 flex items-center justify-center p-8">
-              <div className="relative w-[280px] h-[320px]">
-                <ProductSvg product={product} fill={activeColor.svgFill} />
-                {logo && (
-                  <img
-                    src={logo}
-                    alt="Logo preview"
-                    className="absolute pointer-events-none object-contain transition-all duration-200 motion-reduce:transition-none"
-                    style={logoStyle}
-                  />
-                )}
-              </div>
+          />
+
+          {/* Product on stage */}
+          <div className="flex-1 flex items-center justify-center relative z-10">
+            <div
+              ref={productRef}
+              className={cn(
+                'relative w-[280px] h-[320px] sm:w-[340px] sm:h-[380px] transition-all duration-300 ease-out motion-reduce:transition-none',
+                slideDir === 'right' && 'animate-slide-in-right',
+                slideDir === 'left' && 'animate-slide-in-left',
+              )}
+            >
+              <ProductSvg product={product} fill={activeColor.svgFill} />
+
+              {/* Logo overlay */}
+              {logo && (
+                <img
+                  src={logo}
+                  alt="Logo preview"
+                  className="absolute pointer-events-none object-contain transition-all duration-300 ease-out motion-reduce:transition-none"
+                  style={logoStyle}
+                />
+              )}
             </div>
 
-            {/* Artboard label */}
-            <div className="absolute -top-5 left-0">
-              <span className="text-[10px] font-mono text-[#8A8A8A]">
-                {currentProduct.label} — {activeColor.label}
-              </span>
+            {/* Soft shadow beneath product */}
+            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[6px] rounded-full bg-foreground/[0.08] blur-[6px]" />
+          </div>
+
+          {/* Product carousel */}
+          <div className="relative z-10 pb-5 px-4">
+            <div className="flex items-center justify-center gap-4">
+              <button
+                aria-label="Previous product"
+                onClick={() => goProduct('left')}
+                className={cn(
+                  'h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors duration-200 active:scale-90',
+                  focusRing
+                )}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+
+              <div className="flex items-center gap-2.5 min-w-[180px] justify-center">
+                <ProductThumb product={currentProduct.key} active />
+                <span className="font-heading font-semibold text-sm tracking-tight text-foreground dark:text-white">
+                  {currentProduct.label}
+                </span>
+              </div>
+
+              <button
+                aria-label="Next product"
+                onClick={() => goProduct('right')}
+                className={cn(
+                  'h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors duration-200 active:scale-90',
+                  focusRing
+                )}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Dot nav */}
+            <div className="flex justify-center gap-1.5 mt-3" role="tablist" aria-label="Product selector">
+              {PRODUCTS.map((p, i) => (
+                <button
+                  key={p.key}
+                  role="tab"
+                  aria-selected={i === productIndex}
+                  aria-label={p.label}
+                  onClick={() => { setProduct(p.key); setProductIndex(i); }}
+                  className={cn(
+                    'h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none',
+                    focusRing,
+                    i === productIndex
+                      ? 'w-5 bg-foreground/60 dark:bg-white/60'
+                      : 'w-1.5 bg-foreground/15 dark:bg-white/15 hover:bg-foreground/30'
+                  )}
+                />
+              ))}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* ===== PROPERTIES PANEL (right side, like Photoshop) ===== */}
-      <div className={cn('w-[260px] shrink-0 flex flex-col border-l overflow-y-auto', c.panel, c.border)}>
-        {/* Panel header */}
-        <div className={cn('px-3 py-2 border-b flex items-center justify-between', c.border)}>
-          <span className={cn('text-[11px] font-semibold uppercase tracking-wider', c.text)}>Properties</span>
-          <button
-            onClick={reset}
-            className={cn('h-5 w-5 rounded flex items-center justify-center', c.textDim, c.hover, c.focusRing)}
-            aria-label="Reset all"
-            title="Reset all"
-          >
-            <RotateCcw className="h-3 w-3" />
-          </button>
-        </div>
-
-        {/* === Logo section === */}
-        <PanelSection icon={ImageIcon} title="Logo">
+        {/* ===== CONTROLS ===== */}
+        <div className="space-y-3">
+          {/* C4: Upload zone — now keyboard-accessible with role="button" */}
           <div
             role="button"
             tabIndex={0}
-            aria-label={logo ? 'Logo uploaded. Click to change' : 'Upload logo'}
+            aria-label={logo ? 'Logo uploaded. Click to change' : 'Upload logo. Drop image or click to browse'}
             onDragOver={(e) => { e.preventDefault(); if (!isDragging) setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={onDrop}
             onClick={() => fileInputRef.current?.click()}
             onKeyDown={onUploadKeyDown}
             className={cn(
-              'rounded border border-dashed cursor-pointer transition-colors duration-150',
-              c.focusRing,
+              'relative rounded-xl border-2 border-dashed cursor-pointer transition-colors duration-200 overflow-hidden group',
+              focusRing,
               isDragging
-                ? 'border-[#5B9BD5] bg-[#5B9BD5]/10'
+                ? 'border-primary bg-primary/5'
                 : logo
-                  ? 'border-[#4A4A4A] bg-[#2B2B2B]'
-                  : cn('border-[#4A4A4A]', c.hover)
+                  ? 'border-success/30 bg-success/[0.03]'
+                  : 'border-border hover:border-primary/40'
             )}
           >
             {logo ? (
-              <div className="flex items-center gap-2 p-2">
-                <img src={logo} alt="Logo" className="h-10 w-10 object-contain rounded bg-[#2B2B2B] p-0.5" />
+              <div className="flex items-center gap-3 p-3">
+                <img src={logo} alt="Logo" className="h-12 w-12 object-contain rounded-lg bg-muted/30 p-1" />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1">
-                    <Check className="h-3 w-3 text-[#4EC9B0]" />
-                    <span className={cn('text-[11px]', c.text)}>Loaded</span>
+                  <div className="flex items-center gap-1.5">
+                    <Check className="h-3.5 w-3.5 text-success" />
+                    <span className="text-sm font-medium">Logo ready</span>
                   </div>
-                  <p className={cn('text-[10px]', c.textDim)}>Click to swap</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Click to swap</p>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center py-4 px-2">
-                <Upload className={cn('h-4 w-4 mb-1.5', c.textDim)} />
-                <p className={cn('text-[11px]', c.textDim)}>Drop logo or click</p>
-                <p className={cn('text-[9px] mt-0.5', 'text-[#666]')}>PNG, SVG, JPG</p>
+              <div className="flex flex-col items-center py-7 px-4">
+                <div className={cn(
+                  'h-12 w-12 rounded-xl bg-muted/20 flex items-center justify-center mb-2.5 transition-colors duration-200',
+                  isDragging ? 'bg-primary/10' : 'group-hover:bg-muted/40'
+                )}>
+                  <Upload className={cn(
+                    'h-5 w-5 transition-colors duration-150',
+                    isDragging ? 'text-primary' : 'text-muted-foreground/40 group-hover:text-muted-foreground/60'
+                  )} />
+                </div>
+                <p className="text-sm font-medium">Drop your logo</p>
+                <p className="text-xs text-muted-foreground mt-0.5">PNG, SVG, or JPG</p>
               </div>
             )}
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
-        </PanelSection>
 
-        {/* === Product section === */}
-        <PanelSection icon={Layers} title="Product">
-          <div className="flex items-center gap-1.5">
-            <button
-              aria-label="Previous product"
-              onClick={() => goProduct('left')}
-              className={cn('h-6 w-6 rounded flex items-center justify-center shrink-0', c.input, c.hover, c.textDim, c.focusRing)}
-            >
-              <ChevronLeft className="h-3 w-3" />
-            </button>
-            <div className={cn('flex-1 text-center text-[11px] font-medium py-1 rounded', c.input, c.text)}>
-              {currentProduct.label}
+          {/* Color */}
+          <fieldset className="rounded-xl border bg-card p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Color</legend>
+              <span className="text-xs font-medium">{activeColor.label}</span>
             </div>
-            <button
-              aria-label="Next product"
-              onClick={() => goProduct('right')}
-              className={cn('h-6 w-6 rounded flex items-center justify-center shrink-0', c.input, c.hover, c.textDim, c.focusRing)}
-            >
-              <ChevronRight className="h-3 w-3" />
-            </button>
-          </div>
-          {/* Product grid */}
-          <div className="grid grid-cols-3 gap-1 mt-2">
-            {PRODUCTS.map((p) => (
-              <button
-                key={p.key}
-                onClick={() => setProduct(p.key)}
-                className={cn(
-                  'rounded px-1 py-1.5 text-[10px] font-medium text-center transition-colors duration-100',
-                  c.focusRing,
-                  product === p.key
-                    ? cn(c.active, c.textBright)
-                    : cn(c.textDim, c.hover)
-                )}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </PanelSection>
+            <div className="flex gap-2 justify-center" role="radiogroup" aria-label="Product color">
+              {COLORS.map((c) => {
+                const isActive = color === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    role="radio"
+                    aria-checked={isActive}
+                    aria-label={c.label}
+                    onClick={() => setColor(c.key)}
+                    className={cn(
+                      'relative h-9 w-9 rounded-lg transition-all duration-200',
+                      focusRing,
+                      isActive
+                        ? 'ring-2 ring-foreground/20 ring-offset-2 ring-offset-card scale-105'
+                        : 'hover:scale-105 border border-border/40'
+                    )}
+                    style={{ backgroundColor: c.hex }}
+                  >
+                    {isActive && (
+                      <Check className={cn(
+                        'absolute inset-0 m-auto h-3.5 w-3.5',
+                        c.key === 'white' || c.key === 'grey' ? 'text-foreground/50' : 'text-white/80'
+                      )} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
 
-        {/* === Color section === */}
-        <PanelSection icon={Palette} title="Color">
-          <div className="flex gap-1.5 flex-wrap" role="radiogroup" aria-label="Product color">
-            {COLORS.map((col) => {
-              const isActive = color === col.key;
-              return (
+          {/* Placement */}
+          <fieldset className="rounded-xl border bg-card p-4 space-y-3.5">
+            <div className="flex items-center gap-2">
+              <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
+              <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Placement</legend>
+            </div>
+
+            <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-muted/30" role="radiogroup" aria-label="Logo position">
+              {POSITIONS.map((p) => (
                 <button
-                  key={col.key}
+                  key={p.key}
                   role="radio"
-                  aria-checked={isActive}
-                  aria-label={col.label}
-                  onClick={() => setColor(col.key)}
+                  aria-checked={position === p.key}
+                  onClick={() => setPosition(p.key)}
                   className={cn(
-                    'relative h-7 w-7 rounded transition-all duration-100',
-                    c.focusRing,
-                    isActive
-                      ? 'ring-1 ring-[#5B9BD5] ring-offset-1 ring-offset-[#3C3C3C]'
-                      : 'ring-1 ring-[#1E1E1E] hover:ring-[#5B9BD5]/50'
+                    'rounded-md py-2 text-xs font-medium text-center transition-colors duration-200',
+                    focusRing,
+                    position === p.key
+                      ? 'bg-card text-foreground shadow-sm border border-border/50'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
-                  style={{ backgroundColor: col.hex }}
                 >
-                  {isActive && (
-                    <Check className={cn(
-                      'absolute inset-0 m-auto h-3 w-3',
-                      col.key === 'white' || col.key === 'grey' ? 'text-[#333]' : 'text-white/80'
-                    )} />
-                  )}
+                  {p.label}
                 </button>
-              );
-            })}
-          </div>
-          <div className="flex items-center justify-between mt-2">
-            <span className={cn('text-[10px]', c.textDim)}>Active</span>
-            <div className="flex items-center gap-1.5">
-              <div className="h-3 w-3 rounded-sm border border-[#1E1E1E]" style={{ backgroundColor: activeColor.hex }} />
-              <span className={cn('text-[10px] font-mono', c.text)}>{activeColor.hex}</span>
+              ))}
             </div>
+
+            {/* Scale */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <ZoomIn className="h-3 w-3 text-muted-foreground" />
+                  <label htmlFor="logo-scale" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scale</label>
+                </div>
+                <span className="text-xs font-mono font-medium tabular-nums text-foreground/70">
+                  {scale}%
+                </span>
+              </div>
+              <input
+                id="logo-scale"
+                type="range"
+                min={20}
+                max={100}
+                value={scale}
+                onChange={(e) => setScale(Number(e.target.value))}
+                className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-border [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-card [&::-webkit-slider-thumb]:shadow-sm focus-visible:outline-none [&:focus-visible::-webkit-slider-thumb]:ring-2 [&:focus-visible::-webkit-slider-thumb]:ring-ring [&:focus-visible::-webkit-slider-thumb]:ring-offset-2"
+              />
+            </div>
+          </fieldset>
+
+          {/* Actions */}
+          <div className="space-y-2 pt-1">
+            <Button
+              className="w-full h-10"
+              onClick={downloadMockup}
+              disabled={!logo}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download Mockup
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate('/communications')}
+              disabled={!logo}
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Send to Manufacturer
+            </Button>
           </div>
-        </PanelSection>
-
-        {/* === Position section === */}
-        <PanelSection icon={MapPin} title="Position">
-          <div className={cn('grid grid-cols-3 gap-0.5 p-0.5 rounded', c.input)} role="radiogroup" aria-label="Logo position">
-            {POSITIONS.map((p) => (
-              <button
-                key={p.key}
-                role="radio"
-                aria-checked={position === p.key}
-                onClick={() => setPosition(p.key)}
-                className={cn(
-                  'rounded py-1.5 text-[10px] font-medium text-center transition-colors duration-100',
-                  c.focusRing,
-                  position === p.key
-                    ? cn(c.active, c.textBright)
-                    : cn(c.textDim, c.hover)
-                )}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </PanelSection>
-
-        {/* === Scale section === */}
-        <PanelSection icon={ZoomIn} title="Scale">
-          <div className="flex items-center gap-2">
-            <input
-              id="logo-scale"
-              type="range"
-              min={20}
-              max={100}
-              value={scale}
-              onChange={(e) => setScale(Number(e.target.value))}
-              className={cn(
-                'flex-1 h-1 rounded-full appearance-none cursor-pointer bg-[#1E1E1E]',
-                '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#CCCCCC] [&::-webkit-slider-thumb]:border-[1px] [&::-webkit-slider-thumb]:border-[#1E1E1E]',
-                'focus-visible:outline-none [&:focus-visible::-webkit-slider-thumb]:ring-1 [&:focus-visible::-webkit-slider-thumb]:ring-[#5B9BD5]'
-              )}
-            />
-            <input
-              type="number"
-              min={20}
-              max={100}
-              value={scale}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                if (v >= 20 && v <= 100) setScale(v);
-              }}
-              className={cn(
-                'w-12 h-5 text-[10px] font-mono text-center rounded border tabular-nums',
-                c.input, c.borderLight, c.text,
-                c.focusRing
-              )}
-            />
-          </div>
-        </PanelSection>
-
-        {/* Spacer */}
-        <div className="flex-1" />
-
-        {/* === Export actions (bottom of panel) === */}
-        <div className={cn('p-3 border-t space-y-1.5', c.border)}>
-          <button
-            onClick={downloadMockup}
-            disabled={!logo}
-            className={cn(
-              'flex items-center justify-center gap-1.5 w-full h-7 rounded text-[11px] font-medium transition-colors duration-100',
-              c.focusRing,
-              logo
-                ? 'bg-[#5B9BD5] text-white hover:bg-[#4A8BC4]'
-                : 'bg-[#4A4A4A] text-[#666] cursor-not-allowed'
-            )}
-          >
-            <Download className="h-3 w-3" />
-            Export PNG
-          </button>
-          <button
-            onClick={() => navigate('/communications')}
-            disabled={!logo}
-            className={cn(
-              'flex items-center justify-center gap-1.5 w-full h-7 rounded text-[11px] font-medium transition-colors duration-100 border',
-              c.focusRing,
-              logo
-                ? cn(c.borderLight, c.text, c.hover)
-                : 'border-[#3C3C3C] text-[#666] cursor-not-allowed'
-            )}
-          >
-            <Send className="h-3 w-3" />
-            Send to Manufacturer
-          </button>
         </div>
       </div>
 
