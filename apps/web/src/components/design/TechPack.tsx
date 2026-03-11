@@ -296,23 +296,25 @@ function FieldPair({ label, children }: { label: string; children: React.ReactNo
   );
 }
 
+const STATUS_BADGE_MAP: Record<TechPackData['status'], { label: string; variant: 'default' | 'warning' | 'outline' }> = {
+  draft: { label: 'Draft', variant: 'outline' },
+  review: { label: 'In Review', variant: 'warning' },
+  approved: { label: 'Approved', variant: 'default' },
+};
+
+const COLORWAY_STATUS_MAP: Record<Colorway['status'], { variant: 'default' | 'warning' | 'destructive' }> = {
+  approved: { variant: 'default' },
+  pending: { variant: 'warning' },
+  rejected: { variant: 'destructive' },
+};
+
 function StatusBadge({ status }: { status: TechPackData['status'] }) {
-  const map: Record<TechPackData['status'], { label: string; variant: 'default' | 'warning' | 'outline' }> = {
-    draft: { label: 'Draft', variant: 'outline' },
-    review: { label: 'In Review', variant: 'warning' },
-    approved: { label: 'Approved', variant: 'default' },
-  };
-  const { label, variant } = map[status];
+  const { label, variant } = STATUS_BADGE_MAP[status];
   return <Badge variant={variant}>{label}</Badge>;
 }
 
 function ColorwayStatusBadge({ status }: { status: Colorway['status'] }) {
-  const map: Record<Colorway['status'], { variant: 'default' | 'warning' | 'destructive' }> = {
-    approved: { variant: 'default' },
-    pending: { variant: 'warning' },
-    rejected: { variant: 'destructive' },
-  };
-  return <Badge variant={map[status].variant}>{status}</Badge>;
+  return <Badge variant={COLORWAY_STATUS_MAP[status].variant}>{status}</Badge>;
 }
 
 // ---------------------------------------------------------------------------
@@ -320,6 +322,7 @@ function ColorwayStatusBadge({ status }: { status: Colorway['status'] }) {
 // ---------------------------------------------------------------------------
 
 function OverviewTab({ pack }: { pack: TechPackData }) {
+  const bomCost = pack.materials.reduce((sum, m) => sum + m.unitCost, 0);
   return (
     <div className="space-y-5">
       <Card className="animate-in">
@@ -349,7 +352,7 @@ function OverviewTab({ pack }: { pack: TechPackData }) {
                 <CardContent className="p-3 text-center">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">BOM Cost</p>
                   <p className="text-lg font-heading font-bold data-value mt-0.5">
-                    {formatCurrency(pack.materials.reduce((sum, m) => sum + m.unitCost, 0))}
+                    {formatCurrency(bomCost)}
                   </p>
                 </CardContent>
               </Card>
@@ -362,7 +365,7 @@ function OverviewTab({ pack }: { pack: TechPackData }) {
               <Card className="bg-muted/40 border-0 shadow-none">
                 <CardContent className="p-3 text-center">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Margin</p>
-                  <p className="text-lg font-heading font-bold data-value mt-0.5" style={{ color: 'hsl(var(--gold))' }}>
+                  <p className="text-lg font-heading font-bold data-value mt-0.5 text-accent">
                     {(((pack.targetRetail - pack.targetCost) / pack.targetRetail) * 100).toFixed(1)}%
                   </p>
                 </CardContent>
@@ -414,7 +417,7 @@ function MaterialsTab({ pack }: { pack: TechPackData }) {
                 <td colSpan={4} className="pt-2.5 text-right pr-4 font-heading text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Total Material Cost
                 </td>
-                <td className="pt-2.5 font-bold data-value" style={{ color: 'hsl(var(--gold))' }}>
+                <td className="pt-2.5 font-bold data-value text-accent">
                   {formatCurrency(totalCost)}
                 </td>
                 <td />
@@ -509,8 +512,7 @@ function ConstructionTab({ pack }: { pack: TechPackData }) {
             {pack.specialInstructions.map((instruction, i) => (
               <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed">
                 <span
-                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: 'hsl(var(--gold))' }}
+                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
                 />
                 {instruction}
               </li>
@@ -616,8 +618,7 @@ function LabelsTab({ pack }: { pack: TechPackData }) {
             {pack.packagingRequirements.map((item, i) => (
               <li key={i} className="flex items-start gap-2.5 text-sm">
                 <span
-                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: 'hsl(var(--gold))' }}
+                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
                 />
                 {item}
               </li>
@@ -636,8 +637,6 @@ function LabelsTab({ pack }: { pack: TechPackData }) {
 export function TechPack() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [selectedPackIndex, setSelectedPackIndex] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-
   const pack = TECH_PACKS[selectedPackIndex];
 
   const renderTab = () => {
@@ -669,15 +668,7 @@ export function TechPack() {
             Manage product specifications, materials, and construction details.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder="Search tech packs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-56"
-          />
-          <Button>New Tech Pack</Button>
-        </div>
+        <Button>New Tech Pack</Button>
       </div>
 
       {/* Template selector */}
@@ -686,6 +677,7 @@ export function TechPack() {
           <button
             key={tp.id}
             onClick={() => {
+              if (i === selectedPackIndex) return;
               setSelectedPackIndex(i);
               setActiveTab('overview');
             }}
@@ -728,7 +720,7 @@ export function TechPack() {
       </div>
 
       {/* Tab content */}
-      <div>{renderTab()}</div>
+      {renderTab()}
     </div>
   );
 }

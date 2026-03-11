@@ -35,7 +35,18 @@ const designTabs = [
   { key: 'assets', label: 'Assets', icon: Image },
   { key: 'techpack', label: 'Tech Packs', icon: ClipboardList },
   { key: 'moodboard', label: 'Mood Board', icon: Palette },
-];
+] as const;
+
+type DesignTabKey = (typeof designTabs)[number]['key'];
+
+function getAssetIcon(type: string) {
+  switch (type) {
+    case 'image': return Image;
+    case 'cad': return Box;
+    case 'mood_board': return Palette;
+    default: return File;
+  }
+}
 
 function DropZone({ onUpload }: { onUpload: (files: FileList) => void }) {
   const [dragOver, setDragOver] = useState(false);
@@ -84,13 +95,14 @@ function DropZone({ onUpload }: { onUpload: (files: FileList) => void }) {
 
 export function DesignHub() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('assets');
+  const [activeTab, setActiveTab] = useState<DesignTabKey>('assets');
   const [typeFilter, setTypeFilter] = useState('');
   const [insightsOpen, setInsightsOpen] = useState(false);
 
   const assetsQuery = useQuery({
-    queryKey: ['design-assets', typeFilter || undefined],
+    queryKey: ['design-assets', typeFilter],
     queryFn: () => designAssetsApi.list(typeFilter ? { type: typeFilter } : undefined),
+    enabled: activeTab === 'assets',
   });
 
   const uploadMutation = useMutation({
@@ -116,14 +128,10 @@ export function DesignHub() {
 
   const assets = assetsQuery.data ?? [];
 
-  const getAssetIcon = (type: string) => {
-    switch (type) {
-      case 'image': return Image;
-      case 'cad': return Box;
-      case 'mood_board': return Palette;
-      default: return File;
-    }
-  };
+  const handleUpload = useCallback(
+    (files: FileList) => uploadMutation.mutate(files),
+    [uploadMutation]
+  );
 
   return (
     <div className="space-y-5">
@@ -169,7 +177,7 @@ export function DesignHub() {
                   <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">Upload Assets</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <DropZone onUpload={(files) => uploadMutation.mutate(files)} />
+                  <DropZone onUpload={handleUpload} />
                   {uploadMutation.isPending && (
                     <div className="mt-2.5 flex items-center gap-2 text-sm text-muted-foreground">
                       <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -244,11 +252,7 @@ export function DesignHub() {
           )}
 
           {/* Tech Pack Tab */}
-          {activeTab === 'techpack' && (
-            <div className="animate-in">
-              <TechPack />
-            </div>
-          )}
+          {activeTab === 'techpack' && <TechPack />}
 
           {/* Mood Board Tab */}
           {activeTab === 'moodboard' && (
