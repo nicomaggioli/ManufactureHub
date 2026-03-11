@@ -140,8 +140,8 @@ function StepDots({ steps }: { steps: { label: string; done: boolean }[] }) {
           role="listitem"
           aria-label={`${s.label}: ${s.done ? 'done' : 'pending'}`}
           className={cn(
-            'h-1.5 rounded-full transition-all duration-500 motion-reduce:transition-none',
-            s.done ? 'w-5 bg-primary' : 'w-1.5 bg-border',
+            'h-1 transition-all duration-500 motion-reduce:transition-none',
+            s.done ? 'w-5 bg-foreground' : 'w-1.5 bg-border',
           )}
         />
       ))}
@@ -237,7 +237,7 @@ export function MockupGenerator() {
     canvas.width = W;
     canvas.height = H;
 
-    ctx.fillStyle = '#ECEAE4';
+    ctx.fillStyle = '#F5F5F3';
     ctx.fillRect(0, 0, W, H);
 
     const svgEl = productRef.current?.querySelector('svg');
@@ -313,7 +313,7 @@ export function MockupGenerator() {
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         {/* ===== LIGHTBOX — neutral stage, product is the star ===== */}
-        <div className="relative rounded-2xl overflow-hidden bg-[#ECEAE4] dark:bg-[#1C1B22] min-h-[520px] flex flex-col border border-border/50">
+        <div className="relative overflow-hidden bg-[#F5F5F3] dark:bg-[#1C1B22] min-h-[520px] flex flex-col border border-border">
           {/* Subtle texture — like studio paper */}
           <div className="absolute inset-0 pointer-events-none opacity-[0.03]"
             style={{
@@ -346,7 +346,7 @@ export function MockupGenerator() {
             </div>
 
             {/* Soft shadow beneath product */}
-            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[6px] rounded-full bg-foreground/[0.08] blur-[6px]" />
+            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[4px] bg-foreground/[0.06] blur-[8px]" />
           </div>
 
           {/* Product carousel */}
@@ -356,7 +356,7 @@ export function MockupGenerator() {
                 aria-label="Previous product"
                 onClick={() => goProduct('left')}
                 className={cn(
-                  'h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors duration-200 active:scale-90',
+                  'h-8 w-8 border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors duration-200 active:scale-95',
                   focusRing
                 )}
               >
@@ -374,7 +374,7 @@ export function MockupGenerator() {
                 aria-label="Next product"
                 onClick={() => goProduct('right')}
                 className={cn(
-                  'h-8 w-8 rounded-full border border-border/60 bg-card/80 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors duration-200 active:scale-90',
+                  'h-8 w-8 border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors duration-200 active:scale-95',
                   focusRing
                 )}
               >
@@ -392,7 +392,7 @@ export function MockupGenerator() {
                   aria-label={p.label}
                   onClick={() => { setProduct(p.key); setProductIndex(i); }}
                   className={cn(
-                    'h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none',
+                    'h-1 transition-all duration-300 motion-reduce:transition-none',
                     focusRing,
                     i === productIndex
                       ? 'w-5 bg-foreground/60 dark:bg-white/60'
@@ -417,7 +417,7 @@ export function MockupGenerator() {
             onClick={() => fileInputRef.current?.click()}
             onKeyDown={onUploadKeyDown}
             className={cn(
-              'relative rounded-xl border-2 border-dashed cursor-pointer transition-colors duration-200 overflow-hidden group',
+              'relative border-2 border-dashed cursor-pointer transition-colors duration-200 overflow-hidden group',
               focusRing,
               isDragging
                 ? 'border-primary bg-primary/5'
@@ -428,7 +428,7 @@ export function MockupGenerator() {
           >
             {logo ? (
               <div className="flex items-center gap-3 p-3">
-                <img src={logo} alt="Logo" className="h-12 w-12 object-contain rounded-lg bg-muted/30 p-1" />
+                <img src={logo} alt="Logo" className="h-12 w-12 object-contain bg-muted/30 p-1" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <Check className="h-3.5 w-3.5 text-success" />
@@ -440,7 +440,7 @@ export function MockupGenerator() {
             ) : (
               <div className="flex flex-col items-center py-7 px-4">
                 <div className={cn(
-                  'h-12 w-12 rounded-xl bg-muted/20 flex items-center justify-center mb-2.5 transition-colors duration-200',
+                  'h-12 w-12 bg-muted/20 flex items-center justify-center mb-2.5 transition-colors duration-200',
                   isDragging ? 'bg-primary/10' : 'group-hover:bg-muted/40'
                 )}>
                   <Upload className={cn(
@@ -456,7 +456,7 @@ export function MockupGenerator() {
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
 
           {/* Color */}
-          <fieldset className="rounded-xl border bg-card p-4 space-y-3">
+          <fieldset className="border border-border bg-card p-4 space-y-3">
             <div className="flex items-center justify-between">
               <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Color</legend>
               <span className="text-xs font-medium">{activeColor.label}</span>
@@ -472,11 +472,11 @@ export function MockupGenerator() {
                     aria-label={c.label}
                     onClick={() => setColor(c.key)}
                     className={cn(
-                      'relative h-9 w-9 rounded-lg transition-all duration-200',
+                      'relative h-9 w-9 transition-all duration-200',
                       focusRing,
                       isActive
-                        ? 'ring-2 ring-foreground/20 ring-offset-2 ring-offset-card scale-105'
-                        : 'hover:scale-105 border border-border/40'
+                        ? 'ring-2 ring-foreground/30 ring-offset-2 ring-offset-card'
+                        : 'hover:ring-1 hover:ring-foreground/15 hover:ring-offset-1 border border-border/40'
                     )}
                     style={{ backgroundColor: c.hex }}
                   >
@@ -493,13 +493,13 @@ export function MockupGenerator() {
           </fieldset>
 
           {/* Placement */}
-          <fieldset className="rounded-xl border bg-card p-4 space-y-3.5">
+          <fieldset className="border border-border bg-card p-4 space-y-3.5">
             <div className="flex items-center gap-2">
               <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
               <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Placement</legend>
             </div>
 
-            <div className="grid grid-cols-3 gap-1 p-0.5 rounded-lg bg-muted/30" role="radiogroup" aria-label="Logo position">
+            <div className="grid grid-cols-3 gap-1 p-0.5 bg-muted/30" role="radiogroup" aria-label="Logo position">
               {POSITIONS.map((p) => (
                 <button
                   key={p.key}
@@ -507,10 +507,10 @@ export function MockupGenerator() {
                   aria-checked={position === p.key}
                   onClick={() => setPosition(p.key)}
                   className={cn(
-                    'rounded-md py-2 text-xs font-medium text-center transition-colors duration-200',
+                    'py-2 text-xs font-medium text-center transition-colors duration-200',
                     focusRing,
                     position === p.key
-                      ? 'bg-card text-foreground shadow-sm border border-border/50'
+                      ? 'bg-card text-foreground shadow-sm border border-border'
                       : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
@@ -537,7 +537,7 @@ export function MockupGenerator() {
                 max={100}
                 value={scale}
                 onChange={(e) => setScale(Number(e.target.value))}
-                className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-border [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-card [&::-webkit-slider-thumb]:shadow-sm focus-visible:outline-none [&:focus-visible::-webkit-slider-thumb]:ring-2 [&:focus-visible::-webkit-slider-thumb]:ring-ring [&:focus-visible::-webkit-slider-thumb]:ring-offset-2"
+                className="w-full h-1 appearance-none cursor-pointer bg-border [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:bg-foreground [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-card focus-visible:outline-none [&:focus-visible::-webkit-slider-thumb]:ring-2 [&:focus-visible::-webkit-slider-thumb]:ring-ring [&:focus-visible::-webkit-slider-thumb]:ring-offset-2"
               />
             </div>
           </fieldset>

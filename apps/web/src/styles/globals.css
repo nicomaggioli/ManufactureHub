@@ -4,29 +4,27 @@
 
 @layer base {
   :root {
-    /* Jace "Arcane Workshop" — deep indigo canvas, violet accents, gold filigree */
-    --background: 240 15% 96%;
-    --foreground: 245 30% 12%;
+    /* Jace — crisp, clean, light */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 245 30% 12%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 245 30% 12%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Regal violet primary */
-    --primary: 262 68% 48%;
+    --primary: 0 0% 9%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 245 16% 94%;
-    --secondary-foreground: 245 24% 22%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
 
-    --muted: 240 12% 92%;
-    --muted-foreground: 245 12% 44%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Gold accent — the wizardry signature */
-    --accent: 42 88% 52%;
-    --accent-foreground: 42 75% 12%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
@@ -37,43 +35,40 @@
     --warning: 36 92% 50%;
     --warning-foreground: 36 80% 10%;
 
-    --border: 240 12% 88%;
-    --input: 240 12% 88%;
-    --ring: 262 68% 48%;
-    --radius: 0.625rem;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
+    --radius: 3px;
 
-    --gold: 42 88% 52%;
-    --gold-foreground: 42 75% 12%;
-
-    /* Sidebar: deep midnight */
-    --sidebar: 248 36% 9%;
-    --sidebar-foreground: 240 12% 62%;
-    --sidebar-accent: 42 88% 52%;
-    --sidebar-muted: 248 28% 15%;
-    --sidebar-border: 248 24% 14%;
+    /* Sidebar: near-black */
+    --sidebar: 0 0% 7%;
+    --sidebar-foreground: 0 0% 60%;
+    --sidebar-accent: 0 0% 100%;
+    --sidebar-muted: 0 0% 14%;
+    --sidebar-border: 0 0% 14%;
   }
 
   .dark {
-    --background: 248 32% 6%;
-    --foreground: 240 14% 93%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 93%;
 
-    --card: 248 28% 9%;
-    --card-foreground: 240 14% 93%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 93%;
 
-    --popover: 248 28% 9%;
-    --popover-foreground: 240 14% 93%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 93%;
 
-    --primary: 262 68% 56%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 248 22% 14%;
-    --secondary-foreground: 240 14% 85%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 85%;
 
-    --muted: 248 20% 13%;
-    --muted-foreground: 240 10% 48%;
+    --muted: 0 0% 13%;
+    --muted-foreground: 0 0% 48%;
 
-    --accent: 42 82% 54%;
-    --accent-foreground: 42 75% 12%;
+    --accent: 0 0% 14%;
+    --accent-foreground: 0 0% 93%;
 
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
@@ -84,18 +79,15 @@
     --warning: 36 85% 54%;
     --warning-foreground: 36 80% 10%;
 
-    --border: 248 18% 16%;
-    --input: 248 18% 16%;
-    --ring: 262 68% 56%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 0 0% 100%;
 
-    --gold: 42 82% 54%;
-    --gold-foreground: 42 75% 12%;
-
-    --sidebar: 248 38% 5%;
-    --sidebar-foreground: 240 10% 56%;
-    --sidebar-accent: 42 82% 54%;
-    --sidebar-muted: 248 26% 10%;
-    --sidebar-border: 248 26% 10%;
+    --sidebar: 0 0% 4%;
+    --sidebar-foreground: 0 0% 56%;
+    --sidebar-accent: 0 0% 100%;
+    --sidebar-muted: 0 0% 10%;
+    --sidebar-border: 0 0% 10%;
   }
 }
 
@@ -119,7 +111,6 @@
   }
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
-    border-radius: 100px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.25);
@@ -135,11 +126,8 @@
 }
 
 @layer components {
-  /* Parchment texture for card backgrounds — ultra-subtle crosshatch */
   .bg-parchment {
-    background-image:
-      radial-gradient(circle at 20% 80%, hsl(var(--primary) / 0.015) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(var(--gold) / 0.02) 0%, transparent 50%);
+    background: hsl(var(--background));
   }
 
   /* Subtle grid pattern */
@@ -164,14 +152,13 @@
     z-index: 0;
   }
 
-  /* Arcane accent bar — vertical gradient glow */
   .accent-bar {
     @apply relative;
   }
   .accent-bar::before {
     content: '';
-    @apply absolute left-0 top-0 bottom-0 w-[3px] rounded-full;
-    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--gold)));
+    @apply absolute left-0 top-0 bottom-0 w-[2px];
+    background: hsl(var(--foreground));
   }
 
   /* Stat card hover lift — subtle and premium */
@@ -181,14 +168,13 @@
   .stat-card::before {
     content: '';
     @apply absolute inset-0 opacity-0 transition-opacity duration-250;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.03) 0%, hsl(var(--gold) / 0.02) 100%);
+    background: hsl(var(--muted) / 0.3);
   }
   .stat-card:hover {
     @apply -translate-y-px;
     box-shadow:
-      0 1px 2px hsl(var(--foreground) / 0.03),
-      0 4px 16px hsl(var(--primary) / 0.06),
-      0 0 0 1px hsl(var(--primary) / 0.06);
+      0 1px 3px hsl(var(--foreground) / 0.06),
+      0 0 0 1px hsl(var(--border));
   }
   .stat-card:hover::before {
     @apply opacity-100;
@@ -200,41 +186,9 @@
     @apply tabular-nums tracking-tight;
   }
 
-  /* Gold shimmer effect for premium elements */
-  .gold-shimmer {
-    background: linear-gradient(
-      120deg,
-      hsl(var(--gold)) 0%,
-      hsl(42 95% 68%) 40%,
-      hsl(var(--gold)) 60%,
-      hsl(42 90% 60%) 100%
-    );
-    background-size: 200% auto;
-    animation: shimmer 4s ease-in-out infinite;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Subtle glow for focused/magical elements */
-  .glow-primary {
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.1), 0 0 4px hsl(var(--primary) / 0.06);
-  }
-  .glow-gold {
-    box-shadow: 0 0 20px hsl(var(--gold) / 0.12), 0 0 4px hsl(var(--gold) / 0.06);
-  }
-
-  /* Magic card — used for hero/featured elements */
+  /* Clean hover card */
   .magic-card {
     @apply relative overflow-hidden;
-  }
-  .magic-card::after {
-    content: '';
-    @apply absolute -top-1/2 -right-1/2 w-full h-full rounded-full opacity-0 transition-opacity duration-500;
-    background: radial-gradient(circle, hsl(var(--primary) / 0.06) 0%, transparent 70%);
-  }
-  .magic-card:hover::after {
-    @apply opacity-100;
   }
 }
 
@@ -277,11 +231,6 @@
 @keyframes slideInRight {
   from { opacity: 0; transform: translateX(-10px); }
   to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes shimmer {
-  0%, 100% { background-position: 200% center; }
-  50% { background-position: 0% center; }
 }
 
 @keyframes float {

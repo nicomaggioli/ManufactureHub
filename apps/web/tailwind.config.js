@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['Sora', 'system-ui', 'sans-serif'],
-        body: ['DM Sans', 'system-ui', 'sans-serif'],
+        heading: ['Inter', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
@@ -73,10 +73,8 @@ export default {
         xl: 'calc(var(--radius) + 2px)',
       },
       boxShadow: {
-        'card': '0 1px 2px hsl(var(--foreground) / 0.03), 0 0 0 1px hsl(var(--border) / 0.5)',
-        'card-hover': '0 4px 16px hsl(var(--foreground) / 0.05), 0 1px 2px hsl(var(--foreground) / 0.03)',
-        'glow': '0 0 24px hsl(var(--primary) / 0.14)',
-        'glow-gold': '0 0 20px hsl(var(--gold, 42 88% 52%) / 0.12)',
+        'card': '0 1px 2px hsl(var(--foreground) / 0.04)',
+        'card-hover': '0 2px 8px hsl(var(--foreground) / 0.06)',
       },
       keyframes: {
         'accordion-down': {

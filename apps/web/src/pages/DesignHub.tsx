@@ -95,7 +95,7 @@ export function DesignHub() {
             <Card className="animate-in">
               <CardContent className="p-5">
                 <div
-                  className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors hover:border-primary/40 border-muted-foreground/20"
+                  className="flex flex-col items-center justify-center border-2 border-dashed p-8 transition-colors hover:border-foreground/30 border-muted-foreground/20"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault();

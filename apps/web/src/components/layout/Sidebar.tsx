@@ -50,7 +50,7 @@ function NavLink({
     <Link
       to={item.to}
       className={cn(
-        'flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 group relative',
+        'flex items-center gap-3 px-3 py-2 text-[13px] font-medium transition-all duration-200 group relative',
         active
           ? 'bg-sidebar-muted/80 text-white'
           : 'text-sidebar-foreground hover:text-white hover:bg-sidebar-muted/40',
@@ -59,7 +59,7 @@ function NavLink({
       title={collapsed ? item.label : undefined}
     >
       {active && (
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-sidebar-accent" />
+        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-sidebar-accent" />
       )}
       <item.icon
         className={cn(
@@ -94,8 +94,8 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 h-[60px] border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2.5 min-w-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(262,68%,48%)]/20 to-[hsl(42,88%,52%)]/15 shrink-0">
-            <WizardHat className="w-[18px] h-[18px] text-[hsl(42,88%,52%)]" />
+          <div className="flex items-center justify-center w-8 h-8 bg-white/10 shrink-0">
+            <WizardHat className="w-[18px] h-[18px] text-white" />
           </div>
           {!collapsed && (
             <div className="flex flex-col min-w-0">
@@ -116,8 +116,8 @@ export function Sidebar() {
           <Link
             to="/design"
             className={cn(
-              'flex items-center justify-center gap-2 w-full py-2 rounded-lg text-[13px] font-semibold transition-all duration-200',
-              'bg-sidebar-accent text-[hsl(42,75%,12%)] hover:bg-sidebar-accent/85 shadow-sm',
+              'flex items-center justify-center gap-2 w-full py-2 text-[13px] font-semibold transition-all duration-200',
+              'bg-white text-black hover:bg-white/90',
               collapsed && 'px-0'
             )}
             title={collapsed ? 'Create Mockup' : undefined}
@@ -143,7 +143,7 @@ export function Sidebar() {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-2 text-sidebar-foreground/60 hover:text-white transition-colors duration-200 rounded-lg hover:bg-sidebar-muted/40"
+          className="flex items-center justify-center w-full py-2 text-sidebar-foreground/60 hover:text-white transition-colors duration-200 hover:bg-sidebar-muted/40"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
