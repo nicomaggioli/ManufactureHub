@@ -163,7 +163,7 @@ export function Dashboard() {
       {statsQuery.isLoading ? (
         <PipelineSkeleton />
       ) : !statsQuery.isError && (
-        <Card className="animate-scale-in border-l-[3px] border-l-primary" style={{ animationDelay: '200ms' }}>
+        <Card className="animate-scale-in" style={{ animationDelay: '200ms' }}>
           <CardHeader className="pb-3">
             <CardTitle>Pipeline Overview</CardTitle>
           </CardHeader>
