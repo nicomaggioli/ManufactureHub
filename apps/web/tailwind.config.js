@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['Inter', 'system-ui', 'sans-serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        body: ['Space Grotesk', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
@@ -73,8 +73,9 @@ export default {
         xl: 'calc(var(--radius) + 2px)',
       },
       boxShadow: {
-        'card': '0 1px 2px hsl(var(--foreground) / 0.04)',
-        'card-hover': '0 2px 8px hsl(var(--foreground) / 0.06)',
+        'card': '0 0 0 1px hsl(var(--border)), 0 2px 8px hsl(0 0% 0% / 0.3)',
+        'card-hover': '0 0 0 1px hsl(var(--neon-cyan, 185 100% 50%) / 0.2), 0 4px 20px hsl(var(--neon-cyan, 185 100% 50%) / 0.08)',
+        'neon': '0 0 12px hsl(var(--neon-cyan, 185 100% 50%) / 0.3), 0 0 4px hsl(var(--neon-cyan, 185 100% 50%) / 0.15)',
       },
       keyframes: {
         'accordion-down': {

@@ -19,7 +19,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between h-[52px] px-6 border-b border-border bg-card sticky top-0 z-30">
+    <header className="flex items-center justify-between h-[52px] px-6 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-30">
       {/* Search */}
       <div className="flex items-center gap-3 flex-1 max-w-md">
         <div className="relative w-full">
@@ -27,7 +27,7 @@ export function Header() {
           <input
             type="text"
             placeholder="Search projects, manufacturers..."
-            className="w-full h-8 pl-9 pr-3 text-[13px] bg-muted/40 border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-foreground/20 focus:bg-white transition-all duration-200 font-body"
+            className="w-full h-8 pl-9 pr-3 text-[13px] bg-muted/40 border border-border text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:bg-muted/60 transition-all duration-200 font-body"
           />
           <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground/40 font-mono bg-background/60 px-1.5 py-0.5 border border-border hidden sm:inline">
             /
@@ -39,7 +39,7 @@ export function Header() {
       <div className="flex items-center gap-1.5">
         <button className="relative flex items-center justify-center w-8 h-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200">
           <Bell className="w-[15px] h-[15px]" />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-foreground" />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary" style={{ boxShadow: '0 0 6px hsl(185 100% 50% / 0.5)' }} />
         </button>
 
         <div className="relative" ref={menuRef}>
@@ -47,8 +47,8 @@ export function Header() {
             onClick={() => setMenuOpen(!menuOpen)}
             className="flex items-center gap-2 pl-2 pr-1.5 py-1 hover:bg-muted/50 transition-all duration-200"
           >
-            <div className="w-7 h-7 bg-foreground/10 flex items-center justify-center">
-              <span className="text-xs font-heading font-semibold text-foreground">
+            <div className="w-7 h-7 bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <span className="text-xs font-heading font-semibold text-primary">
                 {user?.firstName?.[0] ?? 'U'}
               </span>
             </div>

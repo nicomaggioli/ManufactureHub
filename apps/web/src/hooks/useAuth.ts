@@ -12,7 +12,7 @@ export function useAuth(): {
   return {
     user: {
       id: 'dev-user-1',
-      email: 'dev@jace.pro',
+      email: 'dev@ravi.sys',
       firstName: 'Dev',
       lastName: 'User',
       fullName: 'Dev User',

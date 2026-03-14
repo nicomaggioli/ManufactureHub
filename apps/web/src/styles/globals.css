@@ -4,90 +4,54 @@
 
 @layer base {
   :root {
-    /* Jace — crisp, clean, light */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 9%;
+    /* RAVI — hyper futuristic dark interface */
+    --background: 240 20% 4%;
+    --foreground: 210 20% 88%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card: 240 18% 7%;
+    --card-foreground: 210 20% 88%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover: 240 18% 7%;
+    --popover-foreground: 210 20% 88%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 100%;
+    /* Electric cyan primary */
+    --primary: 185 100% 50%;
+    --primary-foreground: 240 20% 4%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 20%;
+    --secondary: 240 16% 12%;
+    --secondary-foreground: 210 20% 78%;
 
-    --muted: 0 0% 95%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 240 14% 10%;
+    --muted-foreground: 220 10% 45%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 270 80% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 50%;
+    --destructive: 0 85% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 60% 36%;
-    --success-foreground: 0 0% 100%;
+    --success: 160 100% 40%;
+    --success-foreground: 240 20% 4%;
 
-    --warning: 36 92% 50%;
-    --warning-foreground: 36 80% 10%;
+    --warning: 45 100% 55%;
+    --warning-foreground: 240 20% 4%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 9%;
-    --radius: 3px;
+    --border: 240 14% 14%;
+    --input: 240 14% 14%;
+    --ring: 185 100% 50%;
+    --radius: 2px;
 
-    /* Sidebar: near-black */
-    --sidebar: 0 0% 7%;
-    --sidebar-foreground: 0 0% 60%;
-    --sidebar-accent: 0 0% 100%;
-    --sidebar-muted: 0 0% 14%;
-    --sidebar-border: 0 0% 14%;
-  }
+    /* Neon glow tokens */
+    --neon-cyan: 185 100% 50%;
+    --neon-purple: 270 80% 60%;
+    --neon-pink: 330 85% 60%;
 
-  .dark {
-    --background: 0 0% 5%;
-    --foreground: 0 0% 93%;
-
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 93%;
-
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 93%;
-
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 9%;
-
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 85%;
-
-    --muted: 0 0% 13%;
-    --muted-foreground: 0 0% 48%;
-
-    --accent: 0 0% 14%;
-    --accent-foreground: 0 0% 93%;
-
-    --destructive: 0 62% 40%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 152 56% 42%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 36 85% 54%;
-    --warning-foreground: 36 80% 10%;
-
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
-    --ring: 0 0% 100%;
-
-    --sidebar: 0 0% 4%;
-    --sidebar-foreground: 0 0% 56%;
-    --sidebar-accent: 0 0% 100%;
-    --sidebar-muted: 0 0% 10%;
-    --sidebar-border: 0 0% 10%;
+    /* Sidebar */
+    --sidebar: 240 22% 3%;
+    --sidebar-foreground: 220 10% 50%;
+    --sidebar-accent: 185 100% 50%;
+    --sidebar-muted: 240 18% 8%;
+    --sidebar-border: 240 16% 10%;
   }
 }
 
@@ -128,14 +92,17 @@
 @layer components {
   .bg-parchment {
     background: hsl(var(--background));
+    background-image:
+      radial-gradient(circle at 15% 85%, hsl(var(--neon-cyan) / 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 85% 15%, hsl(var(--neon-purple) / 0.04) 0%, transparent 40%);
   }
 
-  /* Subtle grid pattern */
+  /* Futuristic grid pattern */
   .bg-grid {
     background-image:
-      linear-gradient(hsl(var(--border) / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.35) 1px, transparent 1px);
-    background-size: 32px 32px;
+      linear-gradient(hsl(var(--neon-cyan) / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--neon-cyan) / 0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 
   /* Noise overlay for texture */
@@ -158,7 +125,8 @@
   .accent-bar::before {
     content: '';
     @apply absolute left-0 top-0 bottom-0 w-[2px];
-    background: hsl(var(--foreground));
+    background: linear-gradient(180deg, hsl(var(--neon-cyan)), hsl(var(--neon-purple)));
+    box-shadow: 0 0 8px hsl(var(--neon-cyan) / 0.4);
   }
 
   /* Stat card hover lift — subtle and premium */
@@ -168,13 +136,13 @@
   .stat-card::before {
     content: '';
     @apply absolute inset-0 opacity-0 transition-opacity duration-250;
-    background: hsl(var(--muted) / 0.3);
+    background: linear-gradient(135deg, hsl(var(--neon-cyan) / 0.04) 0%, hsl(var(--neon-purple) / 0.03) 100%);
   }
   .stat-card:hover {
     @apply -translate-y-px;
     box-shadow:
-      0 1px 3px hsl(var(--foreground) / 0.06),
-      0 0 0 1px hsl(var(--border));
+      0 0 0 1px hsl(var(--neon-cyan) / 0.15),
+      0 4px 20px hsl(var(--neon-cyan) / 0.08);
   }
   .stat-card:hover::before {
     @apply opacity-100;
@@ -186,9 +154,37 @@
     @apply tabular-nums tracking-tight;
   }
 
-  /* Clean hover card */
   .magic-card {
     @apply relative overflow-hidden;
+  }
+  .magic-card::after {
+    content: '';
+    @apply absolute -top-1/2 -right-1/2 w-full h-full opacity-0 transition-opacity duration-500;
+    background: radial-gradient(circle, hsl(var(--neon-cyan) / 0.06) 0%, transparent 70%);
+  }
+  .magic-card:hover::after {
+    @apply opacity-100;
+  }
+
+  /* Neon glow utilities */
+  .glow-cyan {
+    box-shadow: 0 0 20px hsl(var(--neon-cyan) / 0.15), 0 0 4px hsl(var(--neon-cyan) / 0.1);
+  }
+  .glow-purple {
+    box-shadow: 0 0 20px hsl(var(--neon-purple) / 0.15), 0 0 4px hsl(var(--neon-purple) / 0.1);
+  }
+
+  /* Scan line effect */
+  .scan-lines::after {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(var(--neon-cyan) / 0.015) 2px,
+      hsl(var(--neon-cyan) / 0.015) 4px
+    );
   }
 }
 
