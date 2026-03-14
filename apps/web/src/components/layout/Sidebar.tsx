@@ -17,8 +17,8 @@ function RaviLogo({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
       <path d="M12 2 L22 12 L12 22 L2 12 Z" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      <path d="M12 6 L18 12 L12 18 L6 12 Z" stroke="hsl(185, 100%, 50%)" strokeWidth="1" fill="hsl(185, 100%, 50%)" fillOpacity="0.1" />
-      <circle cx="12" cy="12" r="2" fill="hsl(185, 100%, 50%)" />
+      <path d="M12 6 L18 12 L12 18 L6 12 Z" stroke="currentColor" strokeWidth="1" fill="currentColor" fillOpacity="0.15" />
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
     </svg>
   );
 }
@@ -57,7 +57,7 @@ function NavLink({
       title={collapsed ? item.label : undefined}
     >
       {active && (
-        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-sidebar-accent" style={{ boxShadow: '0 0 8px hsl(185 100% 50% / 0.4)' }} />
+        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-sidebar-accent" />
       )}
       <item.icon
         className={cn(
@@ -93,15 +93,15 @@ export function Sidebar() {
       <div className="flex items-center gap-3 px-4 h-[60px] border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2.5 min-w-0">
           <div className="flex items-center justify-center w-8 h-8 border border-sidebar-border shrink-0">
-            <RaviLogo className="w-[18px] h-[18px] text-[hsl(185,100%,50%)]" />
+            <RaviLogo className="w-[18px] h-[18px] text-sidebar-accent" />
           </div>
           {!collapsed && (
             <div className="flex flex-col min-w-0">
-              <span className="font-heading font-bold text-[14px] text-white tracking-[0.2em] uppercase truncate leading-tight">
+              <span className="font-heading font-bold text-[14px] text-white tracking-tight truncate leading-tight">
                 RAVI
               </span>
-              <span className="text-[9px] text-sidebar-foreground/50 font-mono uppercase tracking-[0.15em] leading-tight">
-                MFG.SYS
+              <span className="text-[9px] text-sidebar-foreground/60 font-medium uppercase tracking-[0.1em] leading-tight">
+                Manufacturing
               </span>
             </div>
           )}
@@ -115,7 +115,7 @@ export function Sidebar() {
             to="/design"
             className={cn(
               'flex items-center justify-center gap-2 w-full py-2 text-[13px] font-semibold transition-all duration-200',
-              'bg-[hsl(185,100%,50%)] text-[hsl(240,20%,4%)] hover:bg-[hsl(185,100%,55%)]',
+              'bg-sidebar-accent text-sidebar hover:bg-sidebar-accent/90',
               collapsed && 'px-0'
             )}
             title={collapsed ? 'Create Mockup' : undefined}

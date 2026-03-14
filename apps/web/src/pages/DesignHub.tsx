@@ -60,8 +60,8 @@ export function DesignHub() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-wider uppercase">Design Studio</h1>
-        <p className="text-sm text-muted-foreground mt-0.5 font-mono">
+        <h1 className="font-heading text-2xl font-bold tracking-tight">Design Studio</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Create mockups, manage assets, and build tech packs.
         </p>
       </div>

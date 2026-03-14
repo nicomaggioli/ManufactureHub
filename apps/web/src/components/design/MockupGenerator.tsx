@@ -315,18 +315,13 @@ export function MockupGenerator() {
         {/* ===== LIGHTBOX — neutral stage, product is the star ===== */}
         <div className="relative overflow-hidden bg-[#F0F2F5] min-h-[520px] flex flex-col border border-border">
           {/* Subtle texture — like studio paper */}
-          {/* Grid overlay */}
-          <div className="absolute inset-0 pointer-events-none opacity-100"
+          {/* Subtle dot pattern */}
+          <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
             style={{
-              backgroundImage: 'linear-gradient(hsl(185 100% 35% / 0.08) 1px, transparent 1px), linear-gradient(90deg, hsl(185 100% 35% / 0.08) 1px, transparent 1px)',
-              backgroundSize: '40px 40px',
+              backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 0.5px, transparent 0)',
+              backgroundSize: '20px 20px',
             }}
           />
-          {/* Corner scan line accents */}
-          <div className="absolute top-0 left-0 w-16 h-[1px] bg-gradient-to-r from-[hsl(185,100%,35%,0.3)] to-transparent" />
-          <div className="absolute top-0 left-0 w-[1px] h-16 bg-gradient-to-b from-[hsl(185,100%,35%,0.3)] to-transparent" />
-          <div className="absolute bottom-0 right-0 w-16 h-[1px] bg-gradient-to-l from-[hsl(185,100%,35%,0.3)] to-transparent" />
-          <div className="absolute bottom-0 right-0 w-[1px] h-16 bg-gradient-to-t from-[hsl(185,100%,35%,0.3)] to-transparent" />
 
           {/* Product on stage */}
           <div className="flex-1 flex items-center justify-center relative z-10">
@@ -352,7 +347,7 @@ export function MockupGenerator() {
             </div>
 
             {/* Soft shadow beneath product */}
-            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[4px] bg-[hsl(220,20%,10%,0.06)] blur-[12px]" />
+            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[180px] h-[3px] bg-foreground/[0.05] blur-[10px]" />
           </div>
 
           {/* Product carousel */}
@@ -371,7 +366,7 @@ export function MockupGenerator() {
 
               <div className="flex items-center gap-2.5 min-w-[180px] justify-center">
                 <ProductThumb product={currentProduct.key} active />
-                <span className="font-heading font-semibold text-sm tracking-wider uppercase text-foreground">
+                <span className="font-heading font-semibold text-sm tracking-tight text-foreground">
                   {currentProduct.label}
                 </span>
               </div>

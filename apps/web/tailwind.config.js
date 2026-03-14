@@ -74,8 +74,7 @@ export default {
       },
       boxShadow: {
         'card': '0 1px 3px hsl(var(--foreground) / 0.04), 0 0 0 1px hsl(var(--border))',
-        'card-hover': '0 4px 16px hsl(var(--neon-cyan, 185 100% 35%) / 0.1), 0 0 0 1px hsl(var(--neon-cyan, 185 100% 35%) / 0.2)',
-        'neon': '0 0 10px hsl(var(--neon-cyan, 185 100% 35%) / 0.2), 0 0 3px hsl(var(--neon-cyan, 185 100% 35%) / 0.1)',
+        'card-hover': '0 4px 16px hsl(var(--foreground) / 0.06), 0 0 0 1px hsl(var(--primary) / 0.15)',
       },
       keyframes: {
         'accordion-down': {
