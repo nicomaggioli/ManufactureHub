@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Bell, Link2, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,8 @@ import {
 import { toast } from '@/components/ui/toast';
 import { useAuth } from '@/hooks/useAuth';
 
+const STORAGE_KEY = 'ravi-user-settings';
+
 const integrations = [
   { name: 'Slack', description: 'Get notifications in Slack', connected: false },
   { name: 'Google Drive', description: 'Sync design assets', connected: true },
@@ -21,22 +23,58 @@ const integrations = [
   { name: 'QuickBooks', description: 'Sync invoices and quotes', connected: false },
 ];
 
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function Settings() {
   const { user } = useAuth();
-  const [digestFrequency, setDigestFrequency] = useState('daily');
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [reminderNotifications, setReminderNotifications] = useState(true);
-  const [quoteNotifications, setQuoteNotifications] = useState(true);
-  const [sampleNotifications, setSampleNotifications] = useState(true);
+  const saved = loadSettings();
+
+  const [firstName, setFirstName] = useState(saved?.firstName || user?.firstName || '');
+  const [lastName, setLastName] = useState(saved?.lastName || user?.lastName || '');
+  const [email, setEmail] = useState(saved?.email || user?.email || '');
+  const [digestFrequency, setDigestFrequency] = useState(saved?.digestFrequency || 'daily');
+  const [emailNotifications, setEmailNotifications] = useState(saved?.emailNotifications ?? true);
+  const [reminderNotifications, setReminderNotifications] = useState(saved?.reminderNotifications ?? true);
+  const [quoteNotifications, setQuoteNotifications] = useState(saved?.quoteNotifications ?? true);
+  const [sampleNotifications, setSampleNotifications] = useState(saved?.sampleNotifications ?? true);
+
+  // Sync from user if settings change externally
+  useEffect(() => {
+    if (!saved && user) {
+      setFirstName(user.firstName);
+      setLastName(user.lastName);
+      setEmail(user.email);
+    }
+  }, [user]);
 
   const handleSave = () => {
+    const settings = {
+      firstName,
+      lastName,
+      email,
+      digestFrequency,
+      emailNotifications,
+      reminderNotifications,
+      quoteNotifications,
+      sampleNotifications,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     toast({ title: 'Settings saved', description: 'Your preferences have been updated.' });
+    // Reload to reflect name changes in header
+    window.location.reload();
   };
 
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-semibold font-heading tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">Manage your account and preferences.</p>
       </div>
 
@@ -51,31 +89,27 @@ export function Settings() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
-            {user?.imageUrl ? (
-              <img src={user.imageUrl} alt={user.fullName} className="h-14 w-14 rounded-full object-cover" />
-            ) : (
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-semibold">
-                {user?.firstName?.[0] ?? 'U'}
-              </div>
-            )}
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-semibold">
+              {firstName?.[0] || 'U'}
+            </div>
             <div>
-              <p className="text-base font-semibold">{user?.fullName ?? 'User'}</p>
-              <p className="text-sm text-muted-foreground">{user?.email ?? ''}</p>
+              <p className="text-base font-semibold">{firstName} {lastName}</p>
+              <p className="text-sm text-muted-foreground">{email}</p>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">First Name</label>
-              <Input defaultValue={user?.firstName} />
+              <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Last Name</label>
-              <Input defaultValue={user?.lastName} />
+              <Input value={lastName} onChange={(e) => setLastName(e.target.value)} />
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <label className="text-xs font-medium text-muted-foreground">Email</label>
-              <Input defaultValue={user?.email} disabled />
-              <p className="text-xs text-muted-foreground">Managed by your authentication provider.</p>
+              <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+              <p className="text-xs text-muted-foreground">Used for notifications and login.</p>
             </div>
           </div>
         </CardContent>

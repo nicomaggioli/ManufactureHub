@@ -59,18 +59,18 @@ function NavLink({
     <Link
       to={item.to}
       className={cn(
-        'flex items-center gap-3 px-3 py-2 text-[13px] font-medium rounded-lg transition-colors duration-150',
+        'flex items-center gap-2.5 px-2.5 py-[6px] text-[13px] rounded-md transition-all duration-100',
         active
-          ? 'bg-primary/10 text-primary'
-          : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+          ? 'bg-black/[0.06] text-foreground font-medium shadow-[0_0.5px_1px_rgba(0,0,0,0.04)]'
+          : 'text-muted-foreground hover:text-foreground hover:bg-black/[0.04]',
         collapsed && 'justify-center px-2'
       )}
       title={collapsed ? item.label : undefined}
     >
       <item.icon
         className={cn(
-          'w-[18px] h-[18px] shrink-0',
-          active ? 'text-primary' : ''
+          'w-[16px] h-[16px] shrink-0',
+          active ? 'text-primary' : 'opacity-70'
         )}
         strokeWidth={active ? 2 : 1.5}
       />
@@ -93,52 +93,52 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-200',
-        collapsed ? 'w-[68px]' : 'w-[240px]'
+        'flex flex-col h-screen glass-subtle border-r border-black/[0.08] transition-all duration-200',
+        collapsed ? 'w-[60px]' : 'w-[220px]'
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-[56px]">
-        <Link to="/" className="flex items-center gap-2.5 min-w-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground shrink-0">
-            <span className="text-sm font-bold">R</span>
+      <div className="flex items-center gap-2.5 px-4 h-[52px] shrink-0">
+        <Link to="/" className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center justify-center w-[26px] h-[26px] rounded-lg bg-gradient-to-b from-primary to-blue-600 text-white shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+            <span className="text-[11px] font-bold font-heading">R</span>
           </div>
           {!collapsed && (
-            <span className="font-semibold text-[15px] text-foreground tracking-tight truncate">
+            <span className="font-semibold font-heading text-[14px] text-foreground tracking-tight truncate">
               RAVI
             </span>
           )}
         </Link>
       </div>
 
-      {/* Create Mockup CTA */}
+      {/* New Mockup CTA */}
       {!isActive('/design') && (
-        <div className="px-3 pb-2">
+        <div className="px-2.5 pb-1.5">
           <Link
             to="/design"
             className={cn(
-              'flex items-center justify-center gap-2 w-full py-2 text-[13px] font-medium rounded-lg transition-colors duration-150',
-              'bg-primary text-primary-foreground hover:bg-primary/90',
+              'flex items-center justify-center gap-1.5 w-full py-[5px] text-[12px] font-medium rounded-md transition-all duration-100',
+              'bg-primary text-white hover:bg-primary/90 shadow-[0_0.5px_1px_rgba(0,0,0,0.15),inset_0_0.5px_0_rgba(255,255,255,0.15)]',
               collapsed && 'px-0'
             )}
             title={collapsed ? 'Create Mockup' : undefined}
           >
-            <Plus className="w-4 h-4 shrink-0" strokeWidth={2} />
+            <Plus className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} />
             {!collapsed && <span>New Mockup</span>}
           </Link>
         </div>
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 py-2 px-3 overflow-y-auto">
+      <nav className="flex-1 py-1 px-2.5 overflow-y-auto">
         {navSections.map((section, idx) => (
           <div key={section.label ?? idx}>
             {section.label && !collapsed && (
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium px-3 pt-4 pb-1">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-semibold px-2.5 pt-4 pb-1">
                 {section.label}
               </div>
             )}
-            <div className="space-y-1">
+            <div className="space-y-[2px]">
               {section.items.map((item) => (
                 <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
               ))}
@@ -148,16 +148,16 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className="px-3 pb-3 space-y-1 border-t border-sidebar-border pt-2">
+      <div className="px-2.5 pb-2.5 space-y-[2px] border-t border-black/[0.06] pt-2">
         {bottomItems.map((item) => (
           <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
         ))}
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-2 text-muted-foreground hover:text-foreground rounded-lg transition-colors duration-150 hover:bg-muted"
+          className="flex items-center justify-center w-full py-1.5 text-muted-foreground/60 hover:text-muted-foreground rounded-md transition-colors duration-100 hover:bg-black/[0.04]"
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
         </button>
       </div>
     </aside>

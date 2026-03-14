@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Dashboard } from '@/pages/Dashboard';
 import { Projects } from '@/pages/Projects';
@@ -10,13 +10,30 @@ import { DesignHub } from '@/pages/DesignHub';
 import { Quotes } from '@/pages/Quotes';
 import { Samples } from '@/pages/Samples';
 import { Settings } from '@/pages/Settings';
+import { Login } from '@/pages/Login';
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
 
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const isSignedIn = localStorage.getItem('ravi-signed-in') === 'true';
+  if (!isSignedIn) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+}
+
+function LoginGuard({ children }: { children: React.ReactNode }) {
+  const isSignedIn = localStorage.getItem('ravi-signed-in') === 'true';
+  if (isSignedIn) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <LoginGuard><Login /></LoginGuard>,
+  },
+  {
     path: '/',
-    element: <AppLayout />,
+    element: <AuthGuard><AppLayout /></AuthGuard>,
     children: [
       { index: true, element: <Dashboard /> },
       { path: 'projects', element: <Projects /> },
@@ -24,6 +41,7 @@ export const router = createBrowserRouter([
       { path: 'manufacturers', element: <Manufacturers /> },
       { path: 'manufacturers/:id', element: <ManufacturerDetail /> },
       { path: 'communications', element: <Communications /> },
+      { path: 'communications/:id', element: <Communications /> },
       { path: 'design', element: <DesignHub /> },
       { path: 'quotes', element: <Quotes /> },
       { path: 'samples', element: <Samples /> },

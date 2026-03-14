@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, useParams } from 'react-router-dom';
 import { MessageSquare, Send, Clock, CheckCircle2, AlertCircle, Plus, Inbox, ArrowUpRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -87,18 +87,20 @@ function MessageBubble({ message }: { message: Message }) {
 }
 
 export function Communications() {
-  const [selectedThread, setSelectedThread] = useState<string | null>(null);
+  const { id: urlThreadId } = useParams<{ id?: string }>();
+  const queryClient = useQueryClient();
+  const [selectedThread, setSelectedThread] = useState<string | null>(urlThreadId ?? null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [replyText, setReplyText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const threadsQuery = useQuery({
+  const threadsQuery = useQuery<Communication[]>({
     queryKey: ['communications'],
     queryFn: () => communicationsApi.list(),
   });
 
-  const threads = threadsQuery.data ?? [];
+  const threads: Communication[] = threadsQuery.data ?? [];
   const filteredThreads = searchTerm
     ? threads.filter(
         (t) =>
@@ -109,7 +111,14 @@ export function Communications() {
 
   const activeThread = threads.find((t) => t.id === selectedThread);
 
-  // Auto-select first thread
+  // Sync selectedThread from URL param when it changes
+  useEffect(() => {
+    if (urlThreadId) {
+      setSelectedThread(urlThreadId);
+    }
+  }, [urlThreadId]);
+
+  // Auto-select first thread if none selected
   useEffect(() => {
     if (!selectedThread && threads.length > 0) {
       setSelectedThread(threads[0].id);
@@ -123,7 +132,19 @@ export function Communications() {
 
   const handleSendReply = () => {
     if (!replyText.trim() || !activeThread) return;
-    // In demo mode, just clear the input (no backend)
+    const newMessage: Message = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      sender: 'user',
+      content: replyText.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    queryClient.setQueryData<Communication[]>(['communications'], (old) =>
+      (old ?? []).map((thread) =>
+        thread.id === activeThread.id
+          ? { ...thread, messages: [...thread.messages, newMessage], lastMessageAt: newMessage.createdAt, status: 'awaiting_reply' as const }
+          : thread
+      )
+    );
     setReplyText('');
   };
 
@@ -135,7 +156,12 @@ export function Communications() {
   };
 
   if (composerOpen) {
-    return <MessageComposer onClose={() => setComposerOpen(false)} />;
+    return <MessageComposer onClose={(newThreadId?: string) => {
+      setComposerOpen(false);
+      if (newThreadId) {
+        setSelectedThread(newThreadId);
+      }
+    }} />;
   }
 
   return (

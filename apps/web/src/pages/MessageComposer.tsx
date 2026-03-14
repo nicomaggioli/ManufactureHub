@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Sparkles, Send, Copy, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from '@/components/ui/toast';
-import { aiApi, projectsApi, manufacturersApi, communicationsApi } from '@/lib/api';
+import { aiApi, projectsApi, manufacturersApi, communicationsApi, type Communication } from '@/lib/api';
 
 const messageTypes = [
   { value: 'initial_inquiry', label: 'Initial Inquiry' },
@@ -36,10 +36,11 @@ const toneOptions = [
 ];
 
 interface MessageComposerProps {
-  onClose: () => void;
+  onClose: (newThreadId?: string) => void;
 }
 
 export function MessageComposer({ onClose }: MessageComposerProps) {
+  const queryClient = useQueryClient();
   const [messageType, setMessageType] = useState('');
   const [projectId, setProjectId] = useState('');
   const [manufacturerId, setManufacturerId] = useState('');
@@ -85,8 +86,32 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
         content: draft,
       }),
     onSuccess: () => {
+      const now = new Date().toISOString();
+      const newThreadId = `comm-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const selectedManufacturer = manufacturers.find((m: any) => m.id === manufacturerId);
+      const newThread: Communication = {
+        id: newThreadId,
+        projectId,
+        manufacturerId,
+        manufacturerName: selectedManufacturer?.name ?? 'Manufacturer',
+        subject: subject || 'New Conversation',
+        messages: [
+          {
+            id: `msg-${Date.now()}`,
+            sender: 'user',
+            content: draft,
+            createdAt: now,
+          },
+        ],
+        status: 'awaiting_reply',
+        lastMessageAt: now,
+        createdAt: now,
+      };
+      queryClient.setQueryData<Communication[]>(['communications'], (old) =>
+        [newThread, ...(old ?? [])]
+      );
       toast({ title: 'Sent', description: 'Your message has been sent.' });
-      onClose();
+      onClose(newThreadId);
     },
     onError: () => {
       toast({ title: 'Error', description: 'Failed to send message.', variant: 'destructive' });
@@ -104,7 +129,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={onClose}>
+        <Button variant="ghost" size="sm" onClick={() => onClose()}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
         <div>

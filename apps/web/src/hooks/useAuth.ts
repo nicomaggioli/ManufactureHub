@@ -1,27 +1,57 @@
 // Mock auth hook for development without Clerk
 // Replace with Clerk integration when keys are configured
 
+const STORAGE_KEY_SIGNED_IN = 'ravi-signed-in';
+const STORAGE_KEY_SETTINGS = 'ravi-user-settings';
+const STORAGE_KEY_NOTIFICATIONS = 'ravi-notifications-read-at';
+
+function getSavedSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SETTINGS);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function useAuth(): {
   user: { id: string; email: string; firstName: string; lastName: string; fullName: string; imageUrl: string } | null;
   isLoaded: boolean;
   isSignedIn: boolean;
   getToken: (options?: any) => Promise<string | null>;
-  signOut: () => Promise<void>;
+  signIn: () => void;
+  signOut: () => void;
   openProfile: () => void;
 } {
+  const isSignedIn = localStorage.getItem(STORAGE_KEY_SIGNED_IN) === 'true';
+  const saved = getSavedSettings();
+
+  const firstName = saved?.firstName || 'Dev';
+  const lastName = saved?.lastName || 'User';
+
   return {
-    user: {
+    user: isSignedIn ? {
       id: 'dev-user-1',
-      email: 'dev@ravi.sys',
-      firstName: 'Dev',
-      lastName: 'User',
-      fullName: 'Dev User',
+      email: saved?.email || 'dev@ravi.sys',
+      firstName,
+      lastName,
+      fullName: `${firstName} ${lastName}`,
       imageUrl: '',
-    },
+    } : null,
     isLoaded: true,
-    isSignedIn: true,
-    getToken: async () => 'dev-token',
-    signOut: async () => {},
+    isSignedIn,
+    getToken: async () => isSignedIn ? 'dev-token' : null,
+    signIn: () => {
+      localStorage.setItem(STORAGE_KEY_SIGNED_IN, 'true');
+    },
+    signOut: () => {
+      localStorage.removeItem(STORAGE_KEY_SIGNED_IN);
+      localStorage.removeItem(STORAGE_KEY_SETTINGS);
+      localStorage.removeItem(STORAGE_KEY_NOTIFICATIONS);
+      window.location.href = window.location.pathname.includes('/ManufactureHub')
+        ? '/ManufactureHub/login'
+        : '/login';
+    },
     openProfile: () => {},
   };
 }
