@@ -344,8 +344,8 @@ export function Header() {
           </button>
 
           {notificationsOpen && (
-            <div className="absolute right-0 top-full mt-1 w-80 bg-card border border-border rounded-xl shadow-elevated z-50 animate-in">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+            <div className="absolute right-0 top-full mt-1 w-80 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 animate-scale-in">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.06]">
                 <span className="text-sm font-semibold">Notifications</span>
                 {unreadCount > 0 && (
                   <button
@@ -371,7 +371,7 @@ export function Header() {
                         key={notif.id}
                         to={notif.path}
                         onClick={() => setNotificationsOpen(false)}
-                        className={`flex items-start gap-3 px-4 py-3 hover:bg-muted transition-colors border-b border-border/50 last:border-0 ${isUnread ? '' : 'opacity-60'}`}
+                        className={`flex items-start gap-3 px-4 py-3 hover:bg-black/[0.03] transition-colors border-b border-black/[0.04] last:border-0 ${isUnread ? '' : 'opacity-60'}`}
                       >
                         <div className={`flex h-7 w-7 items-center justify-center rounded-full shrink-0 mt-0.5 ${notif.iconColor}`}>
                           <Icon className="h-3.5 w-3.5" />
@@ -416,7 +416,7 @@ export function Header() {
             <div className="absolute right-0 top-full mt-1 w-48 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover py-1 z-50 animate-scale-in">
               <Link
                 to="/settings"
-                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg mx-1 transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-black/[0.04] rounded-md mx-1 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 <User className="w-4 h-4 text-muted-foreground" />
@@ -424,7 +424,7 @@ export function Header() {
               </Link>
               <Link
                 to="/settings"
-                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg mx-1 transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-black/[0.04] rounded-md mx-1 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 <Settings className="w-4 h-4 text-muted-foreground" />
