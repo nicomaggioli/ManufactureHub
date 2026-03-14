@@ -184,7 +184,7 @@ export function Settings() {
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium">{integration.name}</p>
                     {integration.connected && (
-                      <Badge variant="success" className="text-[10px]">Connected</Badge>
+                      <Badge variant="success" className="text-[11px]">Connected</Badge>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{integration.description}</p>

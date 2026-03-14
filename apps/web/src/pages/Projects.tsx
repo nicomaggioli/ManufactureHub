@@ -50,7 +50,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             <CardTitle className="text-sm font-semibold leading-tight">
               {project.name}
             </CardTitle>
-            <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-[10px] uppercase tracking-wider">
+            <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-[11px] uppercase tracking-wider">
               {project.status}
             </Badge>
           </div>

@@ -19,8 +19,10 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DataTable, type ColumnDef } from '@/components/ui/data-table';
+import { ClipboardList } from 'lucide-react';
 import { projectsApi, communicationsApi, quotesApi, samplesApi, designAssetsApi } from '@/lib/api';
 import type { Communication, Quote, Sample, DesignAsset } from '@/lib/api';
+import { TechPack } from '@/components/design/TechPack';
 import { formatDate, formatCurrency } from '@/lib/utils';
 
 const pipelineSteps = ['ideation', 'sourcing', 'sampling', 'production', 'shipped'] as const;
@@ -264,6 +266,9 @@ export function ProjectDetail() {
           <TabsTrigger value="samples">
             <Package className="mr-1 h-4 w-4" /> Samples
           </TabsTrigger>
+          <TabsTrigger value="techpacks">
+            <ClipboardList className="mr-1 h-4 w-4" /> Tech Packs
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview */}
@@ -347,9 +352,9 @@ export function ProjectDetail() {
                     <CardContent className="p-5">
                       <p className="font-semibold text-sm">{mfr.name}</p>
                       <div className="flex flex-wrap gap-1.5 mt-3">
-                        {mfr.hasComms && <Badge variant="secondary" className="text-[10px]">Messages</Badge>}
-                        {mfr.hasQuotes && <Badge variant="secondary" className="text-[10px]">Quotes</Badge>}
-                        {mfr.hasSamples && <Badge variant="secondary" className="text-[10px]">Samples</Badge>}
+                        {mfr.hasComms && <Badge variant="secondary" className="text-[11px]">Messages</Badge>}
+                        {mfr.hasQuotes && <Badge variant="secondary" className="text-[11px]">Quotes</Badge>}
+                        {mfr.hasSamples && <Badge variant="secondary" className="text-[11px]">Samples</Badge>}
                       </div>
                     </CardContent>
                   </Card>
@@ -428,6 +433,11 @@ export function ProjectDetail() {
               />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Tech Packs */}
+        <TabsContent value="techpacks" className="mt-4">
+          <TechPack />
         </TabsContent>
       </Tabs>
     </div>

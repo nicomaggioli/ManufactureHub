@@ -142,7 +142,7 @@ export function Dashboard() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {statCards.map((sc, idx) => (
-            <Card key={sc.key} className="animate-in" style={{ animationDelay: `${idx * 50}ms` }}>
+            <Card key={sc.key} className="animate-slide-up" style={{ animationDelay: `${idx * 50}ms` }}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div>
@@ -163,7 +163,7 @@ export function Dashboard() {
       {statsQuery.isLoading ? (
         <PipelineSkeleton />
       ) : !statsQuery.isError && (
-        <Card className="animate-in" style={{ animationDelay: '200ms' }}>
+        <Card className="animate-scale-in border-l-[3px] border-l-primary" style={{ animationDelay: '200ms' }}>
           <CardHeader className="pb-3">
             <CardTitle>Pipeline Overview</CardTitle>
           </CardHeader>
@@ -213,7 +213,7 @@ export function Dashboard() {
         {/* Left column (2/3) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick actions — compact horizontal */}
-          <div className="grid gap-3 sm:grid-cols-3 animate-in" style={{ animationDelay: '300ms' }}>
+          <div className="grid gap-3 sm:grid-cols-3 animate-slide-up" style={{ animationDelay: '300ms' }}>
             <Link
               to="/design"
               className="group relative flex items-center gap-3 p-3 rounded-lg border-2 border-primary/20 bg-primary/[0.03] transition-all duration-150 hover:border-primary/40 hover:bg-primary/[0.06]"
@@ -255,7 +255,7 @@ export function Dashboard() {
           </div>
 
           {/* Recent Activity */}
-          <Card className="animate-in" style={{ animationDelay: '350ms' }}>
+          <Card className="animate-slide-up" style={{ animationDelay: '350ms' }}>
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
                 <Activity className="h-4 w-4 text-muted-foreground" />
@@ -295,7 +295,7 @@ export function Dashboard() {
                           </span>
                           {item.projectName && (
                             <Link to={`/projects/${item.projectId}`}>
-                              <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-muted">
+                              <Badge variant="outline" className="text-[11px] cursor-pointer hover:bg-muted">
                                 {item.projectName}
                               </Badge>
                             </Link>
@@ -312,7 +312,7 @@ export function Dashboard() {
 
         {/* Right column (1/3) — Upcoming Tasks */}
         <div className="lg:col-span-1">
-          <Card className="animate-in" style={{ animationDelay: '350ms' }}>
+          <Card className="animate-slide-up" style={{ animationDelay: '400ms' }}>
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
                 <Bell className="h-4 w-4 text-muted-foreground" />
@@ -367,7 +367,7 @@ export function Dashboard() {
                             </span>
                             {reminder.projectName && (
                               <Link to={`/projects/${reminder.projectId}`}>
-                                <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-muted">
+                                <Badge variant="outline" className="text-[11px] cursor-pointer hover:bg-muted">
                                   {reminder.projectName}
                                 </Badge>
                               </Link>

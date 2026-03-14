@@ -5,7 +5,6 @@ import {
   Image,
   File,
   PenTool,
-  ClipboardList,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,6 @@ import { toast } from '@/components/ui/toast';
 import { designAssetsApi, type DesignAsset } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 import { MockupGenerator } from '@/components/design/MockupGenerator';
-import { TechPack } from '@/components/design/TechPack';
 
 function getAssetIcon(type: string) {
   switch (type) {
@@ -62,7 +60,7 @@ export function DesignHub() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Design Studio</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Create mockups, manage assets, and build tech packs.
+          Create mockups and manage design assets.
         </p>
       </div>
 
@@ -78,10 +76,6 @@ export function DesignHub() {
           <TabsTrigger value="assets">
             <Image className="h-3.5 w-3.5 mr-1.5" />
             Assets
-          </TabsTrigger>
-          <TabsTrigger value="techpack">
-            <ClipboardList className="h-3.5 w-3.5 mr-1.5" />
-            Tech Packs
           </TabsTrigger>
         </TabsList>
 
@@ -161,9 +155,6 @@ export function DesignHub() {
           </div>
         </TabsContent>
 
-        <TabsContent value="techpack">
-          <TechPack />
-        </TabsContent>
       </Tabs>
     </div>
   );

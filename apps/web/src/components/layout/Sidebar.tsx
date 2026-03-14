@@ -9,7 +9,6 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Plus,
   FileText,
   Package,
 } from 'lucide-react';
@@ -111,30 +110,12 @@ export function Sidebar() {
         </Link>
       </div>
 
-      {/* New Mockup CTA */}
-      {!isActive('/design') && (
-        <div className="px-2.5 pb-1.5">
-          <Link
-            to="/design"
-            className={cn(
-              'flex items-center justify-center gap-1.5 w-full py-[5px] text-[12px] font-medium rounded-md transition-all duration-100',
-              'bg-primary text-white hover:bg-primary/90 shadow-[0_0.5px_1px_rgba(0,0,0,0.15),inset_0_0.5px_0_rgba(255,255,255,0.15)]',
-              collapsed && 'px-0'
-            )}
-            title={collapsed ? 'Create Mockup' : undefined}
-          >
-            <Plus className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} />
-            {!collapsed && <span>New Mockup</span>}
-          </Link>
-        </div>
-      )}
-
       {/* Navigation */}
       <nav className="flex-1 py-1 px-2.5 overflow-y-auto">
         {navSections.map((section, idx) => (
           <div key={section.label ?? idx}>
             {section.label && !collapsed && (
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground/50 font-semibold px-2.5 pt-4 pb-1">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold px-2.5 pt-4 pb-1">
                 {section.label}
               </div>
             )}

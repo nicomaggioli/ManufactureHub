@@ -61,7 +61,7 @@ function ThreadListItem({
       </div>
       <div className="flex items-center gap-2 mt-1.5">
         <Badge variant="outline" className="text-[9px] px-1.5 py-0">{projectName}</Badge>
-        <span className="text-[10px] text-muted-foreground data-value">{formatRelativeDate(thread.lastMessageAt)}</span>
+        <span className="text-[11px] text-muted-foreground data-value">{formatRelativeDate(thread.lastMessageAt)}</span>
       </div>
     </button>
   );
@@ -78,7 +78,7 @@ function MessageBubble({ message }: { message: Message }) {
         )}
       >
         <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
-        <p className={cn('text-[10px] mt-1.5 data-value', isUser ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
+        <p className={cn('text-[11px] mt-1.5 data-value', isUser ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
           {formatDateTime(message.createdAt)}
         </p>
       </div>

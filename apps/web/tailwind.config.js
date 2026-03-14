@@ -13,8 +13,8 @@ export default {
     extend: {
       fontFamily: {
         // macOS system font stack
-        heading: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Inter', 'system-ui', 'sans-serif'],
-        body: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Inter', 'system-ui', 'sans-serif'],
+        heading: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
+        body: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
         mono: ['SF Mono', 'JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
@@ -74,12 +74,12 @@ export default {
         xl: 'calc(var(--radius) + 4px)',
       },
       boxShadow: {
-        // macOS-style shadows — soft, diffused, layered
-        'card': '0 0.5px 0 0 rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.06)',
-        'card-hover': '0 0.5px 0 0 rgba(0,0,0,0.05), 0 3px 10px rgba(0,0,0,0.08)',
-        'elevated': '0 0.5px 0 0 rgba(0,0,0,0.04), 0 10px 30px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05)',
-        'popover': '0 0.5px 0 0 rgba(0,0,0,0.06), 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
-        'window': '0 0 0 0.5px rgba(0,0,0,0.08), 0 20px 60px rgba(0,0,0,0.15), 0 6px 20px rgba(0,0,0,0.08)',
+        // macOS-style shadows — hue-shifted (slate-tinted, not pure black)
+        'card': '0 0.5px 0 0 rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.06)',
+        'card-hover': '0 0.5px 0 0 rgba(15,23,42,0.05), 0 3px 10px rgba(15,23,42,0.08)',
+        'elevated': '0 0.5px 0 0 rgba(15,23,42,0.04), 0 10px 30px rgba(15,23,42,0.1), 0 4px 10px rgba(15,23,42,0.05)',
+        'popover': '0 0.5px 0 0 rgba(15,23,42,0.06), 0 12px 40px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.06)',
+        'window': '0 0 0 0.5px rgba(15,23,42,0.08), 0 20px 60px rgba(15,23,42,0.15), 0 6px 20px rgba(15,23,42,0.08)',
       },
       keyframes: {
         'accordion-down': {

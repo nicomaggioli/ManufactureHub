@@ -1,5 +1,5 @@
 import {
-  Search, Bell, LogOut, User, Settings, ChevronRight,
+  Search, Bell, LogOut, Settings, ChevronRight,
   FolderKanban, Factory, MessageSquare, Clock, Activity, CheckCheck,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -255,7 +255,7 @@ export function Header() {
             }}
             className="w-full h-[30px] pl-9 pr-3 text-[13px] bg-black/[0.04] border border-black/[0.08] rounded-md text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/30 focus:bg-white transition-all"
           />
-          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground/50 font-mono bg-white/60 px-1 py-px rounded border border-black/[0.08] hidden sm:inline">
+          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/50 font-mono bg-white/60 px-1 py-px rounded border border-black/[0.08] hidden sm:inline">
             /
           </kbd>
 
@@ -263,14 +263,16 @@ export function Header() {
           {searchFocused && searchTerm.trim() && searchResults && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 overflow-hidden">
               {!hasResults ? (
-                <div className="px-4 py-6 text-center text-sm text-muted-foreground">
-                  No results for "{searchTerm}"
+                <div className="px-4 py-8 text-center">
+                  <Search className="mx-auto h-5 w-5 text-muted-foreground/30 mb-2" />
+                  <p className="text-sm text-muted-foreground">No results for &ldquo;{searchTerm}&rdquo;</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">Try a different search term</p>
                 </div>
               ) : (
                 <div className="py-1 max-h-80 overflow-y-auto">
                   {searchResults.projects.length > 0 && (
                     <div>
-                      <div className="px-3 py-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                      <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                         <FolderKanban className="h-3 w-3" /> Projects
                       </div>
                       {searchResults.projects.map((p: Project) => (
@@ -287,7 +289,7 @@ export function Header() {
                   )}
                   {searchResults.manufacturers.length > 0 && (
                     <div>
-                      <div className="px-3 py-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border/50">
+                      <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border/50">
                         <Factory className="h-3 w-3" /> Manufacturers
                       </div>
                       {searchResults.manufacturers.map((m: Manufacturer) => (
@@ -304,7 +306,7 @@ export function Header() {
                   )}
                   {searchResults.communications.length > 0 && (
                     <div>
-                      <div className="px-3 py-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border/50">
+                      <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border/50">
                         <MessageSquare className="h-3 w-3" /> Messages
                       </div>
                       {searchResults.communications.map((c: Communication) => (
@@ -337,14 +339,19 @@ export function Header() {
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-medium px-1">
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[11px] font-medium px-1">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </button>
 
           {notificationsOpen && (
-            <div className="absolute right-0 top-full mt-1 w-80 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 animate-scale-in">
+            <div
+              role="dialog"
+              aria-label="Notifications"
+              onKeyDown={(e) => { if (e.key === 'Escape') setNotificationsOpen(false); }}
+              className="absolute right-0 top-full mt-1 w-80 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 animate-scale-in"
+            >
               <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.06]">
                 <span className="text-sm font-semibold">Notifications</span>
                 {unreadCount > 0 && (
@@ -380,7 +387,7 @@ export function Header() {
                           <p className={`text-sm leading-snug truncate ${isUnread ? 'font-medium' : ''}`}>
                             {notif.message}
                           </p>
-                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
                             {formatRelativeDate(notif.timestamp)}
                           </p>
                         </div>
@@ -414,14 +421,6 @@ export function Header() {
 
           {menuOpen && (
             <div className="absolute right-0 top-full mt-1 w-48 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover py-1 z-50 animate-scale-in">
-              <Link
-                to="/settings"
-                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-black/[0.04] rounded-md mx-1 transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                <User className="w-4 h-4 text-muted-foreground" />
-                Profile
-              </Link>
               <Link
                 to="/settings"
                 className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-black/[0.04] rounded-md mx-1 transition-colors"

@@ -71,12 +71,12 @@ function ManufacturerCard({ manufacturer, index }: { manufacturer: Manufacturer;
         <CardContent className="p-5 pt-0 space-y-3">
           <div className="flex flex-wrap gap-1.5">
             {manufacturer.specialties.slice(0, 3).map((s) => (
-              <Badge key={s} variant="secondary" className="text-[10px] px-2 py-0.5">
+              <Badge key={s} variant="secondary" className="text-[11px] px-2 py-0.5">
                 {s}
               </Badge>
             ))}
             {manufacturer.specialties.length > 3 && (
-              <Badge variant="outline" className="text-[10px] px-2 py-0.5">
+              <Badge variant="outline" className="text-[11px] px-2 py-0.5">
                 +{manufacturer.specialties.length - 3}
               </Badge>
             )}
@@ -84,7 +84,7 @@ function ManufacturerCard({ manufacturer, index }: { manufacturer: Manufacturer;
           <StarRating rating={manufacturer.rating} />
           <div className="flex flex-wrap gap-1.5">
             {manufacturer.certifications.slice(0, 2).map((c) => (
-              <Badge key={c} variant="outline" className="text-[10px] px-2 py-0.5">
+              <Badge key={c} variant="outline" className="text-[11px] px-2 py-0.5">
                 {c}
               </Badge>
             ))}
@@ -218,7 +218,7 @@ export function Manufacturers() {
             <SlidersHorizontal className="mr-2 h-3.5 w-3.5" />
             Filters
             {hasFilters && (
-              <Badge className="ml-2 text-[10px]" variant="secondary">
+              <Badge className="ml-2 text-[11px]" variant="secondary">
                 Active
               </Badge>
             )}

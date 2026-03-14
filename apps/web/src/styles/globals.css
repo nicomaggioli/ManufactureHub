@@ -4,28 +4,28 @@
 
 @layer base {
   :root {
-    /* macOS-inspired color system */
-    --background: 0 0% 96%;
-    --foreground: 0 0% 13%;
+    /* macOS-inspired color system — hue-shifted warm neutrals (220°) */
+    --background: 220 3% 96%;
+    --foreground: 220 5% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 13%;
+    --card-foreground: 220 5% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
+    --popover-foreground: 220 5% 13%;
 
     /* macOS blue accent */
     --primary: 211 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 94%;
-    --secondary-foreground: 0 0% 13%;
+    --secondary: 220 3% 94%;
+    --secondary-foreground: 220 5% 13%;
 
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 44%;
+    --muted: 220 3% 94%;
+    --muted-foreground: 220 4% 44%;
 
-    --accent: 0 0% 94%;
-    --accent-foreground: 0 0% 13%;
+    --accent: 220 3% 94%;
+    --accent-foreground: 220 5% 13%;
 
     --destructive: 0 86% 57%;
     --destructive-foreground: 0 0% 100%;
@@ -34,19 +34,19 @@
     --success-foreground: 0 0% 100%;
 
     --warning: 36 100% 50%;
-    --warning-foreground: 0 0% 13%;
+    --warning-foreground: 220 5% 13%;
 
-    --border: 0 0% 87%;
-    --input: 0 0% 87%;
+    --border: 220 3% 87%;
+    --input: 220 3% 87%;
     --ring: 211 100% 50%;
     --radius: 8px;
 
     /* macOS sidebar — translucent / vibrancy */
-    --sidebar: 0 0% 97%;
-    --sidebar-foreground: 0 0% 33%;
+    --sidebar: 220 3% 97%;
+    --sidebar-foreground: 220 4% 33%;
     --sidebar-accent: 211 100% 50%;
-    --sidebar-muted: 0 0% 93%;
-    --sidebar-border: 0 0% 85%;
+    --sidebar-muted: 220 3% 93%;
+    --sidebar-border: 220 3% 85%;
   }
 }
 
