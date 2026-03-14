@@ -178,7 +178,7 @@ export function Quotes() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Quotes</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Quotes</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Review and compare manufacturer quotes.</p>
         </div>
         {compareIds.length >= 2 && (
@@ -230,7 +230,7 @@ export function Quotes() {
       <Dialog open={compareOpen} onOpenChange={setCompareOpen}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle className="font-heading text-lg font-bold tracking-tight">Compare Quotes</DialogTitle>
+            <DialogTitle className="text-lg font-semibold tracking-tight">Compare Quotes</DialogTitle>
             <DialogDescription>Side-by-side comparison of selected quotes.</DialogDescription>
           </DialogHeader>
           <div className="overflow-x-auto">
@@ -288,7 +288,7 @@ export function Quotes() {
       <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-heading flex items-center gap-2 text-lg font-bold tracking-tight">
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight">
               <Sparkles className="h-5 w-5 text-primary" /> AI Quote Analysis
             </DialogTitle>
           </DialogHeader>

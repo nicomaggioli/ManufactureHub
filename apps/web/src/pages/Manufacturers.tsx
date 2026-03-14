@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import {
@@ -39,10 +39,10 @@ function StarRating({ rating }: { rating: number }) {
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
-          className={cn('h-3 w-3', i < rating ? 'fill-amber-500 text-amber-500' : 'text-muted-foreground/20')}
+          className={cn('h-3.5 w-3.5', i < rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20')}
         />
       ))}
-      <span className="ml-1.5 data-value text-[11px] text-muted-foreground">{rating.toFixed(1)}</span>
+      <span className="ml-1.5 data-value text-xs text-muted-foreground">{rating.toFixed(1)}</span>
     </div>
   );
 }
@@ -51,12 +51,12 @@ function ManufacturerCard({ manufacturer, index }: { manufacturer: Manufacturer;
   return (
     <Link to={`/manufacturers/${manufacturer.id}`}>
       <Card
-        className="stat-card cursor-pointer transition-all hover:shadow-md hover:border-border/80 h-full animate-in"
+        className="cursor-pointer transition-all hover:shadow-card-hover h-full animate-in"
         style={{ animationDelay: `${index * 50}ms` }}
       >
-        <CardHeader className="p-4 pb-2">
+        <CardHeader className="p-5 pb-3">
           <div className="flex items-start justify-between gap-2">
-            <CardTitle className="font-heading text-sm font-semibold leading-tight">
+            <CardTitle className="text-sm font-semibold leading-tight">
               {manufacturer.name}
             </CardTitle>
             {manufacturer.verified && (
@@ -68,31 +68,31 @@ function ManufacturerCard({ manufacturer, index }: { manufacturer: Manufacturer;
             {manufacturer.country}
           </div>
         </CardHeader>
-        <CardContent className="p-4 pt-0 space-y-2.5">
-          <div className="flex flex-wrap gap-1">
+        <CardContent className="p-5 pt-0 space-y-3">
+          <div className="flex flex-wrap gap-1.5">
             {manufacturer.specialties.slice(0, 3).map((s) => (
-              <Badge key={s} variant="secondary" className="text-[10px] px-1.5 py-0 rounded-md">
+              <Badge key={s} variant="secondary" className="text-[10px] px-2 py-0.5">
                 {s}
               </Badge>
             ))}
             {manufacturer.specialties.length > 3 && (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 rounded-md">
+              <Badge variant="outline" className="text-[10px] px-2 py-0.5">
                 +{manufacturer.specialties.length - 3}
               </Badge>
             )}
           </div>
           <StarRating rating={manufacturer.rating} />
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {manufacturer.certifications.slice(0, 2).map((c) => (
-              <Badge key={c} variant="outline" className="text-[10px] px-1.5 py-0 rounded-md">
+              <Badge key={c} variant="outline" className="text-[10px] px-2 py-0.5">
                 {c}
               </Badge>
             ))}
           </div>
           {manufacturer.sustainabilityScore > 0 && (
-            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-              <Leaf className="h-3 w-3 text-green-500" />
-              Sustainability: <span className="data-value">{manufacturer.sustainabilityScore}</span>/100
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Leaf className="h-3 w-3 text-emerald-500" />
+              Sustainability: <span className="data-value font-medium">{manufacturer.sustainabilityScore}</span>/100
             </div>
           )}
         </CardContent>
@@ -106,7 +106,7 @@ function ManufacturersSkeleton({ view }: { view: 'grid' | 'table' }) {
     return (
       <div className="space-y-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-10 w-full rounded-lg" />
+          <Skeleton key={i} className="h-10 w-full" />
         ))}
       </div>
     );
@@ -114,12 +114,12 @@ function ManufacturersSkeleton({ view }: { view: 'grid' | 'table' }) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <Card key={i} className="stat-card">
-          <CardHeader className="p-4 pb-2">
+        <Card key={i}>
+          <CardHeader className="p-5 pb-3">
             <Skeleton className="h-4 w-36" />
             <Skeleton className="h-3 w-20 mt-1.5" />
           </CardHeader>
-          <CardContent className="p-4 pt-0 space-y-2">
+          <CardContent className="p-5 pt-0 space-y-2">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-3 w-28" />
           </CardContent>
@@ -194,17 +194,17 @@ export function Manufacturers() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight">Manufacturers</h1>
-        <p className="text-sm text-muted-foreground">Search and discover manufacturers worldwide</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Manufacturers</h1>
+        <p className="text-sm text-muted-foreground mt-1">Search and discover manufacturers worldwide</p>
       </div>
 
       {/* Search + view toggle */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search by name, specialty, location..."
-            className="pl-10 rounded-lg"
+            className="pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -214,7 +214,6 @@ export function Manufacturers() {
             variant={filterOpen ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilterOpen(!filterOpen)}
-            className="rounded-lg"
           >
             <SlidersHorizontal className="mr-2 h-3.5 w-3.5" />
             Filters
@@ -224,7 +223,7 @@ export function Manufacturers() {
               </Badge>
             )}
           </Button>
-          <div className="flex border rounded-lg overflow-hidden">
+          <div className="flex border border-border rounded-lg overflow-hidden">
             <Button
               variant={view === 'grid' ? 'secondary' : 'ghost'}
               size="icon"
@@ -248,27 +247,26 @@ export function Manufacturers() {
       <div className="flex gap-6">
         {/* Filter panel */}
         {filterOpen && (
-          <Card className="stat-card w-60 shrink-0 self-start">
+          <Card className="w-60 shrink-0 self-start">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="font-heading text-xs font-semibold uppercase tracking-wider">Filters</CardTitle>
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Filters</CardTitle>
               {hasFilters && (
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-auto p-0 text-[10px] text-muted-foreground hover:text-foreground">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground">
                   Clear all
                 </Button>
               )}
             </CardHeader>
             <CardContent className="p-4 pt-0 space-y-4">
-              {/* Country */}
               <div>
-                <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Country</h4>
-                <div className="space-y-1 max-h-36 overflow-y-auto">
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">Country</h4>
+                <div className="space-y-1.5 max-h-36 overflow-y-auto">
                   {countries.map((c) => (
-                    <label key={c} className="flex items-center gap-2 text-xs cursor-pointer hover:text-foreground transition-colors">
+                    <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
                       <input
                         type="checkbox"
                         checked={selectedCountries.includes(c)}
                         onChange={() => toggleCountry(c)}
-                        className="rounded border-input h-3 w-3"
+                        className="rounded border-input h-3.5 w-3.5"
                       />
                       {c}
                     </label>
@@ -276,17 +274,16 @@ export function Manufacturers() {
                 </div>
               </div>
 
-              {/* Certifications */}
               <div>
-                <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Certifications</h4>
-                <div className="space-y-1">
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">Certifications</h4>
+                <div className="space-y-1.5">
                   {certificationOptions.map((c) => (
-                    <label key={c} className="flex items-center gap-2 text-xs cursor-pointer hover:text-foreground transition-colors">
+                    <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
                       <input
                         type="checkbox"
                         checked={selectedCerts.includes(c)}
                         onChange={() => toggleCert(c)}
-                        className="rounded border-input h-3 w-3"
+                        className="rounded border-input h-3.5 w-3.5"
                       />
                       {c}
                     </label>
@@ -294,56 +291,51 @@ export function Manufacturers() {
                 </div>
               </div>
 
-              {/* MOQ Range */}
               <div>
-                <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">MOQ Range</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">MOQ Range</h4>
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
                     placeholder="Min"
-                    className="h-7 text-xs rounded-md"
+                    className="h-8 text-xs"
                     value={moqRange[0] || ''}
                     onChange={(e) => setMoqRange([Number(e.target.value), moqRange[1]])}
                   />
-                  <span className="text-[10px] text-muted-foreground">-</span>
+                  <span className="text-xs text-muted-foreground">-</span>
                   <Input
                     type="number"
                     placeholder="Max"
-                    className="h-7 text-xs rounded-md"
+                    className="h-8 text-xs"
                     value={moqRange[1] === 100000 ? '' : moqRange[1]}
                     onChange={(e) => setMoqRange([moqRange[0], Number(e.target.value) || 100000])}
                   />
                 </div>
               </div>
 
-              {/* Verified toggle */}
               <div>
-                <label className="flex items-center gap-2 text-xs cursor-pointer hover:text-foreground transition-colors">
+                <label className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
                   <input
                     type="checkbox"
                     checked={verifiedOnly}
                     onChange={() => setVerifiedOnly(!verifiedOnly)}
-                    className="rounded border-input h-3 w-3"
+                    className="rounded border-input h-3.5 w-3.5"
                   />
                   Verified only
                   <BadgeCheck className="h-3.5 w-3.5 text-primary" />
                 </label>
               </div>
 
-              {/* Sustainability */}
               <div>
-                <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Min Sustainability
-                </h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">Min Sustainability</h4>
                 <Input
                   type="range"
                   min={0}
                   max={100}
                   value={sustainabilityMin}
                   onChange={(e) => setSustainabilityMin(Number(e.target.value))}
-                  className="h-1.5 p-0 border-0"
+                  className="h-2 p-0 border-0"
                 />
-                <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>0</span>
                   <span className="data-value font-medium">{sustainabilityMin}</span>
                   <span>100</span>
@@ -358,21 +350,21 @@ export function Manufacturers() {
           {query.isLoading ? (
             <ManufacturersSkeleton view={view} />
           ) : query.isError ? (
-            <Card className="stat-card">
+            <Card>
               <CardContent className="py-10 text-center text-destructive text-sm">
-                Failed to load manufacturers. Please try again.
+                Failed to load manufacturers.
               </CardContent>
             </Card>
           ) : manufacturers.length === 0 ? (
-            <Card className="stat-card border-dashed">
+            <Card className="border-dashed">
               <CardContent className="flex flex-col items-center py-16 text-muted-foreground">
-                <div className="rounded-lg bg-muted/60 p-4 mb-4">
+                <div className="rounded-xl bg-muted p-4 mb-4">
                   <Search className="h-8 w-8" />
                 </div>
                 <p className="text-sm font-medium mb-1">No manufacturers found</p>
-                <p className="text-xs text-muted-foreground/70 mb-4">Try adjusting your search or filters</p>
+                <p className="text-xs text-muted-foreground mb-4">Try adjusting your search or filters</p>
                 {hasFilters && (
-                  <Button variant="outline" size="sm" onClick={clearFilters} className="rounded-lg">
+                  <Button variant="outline" size="sm" onClick={clearFilters}>
                     <X className="mr-2 h-3.5 w-3.5" /> Clear Filters
                   </Button>
                 )}
@@ -380,8 +372,8 @@ export function Manufacturers() {
             </Card>
           ) : view === 'grid' ? (
             <>
-              <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wider">
-                <span className="data-value">{manufacturers.length}</span> results
+              <p className="text-xs text-muted-foreground mb-4">
+                <span className="data-value font-medium">{manufacturers.length}</span> results
               </p>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {manufacturers.map((m, i) => (
@@ -391,10 +383,10 @@ export function Manufacturers() {
             </>
           ) : (
             <>
-              <p className="text-xs text-muted-foreground mb-4 uppercase tracking-wider">
-                <span className="data-value">{manufacturers.length}</span> results
+              <p className="text-xs text-muted-foreground mb-4">
+                <span className="data-value font-medium">{manufacturers.length}</span> results
               </p>
-              <Card className="stat-card">
+              <Card>
                 <CardContent className="pt-4">
                   <DataTable
                     columns={tableColumns}
@@ -409,10 +401,9 @@ export function Manufacturers() {
             </>
           )}
 
-          {/* Map view placeholder */}
           <div className="mt-6">
-            <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Map View</h3>
-            <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/30 text-muted-foreground">
+            <h3 className="text-xs font-medium text-muted-foreground mb-2">Map View</h3>
+            <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 text-muted-foreground">
               <div className="text-center">
                 <MapPin className="mx-auto mb-2 h-6 w-6 text-muted-foreground/40" />
                 <p className="text-xs">Manufacturer locations will appear here</p>

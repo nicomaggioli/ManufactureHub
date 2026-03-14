@@ -366,7 +366,7 @@ export function MockupGenerator() {
 
               <div className="flex items-center gap-2.5 min-w-[180px] justify-center">
                 <ProductThumb product={currentProduct.key} active />
-                <span className="font-heading font-semibold text-sm tracking-tight text-foreground">
+                <span className="font-semibold text-sm tracking-tight text-foreground">
                   {currentProduct.label}
                 </span>
               </div>

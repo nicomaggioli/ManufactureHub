@@ -116,7 +116,7 @@ export function ManufacturerDetail() {
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="font-heading text-2xl font-bold tracking-tight">{manufacturer.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{manufacturer.name}</h1>
           {manufacturer.verified && <BadgeCheck className="h-5 w-5 text-primary" />}
         </div>
         <div className="flex gap-2">
@@ -133,7 +133,7 @@ export function ManufacturerDetail() {
         <Card className="lg:col-span-2 animate-in relative overflow-hidden">
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
           <CardHeader className="pb-3">
-            <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">Company Information</CardTitle>
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Company Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground leading-relaxed">{manufacturer.description}</p>
@@ -196,7 +196,7 @@ export function ManufacturerDetail() {
         {/* Certifications */}
         <Card className="animate-in">
           <CardHeader className="pb-3">
-            <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
               <Shield className="h-4 w-4" /> Certifications
             </CardTitle>
           </CardHeader>
@@ -220,7 +220,7 @@ export function ManufacturerDetail() {
       {/* AI Vetting Report */}
       <Card className="animate-in">
         <CardHeader className="pb-3">
-          <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+          <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" /> AI Vetting Report
           </CardTitle>
         </CardHeader>
@@ -296,7 +296,7 @@ export function ManufacturerDetail() {
       {/* Communication History */}
       <Card className="animate-in">
         <CardHeader className="pb-3">
-          <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">Communication History</CardTitle>
+          <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Communication History</CardTitle>
         </CardHeader>
         <CardContent>
           <DataTable

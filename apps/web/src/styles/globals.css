@@ -4,50 +4,47 @@
 
 @layer base {
   :root {
-    /* RAVI — sharp, high-contrast light interface */
-    --background: 220 16% 96%;
-    --foreground: 220 20% 12%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 12%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 12%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Deep teal — WCAG AA compliant on white (5.2:1) */
-    --primary: 192 85% 24%;
+    --primary: 239 84% 67%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 92%;
-    --secondary-foreground: 220 18% 22%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 220 12% 93%;
-    --muted-foreground: 220 8% 42%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Warm amber accent — complementary to teal, not purple */
-    --accent: 28 90% 52%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 0 0% 9%;
 
-    --destructive: 0 72% 48%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 158 65% 32%;
+    --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 42 90% 48%;
-    --warning-foreground: 42 80% 10%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 9%;
 
-    --border: 220 14% 87%;
-    --input: 220 14% 87%;
-    --ring: 192 85% 24%;
-    --radius: 2px;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 239 84% 67%;
+    --radius: 8px;
 
-    /* Sidebar */
-    --sidebar: 220 22% 8%;
-    --sidebar-foreground: 220 8% 52%;
-    --sidebar-accent: 192 85% 44%;
-    --sidebar-muted: 220 18% 14%;
-    --sidebar-border: 220 16% 14%;
+    /* Sidebar — light with subtle contrast */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 0 0% 45%;
+    --sidebar-accent: 239 84% 67%;
+    --sidebar-muted: 240 5% 96%;
+    --sidebar-border: 0 0% 92%;
   }
 }
 
@@ -58,26 +55,21 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "ss01";
   }
 
-  /* Refined scrollbar */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
     background: hsl(var(--border));
+    border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.25);
-  }
-
-  .sidebar-scroll::-webkit-scrollbar-thumb {
-    background: hsl(var(--sidebar-muted));
+    background: hsl(var(--muted-foreground) / 0.3);
   }
 
   .tabular-nums {
@@ -86,38 +78,6 @@
 }
 
 @layer components {
-  .bg-parchment {
-    background: hsl(var(--background));
-  }
-
-  .bg-grid {
-    background-image:
-      linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  .accent-bar {
-    @apply relative;
-  }
-  .accent-bar::before {
-    content: '';
-    @apply absolute left-0 top-0 bottom-0 w-[2px];
-    background: hsl(var(--primary));
-  }
-
-  /* Stat card hover */
-  .stat-card {
-    @apply relative overflow-hidden transition-all duration-250;
-  }
-  .stat-card:hover {
-    @apply -translate-y-px;
-    box-shadow:
-      0 2px 12px hsl(var(--foreground) / 0.06),
-      0 0 0 1px hsl(var(--primary) / 0.12);
-  }
-
-  /* Monospace data display */
   .data-value {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     @apply tabular-nums tracking-tight;
@@ -126,51 +86,29 @@
 
 @layer utilities {
   .animate-in {
-    animation: fadeIn 0.35s ease-out both;
+    animation: fadeIn 0.3s ease-out both;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  .animate-slide-in-right {
-    animation: slideInRight 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .stagger-1 { animation-delay: 40ms; }
-  .stagger-2 { animation-delay: 80ms; }
-  .stagger-3 { animation-delay: 120ms; }
-  .stagger-4 { animation-delay: 160ms; }
-  .stagger-5 { animation-delay: 200ms; }
-  .stagger-6 { animation-delay: 240ms; }
-  .stagger-7 { animation-delay: 280ms; }
-  .stagger-8 { animation-delay: 320ms; }
-
-  /* Duration utilities */
-  .duration-250 { transition-duration: 250ms; }
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-/* Carousel slide animation */
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(16px); }
   to { opacity: 1; transform: translateX(0); }
@@ -180,7 +118,15 @@
   animation: slideInLeft 0.3s ease-out both;
 }
 
-/* C3: Respect reduced motion preference */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

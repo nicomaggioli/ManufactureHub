@@ -107,7 +107,7 @@ export function Communications() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Communications</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Communications</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Manage conversations with manufacturers.</p>
         </div>
         <Button onClick={() => setComposerOpen(true)}>
@@ -175,7 +175,7 @@ export function Communications() {
               <CardHeader className="border-b shrink-0 pb-2.5 pt-3 px-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="font-heading text-sm font-semibold">{activeThread.subject}</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{activeThread.subject}</CardTitle>
                     <p className="text-xs text-muted-foreground mt-0.5">{activeThread.manufacturerName}</p>
                   </div>
                   <Badge variant={statusConfig[activeThread.status].variant}>

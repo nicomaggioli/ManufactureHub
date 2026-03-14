@@ -108,7 +108,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">AI Message Composer</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">AI Message Composer</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Draft messages with AI assistance.</p>
         </div>
       </div>
@@ -117,7 +117,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
         {/* Configuration */}
         <Card className="animate-in">
           <CardHeader className="pb-3">
-            <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">Message Settings</CardTitle>
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Message Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
@@ -225,7 +225,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
         {/* Draft area */}
         <Card className="animate-in">
           <CardHeader className="pb-3">
-            <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">Message Draft</CardTitle>
+            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Message Draft</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">

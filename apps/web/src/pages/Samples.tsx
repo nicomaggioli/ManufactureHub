@@ -84,7 +84,7 @@ export function Samples() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-heading text-2xl font-bold tracking-tight">Samples</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Samples</h1>
         <p className="text-sm text-muted-foreground mt-0.5">Track and manage product samples.</p>
       </div>
 
@@ -137,7 +137,7 @@ export function Samples() {
                 <CardHeader className="pb-2.5">
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="font-heading text-sm font-semibold">{sample.projectName}</CardTitle>
+                      <CardTitle className="text-sm font-semibold">{sample.projectName}</CardTitle>
                       <p className="text-xs text-muted-foreground mt-0.5">{sample.manufacturerName}</p>
                     </div>
                     <Badge variant={config.variant}>
@@ -265,7 +265,7 @@ export function Samples() {
       <Dialog open={!!uploadDialogSampleId} onOpenChange={() => setUploadDialogSampleId(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-heading text-lg font-bold tracking-tight">Upload Sample Photos</DialogTitle>
+            <DialogTitle className="text-lg font-semibold tracking-tight">Upload Sample Photos</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="flex flex-col items-center justify-center rounded-md border-2 border-dashed p-6">

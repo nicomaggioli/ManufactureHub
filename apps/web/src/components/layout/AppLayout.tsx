@@ -5,12 +5,12 @@ import { Toaster } from '@/components/ui/toast';
 
 export function AppLayout() {
   return (
-    <div className="flex h-screen overflow-hidden bg-background bg-parchment">
+    <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
         <main className="flex-1 overflow-y-auto">
-          <div className="px-6 py-5 max-w-[1400px] mx-auto">
+          <div className="px-8 py-6 max-w-[1200px] mx-auto">
             <Outlet />
           </div>
         </main>

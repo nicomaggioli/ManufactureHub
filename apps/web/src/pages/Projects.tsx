@@ -42,12 +42,12 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link to={`/projects/${project.id}`}>
       <Card
-        className="stat-card cursor-pointer transition-all hover:shadow-md hover:border-border/80 animate-in"
+        className="cursor-pointer transition-all hover:shadow-md hover:border-border/80 animate-in"
         style={{ animationDelay: `${index * 60}ms` }}
       >
         <CardHeader className="p-4 pb-2">
           <div className="flex items-start justify-between gap-2">
-            <CardTitle className="font-heading text-sm font-semibold leading-tight">
+            <CardTitle className="text-sm font-semibold leading-tight">
               {project.name}
             </CardTitle>
             <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-[10px] uppercase tracking-wider">
@@ -77,7 +77,7 @@ function ProjectsSkeleton() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <Card key={i} className="stat-card">
+        <Card key={i} className="">
           <CardHeader className="p-4 pb-2">
             <Skeleton className="h-4 w-36" />
             <Skeleton className="h-3 w-full mt-1.5" />
@@ -121,7 +121,7 @@ export function Projects() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Projects</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
           <p className="text-sm text-muted-foreground">Manage your manufacturing projects</p>
         </div>
         <Button onClick={() => setDialogOpen(true)} className="rounded-lg">
@@ -143,13 +143,13 @@ export function Projects() {
           {projectsQuery.isLoading ? (
             <ProjectsSkeleton />
           ) : projectsQuery.isError ? (
-            <Card className="stat-card">
+            <Card className="">
               <CardContent className="py-10 text-center text-destructive text-sm">
                 Failed to load projects. Please try again.
               </CardContent>
             </Card>
           ) : projects.length === 0 ? (
-            <Card className="stat-card border-dashed">
+            <Card className="border-dashed">
               <CardContent className="flex flex-col items-center py-16">
                 <div className="rounded-lg bg-muted/60 p-4 mb-4">
                   <FolderKanban className="h-8 w-8 text-muted-foreground" />
@@ -176,7 +176,7 @@ export function Projects() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-heading">Create New Project</DialogTitle>
+            <DialogTitle className="">Create New Project</DialogTitle>
             <DialogDescription>
               Start a new manufacturing project. You can add details later.
             </DialogDescription>

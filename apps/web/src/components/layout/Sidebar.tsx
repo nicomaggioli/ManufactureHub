@@ -13,16 +13,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-function RaviLogo({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2 L22 12 L12 22 L2 12 Z" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      <path d="M12 6 L18 12 L12 18 L6 12 Z" stroke="currentColor" strokeWidth="1" fill="currentColor" fillOpacity="0.15" />
-      <circle cx="12" cy="12" r="2" fill="currentColor" />
-    </svg>
-  );
-}
-
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/design', label: 'Design Studio', icon: Wand2 },
@@ -48,23 +38,20 @@ function NavLink({
     <Link
       to={item.to}
       className={cn(
-        'flex items-center gap-3 px-3 py-2 text-[13px] font-medium transition-all duration-200 group relative',
+        'flex items-center gap-3 px-3 py-2 text-[13px] font-medium rounded-lg transition-colors duration-150',
         active
-          ? 'bg-sidebar-muted/80 text-white'
-          : 'text-sidebar-foreground hover:text-white hover:bg-sidebar-muted/40',
+          ? 'bg-primary/10 text-primary'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted',
         collapsed && 'justify-center px-2'
       )}
       title={collapsed ? item.label : undefined}
     >
-      {active && (
-        <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-sidebar-accent" />
-      )}
       <item.icon
         className={cn(
-          'w-[18px] h-[18px] shrink-0 transition-colors duration-200',
-          active ? 'text-sidebar-accent' : 'text-sidebar-foreground group-hover:text-white'
+          'w-[18px] h-[18px] shrink-0',
+          active ? 'text-primary' : ''
         )}
-        strokeWidth={active ? 2 : 1.7}
+        strokeWidth={active ? 2 : 1.5}
       />
       {!collapsed && (
         <span className="truncate">{item.label}</span>
@@ -85,63 +72,58 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out',
-        collapsed ? 'w-[68px]' : 'w-[232px]'
+        'flex flex-col h-screen bg-sidebar border-r border-sidebar-border transition-all duration-200',
+        collapsed ? 'w-[68px]' : 'w-[240px]'
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-[60px] border-b border-sidebar-border">
+      <div className="flex items-center gap-3 px-4 h-[56px]">
         <Link to="/" className="flex items-center gap-2.5 min-w-0">
-          <div className="flex items-center justify-center w-8 h-8 border border-sidebar-border shrink-0">
-            <RaviLogo className="w-[18px] h-[18px] text-sidebar-accent" />
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground shrink-0">
+            <span className="text-sm font-bold">R</span>
           </div>
           {!collapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="font-heading font-bold text-[14px] text-white tracking-tight truncate leading-tight">
-                RAVI
-              </span>
-              <span className="text-[9px] text-sidebar-foreground/60 font-medium uppercase tracking-[0.1em] leading-tight">
-                Manufacturing
-              </span>
-            </div>
+            <span className="font-semibold text-[15px] text-foreground tracking-tight truncate">
+              RAVI
+            </span>
           )}
         </Link>
       </div>
 
-      {/* Create Mockup CTA — hide when already on /design */}
+      {/* Create Mockup CTA */}
       {!isActive('/design') && (
-        <div className="px-2 pt-3 pb-1">
+        <div className="px-3 pb-2">
           <Link
             to="/design"
             className={cn(
-              'flex items-center justify-center gap-2 w-full py-2 text-[13px] font-semibold transition-all duration-200',
-              'bg-sidebar-accent text-sidebar hover:bg-sidebar-accent/90',
+              'flex items-center justify-center gap-2 w-full py-2 text-[13px] font-medium rounded-lg transition-colors duration-150',
+              'bg-primary text-primary-foreground hover:bg-primary/90',
               collapsed && 'px-0'
             )}
             title={collapsed ? 'Create Mockup' : undefined}
           >
-            <Plus className="w-4 h-4 shrink-0" strokeWidth={2.2} />
-            {!collapsed && <span>Create Mockup</span>}
+            <Plus className="w-4 h-4 shrink-0" strokeWidth={2} />
+            {!collapsed && <span>New Mockup</span>}
           </Link>
         </div>
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto sidebar-scroll">
+      <nav className="flex-1 py-2 px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
         ))}
       </nav>
 
       {/* Bottom section */}
-      <div className="px-2 pb-2 space-y-0.5 border-t border-sidebar-border pt-2">
+      <div className="px-3 pb-3 space-y-1 border-t border-sidebar-border pt-2">
         {bottomItems.map((item) => (
           <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
         ))}
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-2 text-sidebar-foreground/60 hover:text-white transition-colors duration-200 hover:bg-sidebar-muted/40"
+          className="flex items-center justify-center w-full py-2 text-muted-foreground hover:text-foreground rounded-lg transition-colors duration-150 hover:bg-muted"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>

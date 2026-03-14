@@ -206,7 +206,7 @@ export function ProjectDetail() {
       {/* Title + status */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">{project.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{project.name}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{project.description}</p>
         </div>
         <Badge variant="outline" className="w-fit px-3 py-1">
@@ -247,7 +247,7 @@ export function ProjectDetail() {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="animate-in">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                   <Users className="h-4 w-4" /> Project Info
                 </CardTitle>
               </CardHeader>
@@ -272,7 +272,7 @@ export function ProjectDetail() {
             </Card>
             <Card className="animate-in">
               <CardHeader className="pb-3">
-                <CardTitle className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                   <Calendar className="h-4 w-4" /> Milestones
                 </CardTitle>
               </CardHeader>

@@ -281,7 +281,7 @@ type TabKey = (typeof TABS)[number]['key'];
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="font-heading text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+    <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
       {children}
     </h4>
   );
@@ -351,7 +351,7 @@ function OverviewTab({ pack }: { pack: TechPackData }) {
               <Card className="bg-muted/40 border-0 shadow-none">
                 <CardContent className="p-3 text-center">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">BOM Cost</p>
-                  <p className="text-lg font-heading font-bold data-value mt-0.5">
+                  <p className="text-lg font-bold data-value mt-0.5">
                     {formatCurrency(bomCost)}
                   </p>
                 </CardContent>
@@ -359,13 +359,13 @@ function OverviewTab({ pack }: { pack: TechPackData }) {
               <Card className="bg-muted/40 border-0 shadow-none">
                 <CardContent className="p-3 text-center">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Target Cost</p>
-                  <p className="text-lg font-heading font-bold data-value mt-0.5">{formatCurrency(pack.targetCost)}</p>
+                  <p className="text-lg font-bold data-value mt-0.5">{formatCurrency(pack.targetCost)}</p>
                 </CardContent>
               </Card>
               <Card className="bg-muted/40 border-0 shadow-none">
                 <CardContent className="p-3 text-center">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Margin</p>
-                  <p className="text-lg font-heading font-bold data-value mt-0.5 text-accent">
+                  <p className="text-lg font-bold data-value mt-0.5 text-accent">
                     {(((pack.targetRetail - pack.targetCost) / pack.targetRetail) * 100).toFixed(1)}%
                   </p>
                 </CardContent>
@@ -394,7 +394,7 @@ function MaterialsTab({ pack }: { pack: TechPackData }) {
             <thead>
               <tr className="border-b">
                 {['Material', 'Type', 'Color', 'Supplier', 'Unit Cost', 'Usage / Unit'].map((h) => (
-                  <th key={h} className="pb-2.5 pr-4 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground font-heading last:pr-0">
+                  <th key={h} className="pb-2.5 pr-4 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground last:pr-0">
                     {h}
                   </th>
                 ))}
@@ -414,7 +414,7 @@ function MaterialsTab({ pack }: { pack: TechPackData }) {
             </tbody>
             <tfoot>
               <tr className="border-t-2">
-                <td colSpan={4} className="pt-2.5 text-right pr-4 font-heading text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <td colSpan={4} className="pt-2.5 text-right pr-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Total Material Cost
                 </td>
                 <td className="pt-2.5 font-bold data-value text-accent">
@@ -447,11 +447,11 @@ function MeasurementsTab({ pack }: { pack: TechPackData }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
-                <th className="pb-2.5 pr-4 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground font-heading">
+                <th className="pb-2.5 pr-4 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                   Measurement
                 </th>
                 {sizes.map((s) => (
-                  <th key={s} className="pb-2.5 px-4 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground font-heading">
+                  <th key={s} className="pb-2.5 px-4 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {s}
                   </th>
                 ))}
@@ -493,7 +493,7 @@ function ConstructionTab({ pack }: { pack: TechPackData }) {
           <dl className="space-y-4">
             {pack.construction.map((detail, i) => (
               <div key={i} className="flex flex-col sm:flex-row sm:gap-4">
-                <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground font-heading min-w-[180px] pt-0.5">
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground min-w-[180px] pt-0.5">
                   {detail.label}
                 </dt>
                 <dd className="text-sm leading-relaxed">{detail.value}</dd>
@@ -571,7 +571,7 @@ function LabelsTab({ pack }: { pack: TechPackData }) {
               <thead>
                 <tr className="border-b">
                   {['Type', 'Placement', 'Content'].map((h) => (
-                    <th key={h} className="pb-2.5 pr-4 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground font-heading last:pr-0">
+                    <th key={h} className="pb-2.5 pr-4 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground last:pr-0">
                       {h}
                     </th>
                   ))}
@@ -663,7 +663,7 @@ export function TechPack() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight">Tech Pack Builder</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Tech Pack Builder</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Manage product specifications, materials, and construction details.
           </p>
@@ -707,7 +707,7 @@ export function TechPack() {
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                'whitespace-nowrap border-b-2 px-3 py-2 text-xs font-heading font-semibold uppercase tracking-wider transition-colors',
+                'whitespace-nowrap border-b-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors',
                 activeTab === tab.key
                   ? 'border-primary text-primary'
                   : 'border-transparent text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground'
