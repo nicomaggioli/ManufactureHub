@@ -162,7 +162,7 @@ export function ManufacturerDetail() {
 
             {/* Specialties */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Specialties</h4>
+              <h4 className="text-xs font-medium text-muted-foreground mb-2">Specialties</h4>
               <div className="flex flex-wrap gap-1.5">
                 {manufacturer.specialties.map((s) => (
                   <Badge key={s} variant="secondary">{s}</Badge>
@@ -186,7 +186,7 @@ export function ManufacturerDetail() {
               </div>
               <div className="flex items-center gap-1.5 text-sm">
                 <Leaf className="h-4 w-4 text-green-500" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sustainability</span>
+                <span className="text-xs font-medium text-muted-foreground">Sustainability</span>
                 <span className="data-value font-semibold">{manufacturer.sustainabilityScore}/100</span>
               </div>
             </div>
@@ -248,7 +248,7 @@ export function ManufacturerDetail() {
                 {vetting.categories.map((cat) => (
                   <div key={cat.name} className="rounded-md border p-3">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{cat.name}</span>
+                      <span className="text-xs font-medium text-muted-foreground">{cat.name}</span>
                       <span className="text-sm font-bold data-value">{cat.score}/100</span>
                     </div>
                     <Progress value={cat.score} className="h-1.5 mb-2" />
@@ -260,7 +260,7 @@ export function ManufacturerDetail() {
               {/* Risks */}
               {vetting.risks.length > 0 && (
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mb-2">
+                  <h4 className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
                     <AlertTriangle className="h-3.5 w-3.5 text-warning" /> Risks
                   </h4>
                   <ul className="space-y-1">
@@ -276,7 +276,7 @@ export function ManufacturerDetail() {
               {/* Recommendations */}
               {vetting.recommendations.length > 0 && (
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mb-2">
+                  <h4 className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
                     <ThumbsUp className="h-3.5 w-3.5 text-primary" /> Recommendations
                   </h4>
                   <ul className="space-y-1">

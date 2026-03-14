@@ -10,15 +10,36 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  FileText,
+  Package,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/design', label: 'Design Studio', icon: Wand2 },
-  { to: '/manufacturers', label: 'Manufacturers', icon: Factory },
-  { to: '/projects', label: 'Projects', icon: FolderKanban },
-  { to: '/communications', label: 'Messages', icon: MessageSquare },
+type NavItem = { to: string; label: string; icon: React.ElementType };
+type NavSection = { label?: string; items: NavItem[] };
+
+const navSections: NavSection[] = [
+  {
+    items: [
+      { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: 'Workflow',
+    items: [
+      { to: '/design', label: 'Design Studio', icon: Wand2 },
+      { to: '/projects', label: 'Projects', icon: FolderKanban },
+      { to: '/manufacturers', label: 'Manufacturers', icon: Factory },
+    ],
+  },
+  {
+    label: 'Pipeline',
+    items: [
+      { to: '/quotes', label: 'Quotes', icon: FileText },
+      { to: '/samples', label: 'Samples', icon: Package },
+      { to: '/communications', label: 'Messages', icon: MessageSquare },
+    ],
+  },
 ];
 
 const bottomItems = [
@@ -109,9 +130,20 @@ export function Sidebar() {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 py-2 px-3 space-y-1 overflow-y-auto">
-        {navItems.map((item) => (
-          <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
+      <nav className="flex-1 py-2 px-3 overflow-y-auto">
+        {navSections.map((section, idx) => (
+          <div key={section.label ?? idx}>
+            {section.label && !collapsed && (
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium px-3 pt-4 pb-1">
+                {section.label}
+              </div>
+            )}
+            <div className="space-y-1">
+              {section.items.map((item) => (
+                <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 

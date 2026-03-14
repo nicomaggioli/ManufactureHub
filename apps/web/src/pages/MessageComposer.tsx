@@ -121,7 +121,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Message Type</label>
+              <label className="text-xs font-medium text-muted-foreground">Message Type</label>
               <Select value={messageType} onValueChange={setMessageType}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select message type" />
@@ -137,7 +137,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Project (optional)</label>
+              <label className="text-xs font-medium text-muted-foreground">Project (optional)</label>
               <Select value={projectId} onValueChange={setProjectId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select project" />
@@ -157,7 +157,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Manufacturer</label>
+              <label className="text-xs font-medium text-muted-foreground">Manufacturer</label>
               <Select value={manufacturerId} onValueChange={setManufacturerId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select manufacturer" />
@@ -177,7 +177,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tone</label>
+              <label className="text-xs font-medium text-muted-foreground">Tone</label>
               <Select value={tone} onValueChange={setTone}>
                 <SelectTrigger>
                   <SelectValue />
@@ -193,7 +193,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Additional Context (optional)</label>
+              <label className="text-xs font-medium text-muted-foreground">Additional Context (optional)</label>
               <Textarea
                 placeholder="Any specific details or requirements to include..."
                 value={context}
@@ -229,7 +229,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Subject</label>
+              <label className="text-xs font-medium text-muted-foreground">Subject</label>
               <Input
                 placeholder="Message subject..."
                 value={subject}
@@ -238,7 +238,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Message</label>
+              <label className="text-xs font-medium text-muted-foreground">Message</label>
               <Textarea
                 placeholder="Your message will appear here after generation, or type manually..."
                 value={draft}

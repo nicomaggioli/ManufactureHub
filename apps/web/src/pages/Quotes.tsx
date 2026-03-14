@@ -237,7 +237,7 @@ export function Quotes() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="p-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Attribute</th>
+                  <th className="p-2.5 text-left text-xs font-medium text-muted-foreground">Attribute</th>
                   {compareQuotes.map((q) => (
                     <th key={q.id} className="p-2.5 text-left font-semibold">{q.manufacturerName}</th>
                   ))}
@@ -245,29 +245,29 @@ export function Quotes() {
               </thead>
               <tbody>
                 <tr className="border-b">
-                  <td className="p-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Project</td>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Project</td>
                   {compareQuotes.map((q) => <td key={q.id} className="p-2.5">{q.projectName}</td>)}
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Unit Price</td>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Unit Price</td>
                   {compareQuotes.map((q) => (
                     <td key={q.id} className="p-2.5 font-semibold data-value">{formatCurrency(q.unitPrice, q.currency)}</td>
                   ))}
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">MOQ</td>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">MOQ</td>
                   {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{q.moq.toLocaleString()}</td>)}
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Lead Time</td>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Lead Time</td>
                   {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{q.leadTimeDays} days</td>)}
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Valid Until</td>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Valid Until</td>
                   {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{formatDate(q.validUntil)}</td>)}
                 </tr>
                 <tr className="border-b">
-                  <td className="p-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</td>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Status</td>
                   {compareQuotes.map((q) => (
                     <td key={q.id} className="p-2.5">
                       <Badge variant={statusVariant[q.status] ?? 'outline'}>{q.status}</Badge>
@@ -275,7 +275,7 @@ export function Quotes() {
                   ))}
                 </tr>
                 <tr>
-                  <td className="p-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Notes</td>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Notes</td>
                   {compareQuotes.map((q) => <td key={q.id} className="p-2.5 text-xs">{q.notes || '--'}</td>)}
                 </tr>
               </tbody>
@@ -295,15 +295,15 @@ export function Quotes() {
           {analysis ? (
             <div className="space-y-4">
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Competitiveness</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Competitiveness</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">{analysis.competitiveness}</p>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Market Comparison</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Market Comparison</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed">{analysis.marketComparison}</p>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Negotiation Tips</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Negotiation Tips</h4>
                 <ul className="space-y-1">
                   {analysis.negotiationTips.map((tip, i) => (
                     <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
@@ -313,7 +313,7 @@ export function Quotes() {
                 </ul>
               </div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Recommendation</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Recommendation</h4>
                 <p className="text-sm font-semibold text-primary">{analysis.recommendation}</p>
               </div>
             </div>

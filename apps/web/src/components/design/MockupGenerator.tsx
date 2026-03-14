@@ -459,7 +459,7 @@ export function MockupGenerator() {
           {/* Color */}
           <fieldset className="border border-border bg-card p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Color</legend>
+              <legend className="text-xs font-medium text-muted-foreground">Color</legend>
               <span className="text-xs font-medium">{activeColor.label}</span>
             </div>
             <div className="flex gap-2 justify-center" role="radiogroup" aria-label="Product color">
@@ -497,7 +497,7 @@ export function MockupGenerator() {
           <fieldset className="border border-border bg-card p-4 space-y-3.5">
             <div className="flex items-center gap-2">
               <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
-              <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Placement</legend>
+              <legend className="text-xs font-medium text-muted-foreground">Placement</legend>
             </div>
 
             <div className="grid grid-cols-3 gap-1 p-0.5 bg-muted/30" role="radiogroup" aria-label="Logo position">
@@ -525,7 +525,7 @@ export function MockupGenerator() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
                   <ZoomIn className="h-3 w-3 text-muted-foreground" />
-                  <label htmlFor="logo-scale" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Scale</label>
+                  <label htmlFor="logo-scale" className="text-xs font-medium text-muted-foreground">Scale</label>
                 </div>
                 <span className="text-xs font-mono font-medium tabular-nums text-foreground/70">
                   {scale}%

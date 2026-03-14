@@ -176,18 +176,18 @@ export function Samples() {
                   {/* Info */}
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Requested</span>
+                      <span className="text-xs font-medium text-muted-foreground">Requested</span>
                       <span className="data-value">{formatDate(sample.requestedAt)}</span>
                     </div>
                     {sample.receivedAt && (
                       <div className="flex justify-between items-center">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Received</span>
+                        <span className="text-xs font-medium text-muted-foreground">Received</span>
                         <span className="data-value">{formatDate(sample.receivedAt)}</span>
                       </div>
                     )}
                     {sample.trackingNumber && (
                       <div className="flex justify-between items-center">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Tracking</span>
+                        <span className="text-xs font-medium text-muted-foreground">Tracking</span>
                         <span className="data-value text-xs">{sample.trackingNumber}</span>
                       </div>
                     )}

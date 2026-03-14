@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import {
@@ -58,7 +59,7 @@ function StatusTimeline({ currentStatus }: { currentStatus: string }) {
                 )}
               </div>
               <span
-                className={`mt-1.5 text-[10px] font-semibold uppercase tracking-wider ${
+                className={`mt-1.5 text-xs font-medium ${
                   active ? 'text-primary' : completed ? 'text-foreground' : 'text-muted-foreground/60'
                 }`}
               >
@@ -126,6 +127,29 @@ export function ProjectDetail() {
   });
 
   const project = projectQuery.data;
+
+  // Derive manufacturers from project data
+  const projectManufacturers = useMemo(() => {
+    const mfrMap = new Map<string, { id: string; name: string; hasComms: boolean; hasQuotes: boolean; hasSamples: boolean }>();
+
+    for (const c of (commsQuery.data ?? [])) {
+      const existing = mfrMap.get(c.manufacturerId) ?? { id: c.manufacturerId, name: c.manufacturerName, hasComms: false, hasQuotes: false, hasSamples: false };
+      existing.hasComms = true;
+      mfrMap.set(c.manufacturerId, existing);
+    }
+    for (const q of (quotesQuery.data ?? [])) {
+      const existing = mfrMap.get(q.manufacturerId) ?? { id: q.manufacturerId, name: q.manufacturerName, hasComms: false, hasQuotes: false, hasSamples: false };
+      existing.hasQuotes = true;
+      mfrMap.set(q.manufacturerId, existing);
+    }
+    for (const s of (samplesQuery.data ?? [])) {
+      const existing = mfrMap.get(s.manufacturerId) ?? { id: s.manufacturerId, name: s.manufacturerName, hasComms: false, hasQuotes: false, hasSamples: false };
+      existing.hasSamples = true;
+      mfrMap.set(s.manufacturerId, existing);
+    }
+
+    return Array.from(mfrMap.values());
+  }, [commsQuery.data, quotesQuery.data, samplesQuery.data]);
 
   if (projectQuery.isLoading) return <DetailSkeleton />;
 
@@ -247,32 +271,32 @@ export function ProjectDetail() {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="animate-in">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
                   <Users className="h-4 w-4" /> Project Info
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2.5 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</span>
+                  <span className="text-xs font-medium text-muted-foreground">Status</span>
                   <Badge variant="outline">{project.status}</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Manufacturers</span>
+                  <span className="text-xs font-medium text-muted-foreground">Manufacturers</span>
                   <span className="data-value">{project.manufacturerCount}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Created</span>
+                  <span className="text-xs font-medium text-muted-foreground">Created</span>
                   <span className="data-value">{formatDate(project.createdAt)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Last Updated</span>
+                  <span className="text-xs font-medium text-muted-foreground">Last Updated</span>
                   <span className="data-value">{formatDate(project.updatedAt)}</span>
                 </div>
               </CardContent>
             </Card>
             <Card className="animate-in">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
                   <Calendar className="h-4 w-4" /> Milestones
                 </CardTitle>
               </CardHeader>
@@ -305,15 +329,34 @@ export function ProjectDetail() {
 
         {/* Manufacturers */}
         <TabsContent value="manufacturers" className="mt-4">
-          <Card className="animate-in">
-            <CardContent className="py-8 text-center text-muted-foreground">
-              <Factory className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
-              <p className="text-sm">Manufacturers linked to this project will appear here.</p>
-              <Button variant="outline" className="mt-4" asChild>
-                <Link to="/manufacturers">Browse Manufacturers</Link>
-              </Button>
-            </CardContent>
-          </Card>
+          {projectManufacturers.length === 0 ? (
+            <Card className="animate-in">
+              <CardContent className="py-8 text-center text-muted-foreground">
+                <Factory className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+                <p className="text-sm">No manufacturers linked yet.</p>
+                <Button variant="outline" className="mt-4" asChild>
+                  <Link to="/manufacturers">Browse Manufacturers</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {projectManufacturers.map((mfr) => (
+                <Link key={mfr.id} to={`/manufacturers/${mfr.id}`}>
+                  <Card className="h-full hover:shadow-card-hover transition-all cursor-pointer animate-in">
+                    <CardContent className="p-5">
+                      <p className="font-semibold text-sm">{mfr.name}</p>
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {mfr.hasComms && <Badge variant="secondary" className="text-[10px]">Messages</Badge>}
+                        {mfr.hasQuotes && <Badge variant="secondary" className="text-[10px]">Quotes</Badge>}
+                        {mfr.hasSamples && <Badge variant="secondary" className="text-[10px]">Samples</Badge>}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         {/* Communications */}
