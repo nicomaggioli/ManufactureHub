@@ -237,7 +237,7 @@ export function MockupGenerator() {
     canvas.width = W;
     canvas.height = H;
 
-    ctx.fillStyle = '#0D0D14';
+    ctx.fillStyle = '#F0F2F5';
     ctx.fillRect(0, 0, W, H);
 
     const svgEl = productRef.current?.querySelector('svg');
@@ -313,20 +313,20 @@ export function MockupGenerator() {
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         {/* ===== LIGHTBOX — neutral stage, product is the star ===== */}
-        <div className="relative overflow-hidden bg-[#0D0D14] min-h-[520px] flex flex-col border border-border">
+        <div className="relative overflow-hidden bg-[#F0F2F5] min-h-[520px] flex flex-col border border-border">
           {/* Subtle texture — like studio paper */}
           {/* Grid overlay */}
           <div className="absolute inset-0 pointer-events-none opacity-100"
             style={{
-              backgroundImage: 'linear-gradient(hsl(185 100% 50% / 0.04) 1px, transparent 1px), linear-gradient(90deg, hsl(185 100% 50% / 0.04) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(hsl(185 100% 35% / 0.08) 1px, transparent 1px), linear-gradient(90deg, hsl(185 100% 35% / 0.08) 1px, transparent 1px)',
               backgroundSize: '40px 40px',
             }}
           />
           {/* Corner scan line accents */}
-          <div className="absolute top-0 left-0 w-16 h-[1px] bg-gradient-to-r from-[hsl(185,100%,50%,0.4)] to-transparent" />
-          <div className="absolute top-0 left-0 w-[1px] h-16 bg-gradient-to-b from-[hsl(185,100%,50%,0.4)] to-transparent" />
-          <div className="absolute bottom-0 right-0 w-16 h-[1px] bg-gradient-to-l from-[hsl(185,100%,50%,0.4)] to-transparent" />
-          <div className="absolute bottom-0 right-0 w-[1px] h-16 bg-gradient-to-t from-[hsl(185,100%,50%,0.4)] to-transparent" />
+          <div className="absolute top-0 left-0 w-16 h-[1px] bg-gradient-to-r from-[hsl(185,100%,35%,0.3)] to-transparent" />
+          <div className="absolute top-0 left-0 w-[1px] h-16 bg-gradient-to-b from-[hsl(185,100%,35%,0.3)] to-transparent" />
+          <div className="absolute bottom-0 right-0 w-16 h-[1px] bg-gradient-to-l from-[hsl(185,100%,35%,0.3)] to-transparent" />
+          <div className="absolute bottom-0 right-0 w-[1px] h-16 bg-gradient-to-t from-[hsl(185,100%,35%,0.3)] to-transparent" />
 
           {/* Product on stage */}
           <div className="flex-1 flex items-center justify-center relative z-10">
@@ -352,7 +352,7 @@ export function MockupGenerator() {
             </div>
 
             {/* Soft shadow beneath product */}
-            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[4px] bg-[hsl(185,100%,50%,0.08)] blur-[12px]" />
+            <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 w-[200px] h-[4px] bg-[hsl(220,20%,10%,0.06)] blur-[12px]" />
           </div>
 
           {/* Product carousel */}

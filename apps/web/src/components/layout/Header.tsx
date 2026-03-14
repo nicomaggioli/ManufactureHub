@@ -39,7 +39,7 @@ export function Header() {
       <div className="flex items-center gap-1.5">
         <button className="relative flex items-center justify-center w-8 h-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200">
           <Bell className="w-[15px] h-[15px]" />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary" style={{ boxShadow: '0 0 6px hsl(185 100% 50% / 0.5)' }} />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary" style={{ boxShadow: '0 0 6px hsl(185 100% 35% / 0.4)' }} />
         </button>
 
         <div className="relative" ref={menuRef}>

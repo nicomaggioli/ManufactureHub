@@ -4,54 +4,54 @@
 
 @layer base {
   :root {
-    /* RAVI — hyper futuristic dark interface */
-    --background: 240 20% 4%;
-    --foreground: 210 20% 88%;
+    /* RAVI — hyper futuristic light interface */
+    --background: 220 20% 97%;
+    --foreground: 230 25% 10%;
 
-    --card: 240 18% 7%;
-    --card-foreground: 210 20% 88%;
+    --card: 0 0% 100%;
+    --card-foreground: 230 25% 10%;
 
-    --popover: 240 18% 7%;
-    --popover-foreground: 210 20% 88%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 230 25% 10%;
 
     /* Electric cyan primary */
-    --primary: 185 100% 50%;
-    --primary-foreground: 240 20% 4%;
+    --primary: 185 100% 35%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 16% 12%;
-    --secondary-foreground: 210 20% 78%;
+    --secondary: 220 15% 93%;
+    --secondary-foreground: 230 20% 20%;
 
-    --muted: 240 14% 10%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 14% 93%;
+    --muted-foreground: 220 10% 42%;
 
-    --accent: 270 80% 60%;
+    --accent: 270 70% 55%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 85% 55%;
+    --destructive: 0 80% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 160 100% 40%;
-    --success-foreground: 240 20% 4%;
+    --success: 160 80% 35%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 45 100% 55%;
-    --warning-foreground: 240 20% 4%;
+    --warning: 45 95% 50%;
+    --warning-foreground: 45 80% 10%;
 
-    --border: 240 14% 14%;
-    --input: 240 14% 14%;
-    --ring: 185 100% 50%;
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 185 100% 35%;
     --radius: 2px;
 
-    /* Neon glow tokens */
-    --neon-cyan: 185 100% 50%;
-    --neon-purple: 270 80% 60%;
-    --neon-pink: 330 85% 60%;
+    /* Neon glow tokens — toned for light mode */
+    --neon-cyan: 185 100% 40%;
+    --neon-purple: 270 70% 55%;
+    --neon-pink: 330 80% 55%;
 
-    /* Sidebar */
-    --sidebar: 240 22% 3%;
+    /* Sidebar stays dark for contrast */
+    --sidebar: 230 25% 8%;
     --sidebar-foreground: 220 10% 50%;
     --sidebar-accent: 185 100% 50%;
-    --sidebar-muted: 240 18% 8%;
-    --sidebar-border: 240 16% 10%;
+    --sidebar-muted: 230 20% 14%;
+    --sidebar-border: 230 18% 14%;
   }
 }
 
@@ -93,8 +93,8 @@
   .bg-parchment {
     background: hsl(var(--background));
     background-image:
-      radial-gradient(circle at 15% 85%, hsl(var(--neon-cyan) / 0.03) 0%, transparent 40%),
-      radial-gradient(circle at 85% 15%, hsl(var(--neon-purple) / 0.04) 0%, transparent 40%);
+      radial-gradient(circle at 15% 85%, hsl(var(--neon-cyan) / 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 85% 15%, hsl(var(--neon-purple) / 0.05) 0%, transparent 40%);
   }
 
   /* Futuristic grid pattern */
@@ -141,8 +141,8 @@
   .stat-card:hover {
     @apply -translate-y-px;
     box-shadow:
-      0 0 0 1px hsl(var(--neon-cyan) / 0.15),
-      0 4px 20px hsl(var(--neon-cyan) / 0.08);
+      0 0 0 1px hsl(var(--neon-cyan) / 0.2),
+      0 4px 16px hsl(var(--neon-cyan) / 0.1);
   }
   .stat-card:hover::before {
     @apply opacity-100;

@@ -73,9 +73,9 @@ export default {
         xl: 'calc(var(--radius) + 2px)',
       },
       boxShadow: {
-        'card': '0 0 0 1px hsl(var(--border)), 0 2px 8px hsl(0 0% 0% / 0.3)',
-        'card-hover': '0 0 0 1px hsl(var(--neon-cyan, 185 100% 50%) / 0.2), 0 4px 20px hsl(var(--neon-cyan, 185 100% 50%) / 0.08)',
-        'neon': '0 0 12px hsl(var(--neon-cyan, 185 100% 50%) / 0.3), 0 0 4px hsl(var(--neon-cyan, 185 100% 50%) / 0.15)',
+        'card': '0 1px 3px hsl(var(--foreground) / 0.04), 0 0 0 1px hsl(var(--border))',
+        'card-hover': '0 4px 16px hsl(var(--neon-cyan, 185 100% 35%) / 0.1), 0 0 0 1px hsl(var(--neon-cyan, 185 100% 35%) / 0.2)',
+        'neon': '0 0 10px hsl(var(--neon-cyan, 185 100% 35%) / 0.2), 0 0 3px hsl(var(--neon-cyan, 185 100% 35%) / 0.1)',
       },
       keyframes: {
         'accordion-down': {
