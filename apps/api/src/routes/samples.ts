@@ -2,7 +2,14 @@ import { Router, Request, Response } from "express";
 import { SampleService } from "../services/SampleService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
 import { NotFoundError } from "../services/ProjectService";
+import {
+  createSampleSchema,
+  updateSampleSchema,
+  updateSampleStatusSchema,
+  listSamplesQuery,
+} from "../schemas";
 
 const router = Router();
 const sampleService = new SampleService();
@@ -11,7 +18,7 @@ const auditService = new AuditService();
 router.use(requireAuth);
 
 // GET /api/v1/samples
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", validate(listSamplesQuery, "query"), async (req: Request, res: Response) => {
   try {
     const result = await sampleService.list(
       {
@@ -21,7 +28,7 @@ router.get("/", async (req: Request, res: Response) => {
       },
       {
         cursor: req.query.cursor as string | undefined,
-        limit: parseInt(req.query.limit as string) || 20,
+        limit: (req.query.limit as unknown as number) ?? 20,
       }
     );
 
@@ -32,7 +39,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/samples
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", validate(createSampleSchema), async (req: Request, res: Response) => {
   try {
     const sample = await sampleService.create(req.body);
 
@@ -64,7 +71,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/samples/:id
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", validate(updateSampleSchema), async (req: Request, res: Response) => {
   try {
     const sample = await sampleService.update(req.params.id as string, req.body);
 
@@ -109,17 +116,9 @@ router.delete("/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/samples/:id/status
-router.put("/:id/status", async (req: Request, res: Response) => {
+router.put("/:id/status", validate(updateSampleStatusSchema), async (req: Request, res: Response) => {
   try {
     const { status } = req.body;
-
-    if (!status) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "status is required" },
-      });
-      return;
-    }
 
     const sample = await sampleService.updateStatus(req.params.id as string, status);
 

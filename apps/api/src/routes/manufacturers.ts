@@ -2,7 +2,15 @@ import { Router, Request, Response } from "express";
 import { ManufacturerService, ValidationError } from "../services/ManufacturerService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
 import { NotFoundError } from "../services/ProjectService";
+import {
+  createManufacturerSchema,
+  updateManufacturerSchema,
+  listManufacturersQuery,
+  compareManufacturersQuery,
+  importManufacturersCsvSchema,
+} from "../schemas";
 
 const router = Router();
 const manufacturerService = new ManufacturerService();
@@ -11,7 +19,7 @@ const auditService = new AuditService();
 router.use(requireAuth);
 
 // GET /api/v1/manufacturers
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", validate(listManufacturersQuery, "query"), async (req: Request, res: Response) => {
   try {
     const filters = {
       search: req.query.search as string | undefined,
@@ -19,17 +27,15 @@ router.get("/", async (req: Request, res: Response) => {
       certifications: req.query.certifications
         ? (req.query.certifications as string).split(",")
         : undefined,
-      moqMin: req.query.moqMin ? parseInt(req.query.moqMin as string) : undefined,
-      moqMax: req.query.moqMax ? parseInt(req.query.moqMax as string) : undefined,
-      verified: req.query.verified !== undefined ? (req.query.verified as string) === "true" : undefined,
-      sustainabilityScoreMin: req.query.sustainabilityScoreMin
-        ? parseFloat(req.query.sustainabilityScoreMin as string)
-        : undefined,
+      moqMin: req.query.moqMin as unknown as number | undefined,
+      moqMax: req.query.moqMax as unknown as number | undefined,
+      verified: req.query.verified as unknown as boolean | undefined,
+      sustainabilityScoreMin: req.query.sustainabilityScoreMin as unknown as number | undefined,
     };
 
     const result = await manufacturerService.list(filters, {
       cursor: req.query.cursor as string | undefined,
-      limit: parseInt(req.query.limit as string) || 20,
+      limit: (req.query.limit as unknown as number) ?? 20,
     });
 
     res.json({ success: true, data: result });
@@ -39,7 +45,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // GET /api/v1/manufacturers/compare
-router.get("/compare", async (req: Request, res: Response) => {
+router.get("/compare", validate(compareManufacturersQuery, "query"), async (req: Request, res: Response) => {
   try {
     const ids = (req.query.ids as string)?.split(",").filter(Boolean) ?? [];
     const result = await manufacturerService.compare(ids);
@@ -68,7 +74,7 @@ router.get("/map-data", async (_req: Request, res: Response) => {
 });
 
 // POST /api/v1/manufacturers
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", validate(createManufacturerSchema), async (req: Request, res: Response) => {
   try {
     const manufacturer = await manufacturerService.create(req.body);
 
@@ -86,17 +92,9 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/manufacturers/import-csv
-router.post("/import-csv", async (req: Request, res: Response) => {
+router.post("/import-csv", validate(importManufacturersCsvSchema), async (req: Request, res: Response) => {
   try {
     const { rows } = req.body;
-
-    if (!Array.isArray(rows)) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "body.rows must be an array" },
-      });
-      return;
-    }
 
     const result = await manufacturerService.bulkImportCsv(rows);
 
@@ -129,7 +127,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/manufacturers/:id
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", validate(updateManufacturerSchema), async (req: Request, res: Response) => {
   try {
     const manufacturer = await manufacturerService.update(req.params.id as string, req.body);
 

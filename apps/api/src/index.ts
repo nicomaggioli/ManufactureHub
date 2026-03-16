@@ -5,6 +5,7 @@ import helmet from "helmet";
 import { config } from "./config";
 import { logger } from "./config/logger";
 import { correlationId } from "./middleware/correlationId";
+import { requestLogger } from "./middleware/requestLogger";
 import { errorHandler } from "./middleware/errorHandler";
 import { cache } from "./utils/cache";
 import prisma from "./lib/prisma";
@@ -24,6 +25,7 @@ app.use(
 );
 app.use(express.json({ limit: "5mb" }));
 app.use(correlationId);
+app.use(requestLogger);
 
 // ---------------------------------------------------------------------------
 // Health check (no auth required)

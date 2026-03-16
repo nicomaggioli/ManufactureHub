@@ -1,7 +1,14 @@
 import { Router, Request, Response } from "express";
 import { ReminderService } from "../services/ReminderService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
 import { NotFoundError } from "../services/ProjectService";
+import {
+  createReminderSchema,
+  updateReminderSchema,
+  listRemindersQuery,
+  snoozeReminderSchema,
+} from "../schemas";
 
 const router = Router();
 const reminderService = new ReminderService();
@@ -9,7 +16,7 @@ const reminderService = new ReminderService();
 router.use(requireAuth);
 
 // GET /api/v1/reminders
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", validate(listRemindersQuery, "query"), async (req: Request, res: Response) => {
   try {
     // If ?upcoming=true, return next-7-day reminders (no pagination)
     if ((req.query.upcoming as string) === "true") {
@@ -26,7 +33,7 @@ router.get("/", async (req: Request, res: Response) => {
       },
       {
         cursor: req.query.cursor as string | undefined,
-        limit: parseInt(req.query.limit as string) || 20,
+        limit: (req.query.limit as unknown as number) ?? 20,
       }
     );
 
@@ -37,7 +44,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/reminders
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", validate(createReminderSchema), async (req: Request, res: Response) => {
   try {
     const reminder = await reminderService.create(req.user!.id, {
       ...req.body,
@@ -51,7 +58,7 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/reminders/:id
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", validate(updateReminderSchema), async (req: Request, res: Response) => {
   try {
     const data = { ...req.body };
     if (data.dueAt) data.dueAt = new Date(data.dueAt);
@@ -96,7 +103,7 @@ router.post("/:id/complete", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/reminders/:id/snooze
-router.post("/:id/snooze", async (req: Request, res: Response) => {
+router.post("/:id/snooze", validate(snoozeReminderSchema), async (req: Request, res: Response) => {
   try {
     const snoozeMinutes = req.body.minutes ?? 60;
     const reminder = await reminderService.snooze(req.params.id as string, req.user!.id, snoozeMinutes);

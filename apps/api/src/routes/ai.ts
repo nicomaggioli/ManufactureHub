@@ -2,6 +2,16 @@ import { Router, Request, Response } from "express";
 import { AiService } from "../services/AiService";
 import { AlibabaSearchService } from "../services/AlibabaSearchService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
+import {
+  aiDraftMessageSchema,
+  aiVetSupplierSchema,
+  aiAnalyzeDesignSchema,
+  aiExtractSpecSchema,
+  aiAnalyzeQuotesSchema,
+  aiGenerateFollowupSchema,
+  aiAlibabaSearchSchema,
+} from "../schemas";
 
 const router = Router();
 const aiService = new AiService();
@@ -10,20 +20,9 @@ const alibabaService = new AlibabaSearchService();
 router.use(requireAuth);
 
 // POST /api/v1/ai/draft-message
-router.post("/draft-message", async (req: Request, res: Response) => {
+router.post("/draft-message", validate(aiDraftMessageSchema), async (req: Request, res: Response) => {
   try {
     const { type, projectContext, manufacturerData, tone } = req.body;
-
-    if (!type || !projectContext || !manufacturerData) {
-      res.status(400).json({
-        success: false,
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "type, projectContext, and manufacturerData are required",
-        },
-      });
-      return;
-    }
 
     const result = await aiService.draftMessage(type, projectContext, manufacturerData, tone);
 
@@ -34,17 +33,9 @@ router.post("/draft-message", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/ai/vet-supplier
-router.post("/vet-supplier", async (req: Request, res: Response) => {
+router.post("/vet-supplier", validate(aiVetSupplierSchema), async (req: Request, res: Response) => {
   try {
     const { manufacturerData } = req.body;
-
-    if (!manufacturerData) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "manufacturerData is required" },
-      });
-      return;
-    }
 
     const result = await aiService.vetSupplier(manufacturerData);
 
@@ -55,17 +46,9 @@ router.post("/vet-supplier", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/ai/analyze-design
-router.post("/analyze-design", async (req: Request, res: Response) => {
+router.post("/analyze-design", validate(aiAnalyzeDesignSchema), async (req: Request, res: Response) => {
   try {
     const { assetUrls, moodboardData, projectContext } = req.body;
-
-    if (!assetUrls || !Array.isArray(assetUrls)) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "assetUrls array is required" },
-      });
-      return;
-    }
 
     const result = await aiService.analyzeDesign(assetUrls, moodboardData, projectContext);
 
@@ -76,17 +59,9 @@ router.post("/analyze-design", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/ai/extract-spec
-router.post("/extract-spec", async (req: Request, res: Response) => {
+router.post("/extract-spec", validate(aiExtractSpecSchema), async (req: Request, res: Response) => {
   try {
     const { description } = req.body;
-
-    if (!description) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "description is required" },
-      });
-      return;
-    }
 
     const result = await aiService.extractSpecData(description);
 
@@ -111,17 +86,9 @@ router.post("/extract-spec", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/ai/analyze-quotes
-router.post("/analyze-quotes", async (req: Request, res: Response) => {
+router.post("/analyze-quotes", validate(aiAnalyzeQuotesSchema), async (req: Request, res: Response) => {
   try {
     const { quotes } = req.body;
-
-    if (!quotes || !Array.isArray(quotes) || quotes.length === 0) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "quotes array is required and must not be empty" },
-      });
-      return;
-    }
 
     const result = await aiService.analyzeQuote(quotes);
 
@@ -132,17 +99,9 @@ router.post("/analyze-quotes", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/ai/generate-followup
-router.post("/generate-followup", async (req: Request, res: Response) => {
+router.post("/generate-followup", validate(aiGenerateFollowupSchema), async (req: Request, res: Response) => {
   try {
     const { conversationHistory } = req.body;
-
-    if (!conversationHistory || !Array.isArray(conversationHistory)) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "conversationHistory array is required" },
-      });
-      return;
-    }
 
     const result = await aiService.generateFollowUp(conversationHistory);
 
@@ -155,17 +114,9 @@ router.post("/generate-followup", async (req: Request, res: Response) => {
 // ─── Alibaba Search (proxied through AI routes) ───
 
 // POST /api/v1/ai/alibaba-search
-router.post("/alibaba-search", async (req: Request, res: Response) => {
+router.post("/alibaba-search", validate(aiAlibabaSearchSchema), async (req: Request, res: Response) => {
   try {
     const { query, filters, page, pageSize } = req.body;
-
-    if (!query) {
-      res.status(400).json({
-        success: false,
-        error: { code: "VALIDATION_ERROR", message: "query is required" },
-      });
-      return;
-    }
 
     const result = await alibabaService.searchSuppliers(query, filters, page, pageSize);
 

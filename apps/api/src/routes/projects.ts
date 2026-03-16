@@ -2,6 +2,13 @@ import { Router, Request, Response } from "express";
 import { ProjectService, NotFoundError } from "../services/ProjectService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
+import {
+  createProjectSchema,
+  updateProjectSchema,
+  listProjectsQuery,
+  archiveProjectSchema,
+} from "../schemas";
 
 const router = Router();
 const projectService = new ProjectService();
@@ -10,17 +17,17 @@ const auditService = new AuditService();
 router.use(requireAuth);
 
 // GET /api/v1/projects
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", validate(listProjectsQuery, "query"), async (req: Request, res: Response) => {
   try {
     const result = await projectService.list(
       req.user!.id,
       {
         status: req.query.status as any,
-        archived: (req.query.archived as string) === "true",
+        archived: (req.query.archived as unknown as boolean) ?? false,
       },
       {
         cursor: req.query.cursor as string | undefined,
-        limit: parseInt(req.query.limit as string) || 20,
+        limit: (req.query.limit as unknown as number) ?? 20,
       }
     );
 
@@ -31,7 +38,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/projects
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", validate(createProjectSchema), async (req: Request, res: Response) => {
   try {
     const project = await projectService.create(req.user!.id, req.body);
 
@@ -63,7 +70,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/projects/:id
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", validate(updateProjectSchema), async (req: Request, res: Response) => {
   try {
     const project = await projectService.update(req.params.id as string, req.user!.id, req.body);
 
@@ -108,7 +115,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/projects/:id/archive
-router.post("/:id/archive", async (req: Request, res: Response) => {
+router.post("/:id/archive", validate(archiveProjectSchema), async (req: Request, res: Response) => {
   try {
     const { action } = req.body; // "archive" or "unarchive"
     const project =

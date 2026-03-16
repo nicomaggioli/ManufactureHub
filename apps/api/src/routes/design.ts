@@ -2,7 +2,15 @@ import { Router, Request, Response } from "express";
 import { DesignAssetService } from "../services/DesignAssetService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
 import { NotFoundError } from "../services/ProjectService";
+import {
+  createDesignAssetSchema,
+  updateDesignAssetSchema,
+  listDesignAssetsQuery,
+  createMoodboardItemSchema,
+  updateMoodboardItemSchema,
+} from "../schemas";
 
 const router = Router();
 const designAssetService = new DesignAssetService();
@@ -13,7 +21,7 @@ router.use(requireAuth);
 // ─── Design Assets ───
 
 // GET /api/v1/design/assets
-router.get("/assets", async (req: Request, res: Response) => {
+router.get("/assets", validate(listDesignAssetsQuery, "query"), async (req: Request, res: Response) => {
   try {
     const result = await designAssetService.listAssets(
       {
@@ -23,7 +31,7 @@ router.get("/assets", async (req: Request, res: Response) => {
       },
       {
         cursor: req.query.cursor as string | undefined,
-        limit: parseInt(req.query.limit as string) || 20,
+        limit: (req.query.limit as unknown as number) ?? 20,
       }
     );
 
@@ -34,7 +42,7 @@ router.get("/assets", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/design/assets
-router.post("/assets", async (req: Request, res: Response) => {
+router.post("/assets", validate(createDesignAssetSchema), async (req: Request, res: Response) => {
   try {
     const asset = await designAssetService.createAsset(req.user!.id, req.body);
 
@@ -66,7 +74,7 @@ router.get("/assets/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/design/assets/:id
-router.put("/assets/:id", async (req: Request, res: Response) => {
+router.put("/assets/:id", validate(updateDesignAssetSchema), async (req: Request, res: Response) => {
   try {
     const asset = await designAssetService.updateAsset(req.params.id as string, req.user!.id, req.body);
 
@@ -130,7 +138,7 @@ router.get("/moodboard/:designAssetId", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/design/moodboard
-router.post("/moodboard", async (req: Request, res: Response) => {
+router.post("/moodboard", validate(createMoodboardItemSchema), async (req: Request, res: Response) => {
   try {
     const item = await designAssetService.createMoodboardItem(req.body);
 
@@ -166,7 +174,7 @@ router.get("/moodboard/item/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/design/moodboard/item/:id
-router.put("/moodboard/item/:id", async (req: Request, res: Response) => {
+router.put("/moodboard/item/:id", validate(updateMoodboardItemSchema), async (req: Request, res: Response) => {
   try {
     const item = await designAssetService.updateMoodboardItem(req.params.id as string, req.body);
 

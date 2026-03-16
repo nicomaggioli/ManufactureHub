@@ -2,7 +2,13 @@ import { Router, Request, Response } from "express";
 import { QuoteService } from "../services/QuoteService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
 import { NotFoundError } from "../services/ProjectService";
+import {
+  createQuoteSchema,
+  updateQuoteSchema,
+  listQuotesQuery,
+} from "../schemas";
 
 const router = Router();
 const quoteService = new QuoteService();
@@ -11,7 +17,7 @@ const auditService = new AuditService();
 router.use(requireAuth);
 
 // GET /api/v1/quotes
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", validate(listQuotesQuery, "query"), async (req: Request, res: Response) => {
   try {
     const result = await quoteService.list(
       {
@@ -21,7 +27,7 @@ router.get("/", async (req: Request, res: Response) => {
       },
       {
         cursor: req.query.cursor as string | undefined,
-        limit: parseInt(req.query.limit as string) || 20,
+        limit: (req.query.limit as unknown as number) ?? 20,
       }
     );
 
@@ -42,7 +48,7 @@ router.get("/compare/:projectId", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/quotes
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", validate(createQuoteSchema), async (req: Request, res: Response) => {
   try {
     const data = { ...req.body };
     if (data.validityDate) data.validityDate = new Date(data.validityDate);
@@ -77,7 +83,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // PUT /api/v1/quotes/:id
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", validate(updateQuoteSchema), async (req: Request, res: Response) => {
   try {
     const data = { ...req.body };
     if (data.validityDate) data.validityDate = new Date(data.validityDate);

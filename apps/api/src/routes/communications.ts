@@ -2,7 +2,13 @@ import { Router, Request, Response } from "express";
 import { CommunicationService } from "../services/CommunicationService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
+import { validate } from "../middleware/validate";
 import { NotFoundError } from "../services/ProjectService";
+import {
+  createCommunicationSchema,
+  listCommunicationsQuery,
+  searchCommunicationsSchema,
+} from "../schemas";
 
 const router = Router();
 const communicationService = new CommunicationService();
@@ -11,7 +17,7 @@ const auditService = new AuditService();
 router.use(requireAuth);
 
 // GET /api/v1/communications
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", validate(listCommunicationsQuery, "query"), async (req: Request, res: Response) => {
   try {
     const result = await communicationService.list(
       {
@@ -20,7 +26,7 @@ router.get("/", async (req: Request, res: Response) => {
       },
       {
         cursor: req.query.cursor as string | undefined,
-        limit: parseInt(req.query.limit as string) || 20,
+        limit: (req.query.limit as unknown as number) ?? 20,
       }
     );
 
@@ -31,7 +37,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/communications
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", validate(createCommunicationSchema), async (req: Request, res: Response) => {
   try {
     const communication = await communicationService.create(req.body);
 
@@ -49,7 +55,7 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // POST /api/v1/communications/search
-router.post("/search", async (req: Request, res: Response) => {
+router.post("/search", validate(searchCommunicationsSchema), async (req: Request, res: Response) => {
   try {
     const { keyword, dateFrom, dateTo, projectId, manufacturerId, cursor, limit } = req.body;
 
