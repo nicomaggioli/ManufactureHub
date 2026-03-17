@@ -98,7 +98,7 @@ function DetailSkeleton() {
 export function ProjectDetail() {
   const { id } = useParams() as { id: string };
 
-  const projectQuery = useQuery({
+  const projectQuery = useQuery<Project>({
     queryKey: ['projects', id],
     queryFn: () => projectsApi.get(id),
     enabled: !!id,

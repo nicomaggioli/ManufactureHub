@@ -12,9 +12,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        // macOS system font stack
-        heading: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
-        body: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
+        // Refined SF Pro stack — SF Pro Display first for proper rendering
+        sans: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        heading: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        body: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        serif: ['New York', 'Apple Garamond', 'Baskerville', 'Georgia', 'Times New Roman', 'serif'],
         mono: ['SF Mono', 'JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
