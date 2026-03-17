@@ -100,11 +100,11 @@ export function Sidebar() {
       <div className="flex items-center gap-2.5 px-4 h-[52px] shrink-0">
         <Link to="/" className="flex items-center gap-2 min-w-0">
           <div className="flex items-center justify-center w-[26px] h-[26px] rounded-lg bg-gradient-to-b from-primary to-blue-600 text-white shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
-            <span className="text-[11px] font-bold font-heading">R</span>
+            <span className="text-[11px] font-bold font-heading">S</span>
           </div>
           {!collapsed && (
             <span className="font-semibold font-heading text-[14px] text-foreground tracking-tight truncate">
-              RAVI
+              Sical
             </span>
           )}
         </Link>

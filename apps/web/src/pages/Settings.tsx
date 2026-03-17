@@ -14,7 +14,7 @@ import {
 import { toast } from '@/components/ui/toast';
 import { useAuth } from '@/hooks/useAuth';
 
-const STORAGE_KEY = 'ravi-user-settings';
+const STORAGE_KEY = 'sical-user-settings';
 
 const integrations = [
   { name: 'Slack', description: 'Get notifications in Slack', connected: false },

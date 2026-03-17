@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 export function Login() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('dev@ravi.sys');
+  const [email, setEmail] = useState('dev@sical.app');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e: FormEvent) => {
@@ -22,9 +22,9 @@ export function Login() {
         {/* Logo + App Name */}
         <div className="text-center space-y-2">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-b from-primary to-blue-600 text-white text-2xl font-bold font-heading shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
-            R
+            S
           </div>
-          <h1 className="text-[20px] font-semibold font-heading tracking-tight mt-3">Sign in to RAVI</h1>
+          <h1 className="text-[20px] font-semibold font-heading tracking-tight mt-3">Sign in to Sical</h1>
           <p className="text-[13px] text-muted-foreground">Manufacturing management platform</p>
         </div>
 

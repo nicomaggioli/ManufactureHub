@@ -1,9 +1,9 @@
 // Mock auth hook for development without Clerk
 // Replace with Clerk integration when keys are configured
 
-const STORAGE_KEY_SIGNED_IN = 'ravi-signed-in';
-const STORAGE_KEY_SETTINGS = 'ravi-user-settings';
-const STORAGE_KEY_NOTIFICATIONS = 'ravi-notifications-read-at';
+const STORAGE_KEY_SIGNED_IN = 'sical-signed-in';
+const STORAGE_KEY_SETTINGS = 'sical-user-settings';
+const STORAGE_KEY_NOTIFICATIONS = 'sical-notifications-read-at';
 
 function getSavedSettings() {
   try {
@@ -32,7 +32,7 @@ export function useAuth(): {
   return {
     user: isSignedIn ? {
       id: 'dev-user-1',
-      email: saved?.email || 'dev@ravi.sys',
+      email: saved?.email || 'dev@sical.app',
       firstName,
       lastName,
       fullName: `${firstName} ${lastName}`,

@@ -159,7 +159,7 @@ export function Header() {
   // ── Notifications ───────────────────────────────────────────────────
 
   const [readAt, setReadAt] = useState(() =>
-    localStorage.getItem('ravi-notifications-read-at') || ''
+    localStorage.getItem('sical-notifications-read-at') || ''
   );
 
   const remindersQuery = useQuery({
@@ -214,7 +214,7 @@ export function Header() {
 
   const markAllRead = () => {
     const now = new Date().toISOString();
-    localStorage.setItem('ravi-notifications-read-at', now);
+    localStorage.setItem('sical-notifications-read-at', now);
     setReadAt(now);
   };
 

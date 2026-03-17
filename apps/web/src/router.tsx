@@ -15,13 +15,13 @@ import { Login } from '@/pages/Login';
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
-  const isSignedIn = localStorage.getItem('ravi-signed-in') === 'true';
+  const isSignedIn = localStorage.getItem('sical-signed-in') === 'true';
   if (!isSignedIn) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
 function LoginGuard({ children }: { children: React.ReactNode }) {
-  const isSignedIn = localStorage.getItem('ravi-signed-in') === 'true';
+  const isSignedIn = localStorage.getItem('sical-signed-in') === 'true';
   if (isSignedIn) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
