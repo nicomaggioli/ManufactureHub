@@ -2,6 +2,7 @@ import { Prisma, CommunicationDirection, CommunicationStatus } from "@prisma/cli
 import prisma from "../lib/prisma";
 import { paginate, PaginatedResult, PaginationOptions } from "../utils/pagination";
 import { NotFoundError } from "../utils/errors";
+import { EmailService } from "./EmailService";
 
 export interface CreateCommunicationInput {
   projectId: string;
@@ -24,6 +25,8 @@ export interface SearchCommunicationParams {
 }
 
 export class CommunicationService {
+  private emailService = new EmailService();
+
   async list(
     filters: { projectId?: string; manufacturerId?: string } = {},
     pagination: PaginationOptions = {}
@@ -66,7 +69,7 @@ export class CommunicationService {
   }
 
   async create(input: CreateCommunicationInput) {
-    return prisma.communication.create({
+    const communication = await prisma.communication.create({
       data: {
         projectId: input.projectId,
         manufacturerId: input.manufacturerId,
@@ -83,6 +86,41 @@ export class CommunicationService {
         project: { select: { id: true, title: true } },
       },
     });
+
+    // Send email for outbound communications
+    if (input.direction === "sent") {
+      const manufacturer = await prisma.manufacturer.findUnique({
+        where: { id: input.manufacturerId },
+        include: { contacts: true },
+      });
+
+      const contactEmail = input.contactId
+        ? manufacturer?.contacts?.find((c) => c.id === input.contactId)?.email
+        : manufacturer?.contacts?.[0]?.email;
+
+      if (contactEmail) {
+        const emailResult = await this.emailService.sendCommunication({
+          to: contactEmail,
+          manufacturerName: manufacturer!.name,
+          subject: input.subject || "Message regarding your services",
+          body: input.body,
+        });
+
+        if (emailResult.sent) {
+          const updated = await prisma.communication.update({
+            where: { id: communication.id },
+            data: { status: "sent", sentAt: new Date() },
+            include: {
+              manufacturer: { select: { id: true, name: true } },
+              project: { select: { id: true, title: true } },
+            },
+          });
+          return updated;
+        }
+      }
+    }
+
+    return communication;
   }
 
   /**

@@ -361,3 +361,82 @@ export const aiAlibabaSearchSchema = z.object({
   page: z.number().int().min(1).optional(),
   pageSize: z.number().int().min(1).max(100).optional(),
 });
+
+// ---------------------------------------------------------------------------
+// Tech Packs
+// ---------------------------------------------------------------------------
+
+const techPackStatusEnum = z.enum(["draft", "review", "approved", "production"]);
+
+const techPackMaterialSchema = z.object({
+  name: z.string().min(1, "name is required"),
+  type: z.string().min(1, "type is required"),
+  composition: z.string().optional(),
+  color: z.string().optional(),
+  colorCode: z.string().optional(),
+  supplier: z.string().optional(),
+  costPerUnit: z.number().min(0).optional(),
+  unit: z.string().optional(),
+  placement: z.string().optional(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+const techPackMeasurementSchema = z.object({
+  pointOfMeasure: z.string().min(1, "pointOfMeasure is required"),
+  sizes: z.record(z.number()),
+  tolerance: z.number().min(0).optional(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+const techPackConstructionSchema = z.object({
+  title: z.string().min(1, "title is required"),
+  value: z.string().min(1, "value is required"),
+  category: z.string().optional(),
+  notes: z.string().optional(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+const techPackColorwaySchema = z.object({
+  name: z.string().min(1, "name is required"),
+  hexCode: z.string().min(1, "hexCode is required"),
+  pantoneRef: z.string().optional(),
+  status: z.enum(["active", "discontinued", "pending"]).optional(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+const techPackLabelSchema = z.object({
+  type: z.string().min(1, "type is required"),
+  text: z.string().optional(),
+  placement: z.string().optional(),
+  careSymbols: z.array(z.string()).optional(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+export const createTechPackSchema = z.object({
+  projectId: z.string().uuid("projectId must be a valid UUID"),
+  name: z.string().min(1, "name is required").max(500),
+  category: z.string().max(200).optional(),
+  season: z.string().max(50).optional(),
+  status: techPackStatusEnum.optional(),
+  materials: z.array(techPackMaterialSchema).optional(),
+  measurements: z.array(techPackMeasurementSchema).optional(),
+  construction: z.array(techPackConstructionSchema).optional(),
+  colorways: z.array(techPackColorwaySchema).optional(),
+  labels: z.array(techPackLabelSchema).optional(),
+});
+
+export const updateTechPackSchema = z.object({
+  name: z.string().min(1).max(500).optional(),
+  category: z.string().max(200).optional(),
+  season: z.string().max(50).optional(),
+  status: techPackStatusEnum.optional(),
+  materials: z.array(techPackMaterialSchema).optional(),
+  measurements: z.array(techPackMeasurementSchema).optional(),
+  construction: z.array(techPackConstructionSchema).optional(),
+  colorways: z.array(techPackColorwaySchema).optional(),
+  labels: z.array(techPackLabelSchema).optional(),
+});
+
+export const duplicateTechPackSchema = z.object({
+  name: z.string().min(1, "name is required").max(500),
+});

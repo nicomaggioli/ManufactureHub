@@ -8,6 +8,8 @@ import quoteRoutes from "./quotes";
 import sampleRoutes from "./samples";
 import aiRoutes from "./ai";
 import dashboardRoutes from "./dashboard";
+import uploadRoutes from "./uploads";
+import techpackRoutes from "./techpacks";
 
 const router = Router();
 
@@ -20,6 +22,8 @@ router.use("/design", designRoutes);
 router.use("/quotes", quoteRoutes);
 router.use("/samples", sampleRoutes);
 router.use("/ai", aiRoutes);
+router.use("/uploads", uploadRoutes);
+router.use("/techpacks", techpackRoutes);
 
 // Health check
 router.get("/health", (_req, res) => {

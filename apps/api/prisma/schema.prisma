@@ -136,6 +136,7 @@ model Project {
   quotes           Quote[]
   samples          Sample[]
   teamMembers      TeamMember[]
+  techPacks        TechPack[]
 
   @@index([userId])
   @@index([status])
@@ -357,4 +358,109 @@ model AuditLog {
   @@index([userId])
   @@index([entityType, entityId])
   @@map("audit_log")
+}
+
+model TechPack {
+  id            String   @id @default(uuid())
+  projectId     String
+  name          String
+  category      String?  // e.g. "Outerwear", "Tops", "Bottoms", "Dresses"
+  season        String?  // e.g. "FW26", "SS27"
+  status        String   @default("draft") // draft, review, approved, production
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  materials     TechPackMaterial[]
+  measurements  TechPackMeasurement[]
+  construction  TechPackConstruction[]
+  colorways     TechPackColorway[]
+  labels        TechPackLabel[]
+
+  @@index([projectId])
+  @@map("tech_packs")
+}
+
+model TechPackMaterial {
+  id           String   @id @default(uuid())
+  techPackId   String
+  name         String
+  type         String   // shell, lining, trim, thread, yarn, interlining
+  composition  String?  // e.g. "80% Wool, 20% Polyester"
+  color        String?
+  colorCode    String?
+  supplier     String?
+  costPerUnit  Float?
+  unit         String?  // yard, meter, piece, kg
+  placement    String?  // e.g. "Body", "Sleeve", "Collar"
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  techPack     TechPack @relation(fields: [techPackId], references: [id], onDelete: Cascade)
+
+  @@index([techPackId])
+  @@map("tech_pack_materials")
+}
+
+model TechPackMeasurement {
+  id           String   @id @default(uuid())
+  techPackId   String
+  pointOfMeasure String // e.g. "Chest", "Waist", "Length", "Sleeve"
+  sizes        Json     // { "XS": 36, "S": 38, "M": 40, "L": 42, "XL": 44 }
+  tolerance    Float?   // e.g. 0.5 (cm)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  techPack     TechPack @relation(fields: [techPackId], references: [id], onDelete: Cascade)
+
+  @@index([techPackId])
+  @@map("tech_pack_measurements")
+}
+
+model TechPackConstruction {
+  id           String   @id @default(uuid())
+  techPackId   String
+  title        String   // e.g. "Seam Type", "Stitch Count", "Button Attachment"
+  value        String   // e.g. "French seam", "12 SPI", "Cross-stitch"
+  category     String?  // seam, stitch, finishing, hardware
+  notes        String?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  techPack     TechPack @relation(fields: [techPackId], references: [id], onDelete: Cascade)
+
+  @@index([techPackId])
+  @@map("tech_pack_construction")
+}
+
+model TechPackColorway {
+  id           String   @id @default(uuid())
+  techPackId   String
+  name         String   // e.g. "Midnight Navy", "Oatmeal"
+  hexCode      String   // e.g. "#1B3764"
+  pantoneRef   String?  // e.g. "19-4052 TCX"
+  status       String   @default("active") // active, discontinued, pending
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  techPack     TechPack @relation(fields: [techPackId], references: [id], onDelete: Cascade)
+
+  @@index([techPackId])
+  @@map("tech_pack_colorways")
+}
+
+model TechPackLabel {
+  id           String   @id @default(uuid())
+  techPackId   String
+  type         String   // main, care, size, content, brand, hang_tag
+  text         String?
+  placement    String?  // e.g. "Center back neck", "Left side seam"
+  careSymbols  String[] // e.g. ["wash-30", "no-bleach", "tumble-dry-low"]
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  techPack     TechPack @relation(fields: [techPackId], references: [id], onDelete: Cascade)
+
+  @@index([techPackId])
+  @@map("tech_pack_labels")
 }

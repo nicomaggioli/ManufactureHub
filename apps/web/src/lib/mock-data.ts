@@ -1,6 +1,8 @@
 // Mock data for demo mode (GitHub Pages / no backend)
 // Manufacturers sourced from Alibaba, IndiaMart, and global supplier directories
 
+import type { TechPack } from './api';
+
 // Use real API if VITE_API_URL is set or running on localhost; otherwise demo mode
 export const DEMO_MODE = !import.meta.env.VITE_API_URL && !window.location.hostname.includes('localhost');
 
@@ -81,6 +83,113 @@ const dashboardStats = {
   pipeline: { ideation: 1, sourcing: 2, sampling: 1, production: 2, shipped: 1 },
 };
 
+let mockTechPacks: TechPack[] = [
+  {
+    id: 'tp-001',
+    projectId: 'p1',
+    name: 'Heritage Wool Blend Overcoat',
+    category: 'Outerwear',
+    season: 'FW26',
+    status: 'review',
+    materials: [
+      { id: 'mat-1', name: 'Wool-Cashmere Twill', type: 'Shell', composition: '80% Wool / 20% Cashmere', color: 'Charcoal Melange', colorCode: '#3B3B3B', supplier: 'Loro Piana', costPerUnit: 48.50, unit: 'meter', placement: 'Body' },
+      { id: 'mat-2', name: 'Cupro Bemberg', type: 'Lining', composition: '100% Cupro', color: 'Burgundy', colorCode: '#800020', supplier: 'Asahi Kasei', costPerUnit: 12.00, unit: 'meter', placement: 'Interior' },
+      { id: 'mat-3', name: 'Horsehair Canvas', type: 'Interlining', composition: '100% Horsehair', color: 'Natural', supplier: 'Wendler', costPerUnit: 8.75, unit: 'meter', placement: 'Chest/Lapel' },
+      { id: 'mat-4', name: 'Horn Buttons', type: 'Trim', color: 'Dark Horn', supplier: 'EUTrim GmbH', costPerUnit: 3.20, unit: 'piece', placement: 'Front closure' },
+    ],
+    measurements: [
+      { id: 'meas-1', pointOfMeasure: 'Chest (cm)', sizes: { XS: 98, S: 102, M: 108, L: 114, XL: 120 }, tolerance: 1 },
+      { id: 'meas-2', pointOfMeasure: 'Waist (cm)', sizes: { XS: 90, S: 94, M: 100, L: 106, XL: 112 }, tolerance: 1 },
+      { id: 'meas-3', pointOfMeasure: 'Body Length (cm)', sizes: { XS: 102, S: 104, M: 106, L: 108, XL: 110 }, tolerance: 1 },
+      { id: 'meas-4', pointOfMeasure: 'Sleeve Length (cm)', sizes: { XS: 62, S: 63.5, M: 65, L: 66.5, XL: 68 }, tolerance: 0.5 },
+    ],
+    construction: [
+      { id: 'con-1', title: 'Seam Type', value: 'Open seam with 1.5 cm SA, pressed and edge-stitched', category: 'Seaming' },
+      { id: 'con-2', title: 'Shoulder Construction', value: 'Half-canvas with hand-padded lapels', category: 'Structure' },
+      { id: 'con-3', title: 'Pocket Style', value: 'Double-welt flap pockets, 1 interior welt pocket', category: 'Details' },
+      { id: 'con-4', title: 'Hem Finish', value: 'Blind hem stitch, 4 cm turn-up', category: 'Finishing' },
+    ],
+    colorways: [
+      { id: 'cw-1', name: 'Charcoal Melange', hexCode: '#3B3B3B', pantoneRef: '19-0201 TCX', status: 'approved' },
+      { id: 'cw-2', name: 'Camel', hexCode: '#C19A6B', pantoneRef: '16-1334 TCX', status: 'approved' },
+      { id: 'cw-3', name: 'Navy Herringbone', hexCode: '#1B2A4A', pantoneRef: '19-4028 TCX', status: 'pending' },
+    ],
+    labels: [
+      { id: 'lbl-1', type: 'Main Label', text: 'Brand logo, woven damask on black satin ground', placement: 'Centre back neck' },
+      { id: 'lbl-2', type: 'Care Label', text: 'Care symbols + composition EN/FR/DE/ES/IT', placement: 'Left side seam at waist', careSymbols: ['dry-clean-only', 'do-not-bleach', 'iron-low', 'do-not-tumble-dry'] },
+      { id: 'lbl-3', type: 'Country of Origin', text: 'Made in Italy', placement: 'Below care label' },
+    ],
+    createdAt: '2026-02-10T09:00:00Z',
+    updatedAt: '2026-03-08T14:30:00Z',
+  },
+  {
+    id: 'tp-002',
+    projectId: 'p1',
+    name: 'Structured Linen Blazer',
+    category: 'Tailoring',
+    season: 'SS26',
+    status: 'approved',
+    materials: [
+      { id: 'mat-5', name: 'Belgian Linen Plainweave', type: 'Shell', composition: '100% Linen', color: 'Sand', colorCode: '#D2B48C', supplier: 'Libeco', costPerUnit: 28.00, unit: 'meter', placement: 'Body' },
+      { id: 'mat-6', name: 'Cotton-Linen Blend', type: 'Lining', composition: '60% Cotton / 40% Linen', color: 'Ecru Melange', supplier: 'Albini Group', costPerUnit: 9.50, unit: 'meter', placement: 'Interior' },
+      { id: 'mat-7', name: 'Corozo Buttons', type: 'Trim', color: 'Natural Tan', supplier: 'BYK Buttons', costPerUnit: 2.10, unit: 'piece', placement: 'Front closure' },
+    ],
+    measurements: [
+      { id: 'meas-5', pointOfMeasure: 'Chest (cm)', sizes: { XS: 96, S: 100, M: 106, L: 112, XL: 118 }, tolerance: 1 },
+      { id: 'meas-6', pointOfMeasure: 'Body Length (cm)', sizes: { XS: 70, S: 72, M: 74, L: 76, XL: 78 }, tolerance: 1 },
+      { id: 'meas-7', pointOfMeasure: 'Sleeve Length (cm)', sizes: { XS: 60, S: 61.5, M: 63, L: 64.5, XL: 66 }, tolerance: 0.5 },
+    ],
+    construction: [
+      { id: 'con-5', title: 'Seam Type', value: 'Flat-felled seams, 1.2 cm SA', category: 'Seaming' },
+      { id: 'con-6', title: 'Shoulder Construction', value: 'Unconstructed, natural shoulder with no padding', category: 'Structure' },
+      { id: 'con-7', title: 'Pocket Style', value: 'Patch pockets with mitred corners, 1 interior welt pocket', category: 'Details' },
+    ],
+    colorways: [
+      { id: 'cw-4', name: 'Sand', hexCode: '#D2B48C', pantoneRef: '14-1118 TCX', status: 'approved' },
+      { id: 'cw-5', name: 'Dusty Blue', hexCode: '#6B8FAD', pantoneRef: '16-4120 TCX', status: 'approved' },
+    ],
+    labels: [
+      { id: 'lbl-4', type: 'Main Label', text: 'Brand logo, woven on natural cotton', placement: 'Centre back neck' },
+      { id: 'lbl-5', type: 'Care Label', text: 'Machine wash cold, hang dry', placement: 'Left side seam', careSymbols: ['machine-wash-cold', 'hang-dry', 'iron-medium', 'do-not-bleach'] },
+    ],
+    createdAt: '2026-01-20T11:00:00Z',
+    updatedAt: '2026-03-05T10:15:00Z',
+  },
+  {
+    id: 'tp-003',
+    projectId: 'p3',
+    name: 'Merino Turtleneck Sweater',
+    category: 'Knitwear',
+    season: 'FW26',
+    status: 'draft',
+    materials: [
+      { id: 'mat-8', name: 'Extra-Fine Merino 19.5 mic', type: 'Yarn', composition: '100% Merino Wool', color: 'Midnight', colorCode: '#191970', supplier: 'Zegna Baruffa', costPerUnit: 24.00, unit: '380g', placement: 'Body' },
+      { id: 'mat-9', name: 'Linking Thread', type: 'Thread', color: 'Midnight Match', supplier: 'Coats Group', costPerUnit: 0.60, unit: '80m', placement: 'Seams' },
+    ],
+    measurements: [
+      { id: 'meas-8', pointOfMeasure: 'Chest (cm)', sizes: { XS: 94, S: 98, M: 104, L: 110, XL: 116 }, tolerance: 1 },
+      { id: 'meas-9', pointOfMeasure: 'Body Length (cm)', sizes: { XS: 64, S: 66, M: 68, L: 70, XL: 72 }, tolerance: 1 },
+      { id: 'meas-10', pointOfMeasure: 'Neck Height (cm)', sizes: { XS: 18, S: 18, M: 18.5, L: 18.5, XL: 19 }, tolerance: 0.5 },
+    ],
+    construction: [
+      { id: 'con-8', title: 'Knit Gauge', value: '12 GG jersey body, 12 GG 2x2 rib at neck / cuffs / hem', category: 'Knitting' },
+      { id: 'con-9', title: 'Linking', value: 'Fully-fashioned, 1x1 linked seams at shoulder and side', category: 'Seaming' },
+      { id: 'con-10', title: 'Neck Construction', value: 'Tubular knit turtleneck, double-layer fold', category: 'Details' },
+    ],
+    colorways: [
+      { id: 'cw-6', name: 'Midnight', hexCode: '#191970', pantoneRef: '19-3933 TCX', status: 'approved' },
+      { id: 'cw-7', name: 'Ivory', hexCode: '#FFFFF0', pantoneRef: '11-0602 TCX', status: 'approved' },
+      { id: 'cw-8', name: 'Bordeaux', hexCode: '#6B1C2A', pantoneRef: '19-1725 TCX', status: 'pending' },
+    ],
+    labels: [
+      { id: 'lbl-6', type: 'Main Label', text: 'Printed heat-transfer logo on satin', placement: 'Centre back neck, inside turtleneck fold' },
+      { id: 'lbl-7', type: 'Care Label', text: 'Hand wash cold, lay flat to dry', placement: 'Left side seam at hip', careSymbols: ['hand-wash-cold', 'lay-flat-dry', 'do-not-wring', 'cool-iron'] },
+    ],
+    createdAt: '2026-02-28T15:00:00Z',
+    updatedAt: '2026-03-12T09:45:00Z',
+  },
+];
+
 // Mock API handlers
 export const mockApi = {
   dashboardStats: async () => dashboardStats,
@@ -113,6 +222,52 @@ export const mockApi = {
     { id: 'da8', projectId: 'p2', fileName: 'Selvedge Denim Reference.jpg', type: 'reference', fileUrl: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=400&h=300&fit=crop', createdAt: '2026-03-06', tags: ['denim', 'reference'] },
     { id: 'da9', projectId: 'p7', fileName: 'Kids Block Print Patterns.png', type: 'reference', fileUrl: '#', thumbnailUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop', createdAt: '2026-03-09', tags: ['kids', 'print'] },
   ],
+  techpacks: {
+    list: async (projectId: string) => mockTechPacks.filter((tp) => tp.projectId === projectId),
+    get: async (id: string) => mockTechPacks.find((tp) => tp.id === id) ?? mockTechPacks[0],
+    create: async (data: Partial<TechPack>) => {
+      const newTp: TechPack = {
+        id: 'tp-new-' + Date.now(),
+        projectId: data.projectId || 'p1',
+        name: data.name || 'Untitled Tech Pack',
+        category: data.category,
+        season: data.season,
+        status: data.status || 'draft',
+        materials: data.materials || [],
+        measurements: data.measurements || [],
+        construction: data.construction || [],
+        colorways: data.colorways || [],
+        labels: data.labels || [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      mockTechPacks.push(newTp);
+      return newTp;
+    },
+    update: async (id: string, data: Partial<TechPack>) => {
+      const idx = mockTechPacks.findIndex((tp) => tp.id === id);
+      if (idx !== -1) {
+        mockTechPacks[idx] = { ...mockTechPacks[idx], ...data, updatedAt: new Date().toISOString() };
+        return mockTechPacks[idx];
+      }
+      return mockTechPacks[0];
+    },
+    delete: async (id: string) => {
+      mockTechPacks = mockTechPacks.filter((tp) => tp.id !== id);
+    },
+    duplicate: async (id: string, newName: string) => {
+      const source = mockTechPacks.find((tp) => tp.id === id);
+      if (!source) return mockTechPacks[0];
+      const clone: TechPack = JSON.parse(JSON.stringify(source));
+      clone.id = 'tp-dup-' + Date.now();
+      clone.name = newName;
+      clone.status = 'draft';
+      clone.createdAt = new Date().toISOString();
+      clone.updatedAt = new Date().toISOString();
+      mockTechPacks.push(clone);
+      return clone;
+    },
+  },
   aiGenerateDraft: async () => ({ draft: 'Dear Partner,\n\nThank you for your prompt response regarding our inquiry. We are pleased with the pricing and specifications provided.\n\nWe would like to proceed with a sample order to evaluate the quality firsthand. Could you please confirm the sample lead time and shipping arrangements?\n\nWe look forward to building a strong manufacturing partnership.\n\nBest regards,\nRAVI Team' }),
   aiVetManufacturer: async () => ({ overallScore: 82, categories: [{ name: 'Quality', score: 85, notes: 'Consistent quality across product lines' }, { name: 'Reliability', score: 78, notes: 'On-time delivery rate of 92%' }, { name: 'Communication', score: 80, notes: 'Responsive within 24 hours' }, { name: 'Sustainability', score: 88, notes: 'Strong environmental certifications' }], risks: ['Currency fluctuation exposure', 'Single-source dependency risk'], recommendations: ['Request third-party quality audit', 'Negotiate penalty clauses for late delivery'], generatedAt: new Date().toISOString() }),
   aiAnalyzeQuote: async () => ({ competitiveness: 'Above Average', marketComparison: 'This quote is 8% below market average for comparable products in the region.', negotiationTips: ['Request volume discount for orders above 5,000 units', 'Ask about payment terms (NET 30/60)', 'Inquire about bundled shipping rates'], recommendation: 'This is a competitive offer. Consider accepting with a request for extended payment terms.' }),

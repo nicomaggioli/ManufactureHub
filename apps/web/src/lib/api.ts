@@ -307,6 +307,90 @@ export const aiApi = {
     DEMO_MODE ? Promise.resolve({} as any) : api.post('/ai/generate-followup', { conversationHistory }).then((r) => r.data.data),
 };
 
+// ── TechPack endpoints ─────────────────────────────────────────────────
+export interface TechPack {
+  id: string;
+  projectId: string;
+  name: string;
+  category?: string;
+  season?: string;
+  status: string;
+  materials: TechPackMaterial[];
+  measurements: TechPackMeasurement[];
+  construction: TechPackConstruction[];
+  colorways: TechPackColorway[];
+  labels: TechPackLabel[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TechPackMaterial {
+  id: string;
+  name: string;
+  type: string;
+  composition?: string;
+  color?: string;
+  colorCode?: string;
+  supplier?: string;
+  costPerUnit?: number;
+  unit?: string;
+  placement?: string;
+}
+
+export interface TechPackMeasurement {
+  id: string;
+  pointOfMeasure: string;
+  sizes: Record<string, number>;
+  tolerance?: number;
+}
+
+export interface TechPackConstruction {
+  id: string;
+  title: string;
+  value: string;
+  category?: string;
+  notes?: string;
+}
+
+export interface TechPackColorway {
+  id: string;
+  name: string;
+  hexCode: string;
+  pantoneRef?: string;
+  status?: string;
+}
+
+export interface TechPackLabel {
+  id: string;
+  type: string;
+  text?: string;
+  placement?: string;
+  careSymbols?: string[];
+}
+
+export const techPacksApi = {
+  list: (projectId: string) =>
+    DEMO_MODE ? mockApi.techpacks.list(projectId) : api.get(`/techpacks?projectId=${projectId}`).then(r => r.data.data),
+  get: (id: string) =>
+    DEMO_MODE ? mockApi.techpacks.get(id) : api.get(`/techpacks/${id}`).then(r => r.data.data),
+  create: (data: Partial<TechPack>) =>
+    DEMO_MODE ? mockApi.techpacks.create(data) : api.post('/techpacks', data).then(r => r.data.data),
+  update: (id: string, data: Partial<TechPack>) =>
+    DEMO_MODE ? mockApi.techpacks.update(id, data) : api.put(`/techpacks/${id}`, data).then(r => r.data.data),
+  delete: (id: string) =>
+    DEMO_MODE ? mockApi.techpacks.delete(id) : api.delete(`/techpacks/${id}`).then(r => r.data.data),
+  duplicate: (id: string, newName: string) =>
+    DEMO_MODE ? mockApi.techpacks.duplicate(id, newName) : api.post(`/techpacks/${id}/duplicate`, { name: newName }).then(r => r.data.data),
+};
+
+// ── Upload endpoints ──────────────────────────────────────────────────
+export const uploadsApi = {
+  getPresignedUrl: (fileName: string, contentType: string, folder?: string) =>
+    DEMO_MODE
+      ? Promise.resolve({ uploadUrl: '', fileUrl: `https://demo-bucket.s3.amazonaws.com/uploads/${fileName}`, key: fileName })
+      : api.post('/uploads/presigned-url', { fileName, contentType, folder }).then(r => r.data.data),
+};
+
 // ── Dashboard stats ────────────────────────────────────────────────────
 export interface DashboardStats {
   activeProjects: number;

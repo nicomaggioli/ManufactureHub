@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { cn, formatCurrency } from '@/lib/utils';
+import { generateTechPackPDF, type TechPackPDFData } from '@/lib/techpack-pdf';
+import { Download } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -639,6 +641,45 @@ export function TechPack() {
   const [selectedPackIndex, setSelectedPackIndex] = useState(0);
   const pack = TECH_PACKS[selectedPackIndex];
 
+  const handleExportPDF = () => {
+    const pdfData: TechPackPDFData = {
+      name: pack.productName,
+      category: pack.category,
+      season: pack.season,
+      status: pack.status,
+      materials: pack.materials.map(m => ({
+        name: m.name,
+        type: m.type,
+        color: m.color,
+        supplier: m.supplier,
+        costPerUnit: m.unitCost,
+        unit: m.usagePerUnit.split(' ').pop() || 'unit',
+        placement: m.usagePerUnit,
+      })),
+      measurements: pack.measurements.map(m => ({
+        pointOfMeasure: m.label,
+        sizes: { XS: m.xs, S: m.s, M: m.m, L: m.l, XL: m.xl },
+        tolerance: 1,
+      })),
+      construction: pack.construction.map(c => ({
+        title: c.label,
+        value: c.value,
+      })),
+      colorways: pack.colorways.map(c => ({
+        name: c.name,
+        hexCode: c.hex,
+        pantoneRef: c.pantone,
+        status: c.status,
+      })),
+      labels: pack.labels.map(l => ({
+        type: l.type,
+        text: l.content,
+        placement: l.placement,
+      })),
+    };
+    generateTechPackPDF(pdfData);
+  };
+
   const renderTab = () => {
     switch (activeTab) {
       case 'overview':
@@ -668,7 +709,13 @@ export function TechPack() {
             Manage product specifications, materials, and construction details.
           </p>
         </div>
-        <Button>New Tech Pack</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExportPDF}>
+            <Download className="h-4 w-4 mr-2" />
+            Export PDF
+          </Button>
+          <Button>New Tech Pack</Button>
+        </div>
       </div>
 
       {/* Template selector */}
