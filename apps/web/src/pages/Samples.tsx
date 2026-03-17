@@ -28,6 +28,7 @@ const statusConfig: Record<
 > = {
   requested: { label: 'Requested', icon: Clock, variant: 'secondary' },
   in_transit: { label: 'In Transit', icon: Truck, variant: 'default' },
+  shipped: { label: 'Shipped', icon: Truck, variant: 'warning' },
   received: { label: 'Received', icon: Package, variant: 'outline' },
   approved: { label: 'Approved', icon: CheckCircle2, variant: 'success' },
   rejected: { label: 'Rejected', icon: XCircle, variant: 'destructive' },
@@ -72,7 +73,7 @@ export function Samples() {
     },
   });
 
-  const samples: Sample[] = samplesQuery.data ?? [];
+  const samples = samplesQuery.data ?? [];
 
   const getNextStatus = (current: string): string | null => {
     const idx = statusFlow.indexOf(current);
@@ -126,7 +127,7 @@ export function Samples() {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {samples.map((sample) => {
+          {samples.map((sample: Sample) => {
             const config = statusConfig[sample.status] ?? statusConfig.requested;
             const StatusIcon = config.icon;
             const nextStatus = getNextStatus(sample.status);
@@ -195,7 +196,7 @@ export function Samples() {
                   {/* Photos */}
                   {sample.photos.length > 0 && (
                     <div className="flex gap-1.5 overflow-x-auto">
-                      {sample.photos.map((photo, i) => (
+                      {sample.photos.map((photo: string, i: number) => (
                         <img
                           key={i}
                           src={photo}

@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Search,
   Star,
   BadgeCheck,
+  LayoutGrid,
+  List,
   MapPin,
   Leaf,
   SlidersHorizontal,
   X,
-  Factory,
-  GitCompareArrows,
-  Package,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DataTable, type ColumnDef } from '@/components/ui/data-table';
 import { manufacturersApi, type Manufacturer, type ManufacturerSearchParams } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
@@ -30,20 +30,7 @@ function useDebounce<T>(value: T, delay: number): T {
   return debounced;
 }
 
-const countryFlags: Record<string, string> = {
-  China: 'CN',
-  India: 'IN',
-  Vietnam: 'VN',
-  Bangladesh: 'BD',
-  Turkey: 'TR',
-  Italy: 'IT',
-  USA: 'US',
-  Mexico: 'MX',
-  Portugal: 'PT',
-  Thailand: 'TH',
-};
-
-const countries = Object.keys(countryFlags);
+const countries = ['China', 'India', 'Vietnam', 'Bangladesh', 'Turkey', 'Italy', 'USA', 'Mexico', 'Portugal', 'Thailand'];
 const certificationOptions = ['ISO 9001', 'ISO 14001', 'GOTS', 'OEKO-TEX', 'Fair Trade', 'BSCI', 'WRAP'];
 
 function StarRating({ rating }: { rating: number }) {
@@ -55,88 +42,36 @@ function StarRating({ rating }: { rating: number }) {
           className={cn('h-3.5 w-3.5', i < rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20')}
         />
       ))}
-      <span className="ml-1.5 data-value text-xs font-medium text-muted-foreground">{rating.toFixed(1)}</span>
+      <span className="ml-1.5 data-value text-xs text-muted-foreground">{rating.toFixed(1)}</span>
     </div>
   );
 }
 
-function SustainabilityBar({ score }: { score: number }) {
+function ManufacturerCard({ manufacturer, index }: { manufacturer: Manufacturer; index: number }) {
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-          <Leaf className="h-3 w-3 text-emerald-500" />
-          Sustainability
-        </span>
-        <span className="text-[11px] font-medium data-value">{score}/100</span>
-      </div>
-      <div className="h-1.5 w-full rounded-full bg-muted-foreground/10 overflow-hidden">
-        <div
-          className={cn(
-            'h-full rounded-full transition-all',
-            score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-rose-400'
-          )}
-          style={{ width: `${score}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
-  manufacturer: Manufacturer;
-  index: number;
-  selected: boolean;
-  onToggleCompare: () => void;
-}) {
-  return (
-    <Card
-      className="transition-all hover:shadow-md h-full animate-in relative group"
-      style={{ animationDelay: `${index * 60}ms` }}
-    >
-      {/* Compare checkbox */}
-      <button
-        onClick={(e) => { e.preventDefault(); onToggleCompare(); }}
-        className={cn(
-          'absolute top-3 right-3 h-5 w-5 rounded border flex items-center justify-center transition-all z-10',
-          selected
-            ? 'bg-primary border-primary text-primary-foreground'
-            : 'border-border bg-background opacity-0 group-hover:opacity-100'
-        )}
-        title="Select to compare"
+    <Link to={`/manufacturers/${manufacturer.id}`}>
+      <Card
+        className="cursor-pointer transition-all hover:shadow-card-hover h-full animate-in"
+        style={{ animationDelay: `${index * 50}ms` }}
       >
-        {selected && <span className="text-[10px] font-bold">&#10003;</span>}
-      </button>
-
-      <Link to={`/manufacturers/${manufacturer.id}`}>
         <CardHeader className="p-5 pb-3">
-          {/* Name + verified */}
-          <div className="flex items-start gap-2 pr-6">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Factory className="h-5 w-5 text-primary" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <CardTitle className="text-sm font-semibold leading-tight truncate">
-                  {manufacturer.name}
-                </CardTitle>
-                {manufacturer.verified && (
-                  <BadgeCheck className="h-4 w-4 text-primary shrink-0" />
-                )}
-              </div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                <MapPin className="h-3 w-3" />
-                <span>{manufacturer.country}</span>
-              </div>
-            </div>
+          <div className="flex items-start justify-between gap-2">
+            <CardTitle className="text-sm font-semibold leading-tight">
+              {manufacturer.name}
+            </CardTitle>
+            {manufacturer.verified && (
+              <BadgeCheck className="h-4 w-4 text-primary shrink-0" />
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="h-3 w-3" />
+            {manufacturer.country}
           </div>
         </CardHeader>
-
-        <CardContent className="p-5 pt-0 space-y-4">
-          {/* Specialties */}
+        <CardContent className="p-5 pt-0 space-y-3">
           <div className="flex flex-wrap gap-1.5">
             {manufacturer.specialties.slice(0, 3).map((s) => (
-              <Badge key={s} variant="secondary" className="text-[11px] px-2 py-0.5 font-normal">
+              <Badge key={s} variant="secondary" className="text-[11px] px-2 py-0.5">
                 {s}
               </Badge>
             ))}
@@ -146,66 +81,47 @@ function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
               </Badge>
             )}
           </div>
-
-          {/* Rating */}
           <StarRating rating={manufacturer.rating} />
-
-          {/* Certifications */}
-          {manufacturer.certifications.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {manufacturer.certifications.slice(0, 3).map((c) => (
-                <Badge key={c} variant="outline" className="text-[10px] px-2 py-0.5 text-muted-foreground">
-                  {c}
-                </Badge>
-              ))}
-              {manufacturer.certifications.length > 3 && (
-                <Badge variant="outline" className="text-[10px] px-2 py-0.5 text-muted-foreground">
-                  +{manufacturer.certifications.length - 3}
-                </Badge>
-              )}
-            </div>
-          )}
-
-          {/* Sustainability */}
+          <div className="flex flex-wrap gap-1.5">
+            {manufacturer.certifications.slice(0, 2).map((c) => (
+              <Badge key={c} variant="outline" className="text-[11px] px-2 py-0.5">
+                {c}
+              </Badge>
+            ))}
+          </div>
           {manufacturer.sustainabilityScore > 0 && (
-            <SustainabilityBar score={manufacturer.sustainabilityScore} />
-          )}
-
-          {/* MOQ */}
-          {manufacturer.moq !== null && manufacturer.moq !== undefined && (
-            <div className="flex items-center gap-1.5 pt-2 border-t border-border/50">
-              <Package className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">MOQ:</span>
-              <span className="text-xs font-semibold data-value">{manufacturer.moq.toLocaleString()} units</span>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Leaf className="h-3 w-3 text-emerald-500" />
+              Sustainability: <span className="data-value font-medium">{manufacturer.sustainabilityScore}</span>/100
             </div>
           )}
         </CardContent>
-      </Link>
-    </Card>
+      </Card>
+    </Link>
   );
 }
 
-function ManufacturersSkeleton() {
+function ManufacturersSkeleton({ view }: { view: 'grid' | 'table' }) {
+  if (view === 'table') {
+    return (
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-10 w-full" />
+        ))}
+      </div>
+    );
+  }
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
         <Card key={i}>
           <CardHeader className="p-5 pb-3">
-            <div className="flex items-start gap-2">
-              <Skeleton className="h-10 w-10 rounded-xl" />
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-3 w-20" />
-              </div>
-            </div>
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-3 w-20 mt-1.5" />
           </CardHeader>
-          <CardContent className="p-5 pt-0 space-y-3">
-            <div className="flex gap-1.5">
-              <Skeleton className="h-5 w-16 rounded-full" />
-              <Skeleton className="h-5 w-20 rounded-full" />
-            </div>
-            <Skeleton className="h-3.5 w-28" />
-            <Skeleton className="h-1.5 w-full rounded-full" />
+          <CardContent className="p-5 pt-0 space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-3 w-28" />
           </CardContent>
         </Card>
       ))}
@@ -214,14 +130,14 @@ function ManufacturersSkeleton() {
 }
 
 export function Manufacturers() {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [view, setView] = useState<'grid' | 'table'>('grid');
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
   const [selectedCerts, setSelectedCerts] = useState<string[]>([]);
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [moqRange, setMoqRange] = useState<[number, number]>([0, 100000]);
-  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [sustainabilityMin, setSustainabilityMin] = useState(0);
 
   const debouncedSearch = useDebounce(searchTerm, 300);
 
@@ -232,6 +148,7 @@ export function Manufacturers() {
     ...(verifiedOnly && { verified: true }),
     ...(moqRange[0] > 0 && { moqMin: moqRange[0] }),
     ...(moqRange[1] < 100000 && { moqMax: moqRange[1] }),
+    ...(sustainabilityMin > 0 && { sustainabilityScoreMin: sustainabilityMin }),
   };
 
   const query = useQuery({
@@ -247,134 +164,102 @@ export function Manufacturers() {
   const toggleCert = (c: string) =>
     setSelectedCerts((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
 
-  const toggleCompare = (id: string) =>
-    setCompareIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 4 ? [...prev, id] : prev
-    );
-
   const clearFilters = () => {
     setSelectedCountries([]);
     setSelectedCerts([]);
     setVerifiedOnly(false);
     setMoqRange([0, 100000]);
+    setSustainabilityMin(0);
   };
 
-  const hasFilters = selectedCountries.length > 0 || selectedCerts.length > 0 || verifiedOnly;
+  const hasFilters = selectedCountries.length > 0 || selectedCerts.length > 0 || verifiedOnly || sustainabilityMin > 0;
+
+  const tableColumns: ColumnDef<Manufacturer>[] = [
+    { key: 'name', header: 'Name', sortable: true },
+    { key: 'country', header: 'Country', sortable: true },
+    {
+      key: 'specialties',
+      header: 'Specialties',
+      render: (row) => row.specialties.slice(0, 2).join(', '),
+    },
+    { key: 'rating', header: 'Rating', sortable: true, render: (row) => <StarRating rating={row.rating} /> },
+    {
+      key: 'verified',
+      header: 'Verified',
+      render: (row) =>
+        row.verified ? <BadgeCheck className="h-4 w-4 text-primary" /> : <span className="text-muted-foreground">--</span>,
+    },
+  ];
 
   return (
-    <div className="space-y-8">
-      {/* Page header */}
+    <div className="space-y-6">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Discover</p>
         <h1 className="text-2xl font-semibold tracking-tight">Manufacturers</h1>
-        <p className="text-sm text-muted-foreground mt-1">Browse and discover verified manufacturers worldwide.</p>
+        <p className="text-sm text-muted-foreground mt-1">Search and discover manufacturers worldwide</p>
       </div>
 
-      {/* Search bar - prominent */}
-      <div className="relative max-w-2xl">
-        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search by name, specialty, location..."
-          className="pl-12 h-12 text-base rounded-xl border-2 focus:border-primary/50"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {/* Filter chips */}
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Search + view toggle */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search by name, specialty, location..."
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="flex gap-2">
           <Button
             variant={filterOpen ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilterOpen(!filterOpen)}
-            className="rounded-full"
           >
             <SlidersHorizontal className="mr-2 h-3.5 w-3.5" />
             Filters
             {hasFilters && (
-              <Badge className="ml-2 text-[10px]" variant="secondary">Active</Badge>
+              <Badge className="ml-2 text-[11px]" variant="secondary">
+                Active
+              </Badge>
             )}
           </Button>
-
-          {/* Quick country chips */}
-          {countries.slice(0, 6).map((c) => (
-            <button
-              key={c}
-              onClick={() => toggleCountry(c)}
-              className={cn(
-                'inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-                selectedCountries.includes(c)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
-            >
-              {c}
-            </button>
-          ))}
-
-          <button
-            onClick={() => setVerifiedOnly(!verifiedOnly)}
-            className={cn(
-              'inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors gap-1',
-              verifiedOnly
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
-            )}
-          >
-            <BadgeCheck className="h-3.5 w-3.5" />
-            Verified
-          </button>
-
-          {hasFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs text-muted-foreground">
-              <X className="mr-1 h-3 w-3" /> Clear all
-            </Button>
-          )}
-        </div>
-
-        {/* Compare bar */}
-        {compareIds.length > 0 && (
-          <div className="flex items-center gap-3 rounded-xl bg-primary/5 border border-primary/20 px-4 py-3 animate-in">
-            <GitCompareArrows className="h-4 w-4 text-primary" />
-            <span className="text-sm">
-              <span className="font-medium data-value">{compareIds.length}</span> of 4 selected for comparison
-            </span>
-            <div className="flex-1" />
+          <div className="flex border border-border rounded-lg overflow-hidden">
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCompareIds([])}
-              className="text-xs"
+              variant={view === 'grid' ? 'secondary' : 'ghost'}
+              size="icon"
+              className="rounded-none h-8 w-8"
+              onClick={() => setView('grid')}
             >
-              Clear
+              <LayoutGrid className="h-3.5 w-3.5" />
             </Button>
-            {compareIds.length >= 2 && (
-              <Button size="sm" className="text-xs">
-                <GitCompareArrows className="mr-1.5 h-3.5 w-3.5" />
-                Compare Now
-              </Button>
-            )}
+            <Button
+              variant={view === 'table' ? 'secondary' : 'ghost'}
+              size="icon"
+              className="rounded-none h-8 w-8"
+              onClick={() => setView('table')}
+            >
+              <List className="h-3.5 w-3.5" />
+            </Button>
           </div>
-        )}
+        </div>
       </div>
 
       <div className="flex gap-6">
         {/* Filter panel */}
         {filterOpen && (
-          <Card className="w-64 shrink-0 self-start animate-in">
+          <Card className="w-60 shrink-0 self-start">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Filters</CardTitle>
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Filters</CardTitle>
               {hasFilters && (
                 <Button variant="ghost" size="sm" onClick={clearFilters} className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground">
                   Clear all
                 </Button>
               )}
             </CardHeader>
-            <CardContent className="p-4 pt-0 space-y-5">
+            <CardContent className="p-4 pt-0 space-y-4">
               <div>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Country</h4>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">Country</h4>
+                <div className="space-y-1.5 max-h-36 overflow-y-auto">
                   {countries.map((c) => (
                     <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
                       <input
@@ -390,7 +275,7 @@ export function Manufacturers() {
               </div>
 
               <div>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Certifications</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">Certifications</h4>
                 <div className="space-y-1.5">
                   {certificationOptions.map((c) => (
                     <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
@@ -407,7 +292,7 @@ export function Manufacturers() {
               </div>
 
               <div>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">MOQ Range</h4>
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">MOQ Range</h4>
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
@@ -439,6 +324,23 @@ export function Manufacturers() {
                   <BadgeCheck className="h-3.5 w-3.5 text-primary" />
                 </label>
               </div>
+
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-2">Min Sustainability</h4>
+                <Input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={sustainabilityMin}
+                  onChange={(e) => setSustainabilityMin(Number(e.target.value))}
+                  className="h-2 p-0 border-0"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>0</span>
+                  <span className="data-value font-medium">{sustainabilityMin}</span>
+                  <span>100</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -446,46 +348,68 @@ export function Manufacturers() {
         {/* Results */}
         <div className="flex-1 min-w-0">
           {query.isLoading ? (
-            <ManufacturersSkeleton />
+            <ManufacturersSkeleton view={view} />
           ) : query.isError ? (
             <Card>
-              <CardContent className="py-12 text-center text-destructive text-sm">
+              <CardContent className="py-10 text-center text-destructive text-sm">
                 Failed to load manufacturers.
               </CardContent>
             </Card>
           ) : manufacturers.length === 0 ? (
             <Card className="border-dashed">
-              <CardContent className="flex flex-col items-center py-20 text-muted-foreground">
-                <div className="rounded-2xl bg-muted p-5 mb-5">
-                  <Search className="h-10 w-10 text-muted-foreground/40" />
+              <CardContent className="flex flex-col items-center py-16 text-muted-foreground">
+                <div className="rounded-xl bg-muted p-4 mb-4">
+                  <Search className="h-8 w-8" />
                 </div>
-                <p className="text-base font-medium mb-1">No manufacturers found</p>
-                <p className="text-sm text-muted-foreground/70 mb-5">Try adjusting your search or filters.</p>
+                <p className="text-sm font-medium mb-1">No manufacturers found</p>
+                <p className="text-xs text-muted-foreground mb-4">Try adjusting your search or filters</p>
                 {hasFilters && (
-                  <Button variant="outline" size="sm" onClick={clearFilters} className="rounded-full">
+                  <Button variant="outline" size="sm" onClick={clearFilters}>
                     <X className="mr-2 h-3.5 w-3.5" /> Clear Filters
                   </Button>
                 )}
               </CardContent>
             </Card>
-          ) : (
+          ) : view === 'grid' ? (
             <>
-              <p className="text-xs text-muted-foreground mb-5">
-                Showing <span className="data-value font-medium">{manufacturers.length}</span> manufacturers
+              <p className="text-xs text-muted-foreground mb-4">
+                <span className="data-value font-medium">{manufacturers.length}</span> results
               </p>
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {manufacturers.map((m, i) => (
-                  <ManufacturerCard
-                    key={m.id}
-                    manufacturer={m}
-                    index={i}
-                    selected={compareIds.includes(m.id)}
-                    onToggleCompare={() => toggleCompare(m.id)}
-                  />
+                  <ManufacturerCard key={m.id} manufacturer={m} index={i} />
                 ))}
               </div>
             </>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground mb-4">
+                <span className="data-value font-medium">{manufacturers.length}</span> results
+              </p>
+              <Card>
+                <CardContent className="pt-4">
+                  <DataTable
+                    columns={tableColumns}
+                    data={manufacturers}
+                    keyExtractor={(r) => r.id}
+                    onRowClick={(r) => {
+                      window.location.href = `/manufacturers/${r.id}`;
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </>
           )}
+
+          <div className="mt-6">
+            <h3 className="text-xs font-medium text-muted-foreground mb-2">Map View</h3>
+            <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 text-muted-foreground">
+              <div className="text-center">
+                <MapPin className="mx-auto mb-2 h-6 w-6 text-muted-foreground/40" />
+                <p className="text-xs">Manufacturer locations will appear here</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

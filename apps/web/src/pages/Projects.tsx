@@ -1,22 +1,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import {
-  Plus,
-  FolderKanban,
-  Factory,
-  Clock,
-  Search,
-  MessageSquare,
-  FileText,
-  Package,
-} from 'lucide-react';
+import { Plus, FolderKanban, Factory, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -28,7 +20,6 @@ import {
 import { toast } from '@/components/ui/toast';
 import { projectsApi, type Project } from '@/lib/api';
 import { formatRelativeDate } from '@/lib/utils';
-import { cn } from '@/lib/utils';
 
 const statusTabs = [
   { value: 'all', label: 'All' },
@@ -47,84 +38,33 @@ const statusBadgeVariant: Record<string, 'default' | 'secondary' | 'outline' | '
   shipped: 'success',
 };
 
-const statusColors: Record<string, string> = {
-  ideation: 'bg-slate-400',
-  sourcing: 'bg-blue-500',
-  sampling: 'bg-amber-500',
-  production: 'bg-violet-500',
-  shipped: 'bg-emerald-500',
-};
-
-const pipelineStages = ['ideation', 'sourcing', 'sampling', 'production', 'shipped'];
-
-function PipelineIndicator({ status }: { status: string }) {
-  const currentIdx = pipelineStages.indexOf(status);
-  return (
-    <div className="flex items-center gap-1 w-full">
-      {pipelineStages.map((stage, idx) => (
-        <div
-          key={stage}
-          className={cn(
-            'h-1.5 flex-1 rounded-full transition-colors',
-            idx <= currentIdx ? (statusColors[status] ?? 'bg-muted-foreground/20') : 'bg-muted-foreground/10'
-          )}
-          title={stage.charAt(0).toUpperCase() + stage.slice(1)}
-        />
-      ))}
-    </div>
-  );
-}
-
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link to={`/projects/${project.id}`}>
       <Card
-        className="cursor-pointer transition-all hover:shadow-md hover:border-border/80 h-full animate-in"
-        style={{ animationDelay: `${index * 80}ms` }}
+        className="cursor-pointer transition-all hover:shadow-md hover:border-border/80 animate-in"
+        style={{ animationDelay: `${index * 60}ms` }}
       >
-        <CardHeader className="p-5 pb-3">
-          <div className="flex items-start justify-between gap-3">
-            <CardTitle className="text-base font-semibold leading-tight">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-start justify-between gap-2">
+            <CardTitle className="text-sm font-semibold leading-tight">
               {project.title}
             </CardTitle>
             <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-[11px] uppercase tracking-wider">
               {project.status}
             </Badge>
           </div>
-          {project.description && (
-            <CardDescription className="line-clamp-2 text-sm mt-1.5 leading-relaxed">
-              {project.description}
-            </CardDescription>
-          )}
+          <CardDescription className="line-clamp-2 text-xs">{project.description}</CardDescription>
         </CardHeader>
-        <CardContent className="p-5 pt-0 space-y-4">
-          {/* Pipeline progress */}
-          <div className="space-y-1.5">
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Pipeline</p>
-            <PipelineIndicator status={project.status} />
-          </div>
-
-          {/* Key counts */}
-          <div className="flex items-center gap-5 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5" title="Quotes">
-              <FileText className="h-3.5 w-3.5" />
-              <span className="data-value font-medium">{project._count?.quotes ?? 0}</span>
+        <CardContent className="p-4 pt-0">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Factory className="h-3 w-3" />
+              <span className="data-value">{project._count?.quotes ?? 0}</span> mfrs
             </span>
-            <span className="flex items-center gap-1.5" title="Samples">
-              <Package className="h-3.5 w-3.5" />
-              <span className="data-value font-medium">{project._count?.samples ?? 0}</span>
-            </span>
-            <span className="flex items-center gap-1.5" title="Messages">
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span className="data-value font-medium">{project._count?.communications ?? 0}</span>
-            </span>
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-border/50">
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              {formatRelativeDate(project.createdAt)}
+              {formatRelativeDate(project.updatedAt)}
             </span>
           </div>
         </CardContent>
@@ -135,24 +75,15 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
 function ProjectsSkeleton() {
   return (
-    <div className="grid gap-5 md:grid-cols-2">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Card key={i}>
-          <CardHeader className="p-5 pb-3">
-            <div className="flex items-start justify-between">
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="h-5 w-20" />
-            </div>
-            <Skeleton className="h-4 w-full mt-2" />
-            <Skeleton className="h-4 w-3/4 mt-1" />
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Card key={i} className="">
+          <CardHeader className="p-4 pb-2">
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-3 w-full mt-1.5" />
           </CardHeader>
-          <CardContent className="p-5 pt-0 space-y-3">
-            <Skeleton className="h-1.5 w-full rounded-full" />
-            <div className="flex gap-4">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-4 w-12" />
-            </div>
+          <CardContent className="p-4 pt-0">
+            <Skeleton className="h-3 w-40" />
           </CardContent>
         </Card>
       ))}
@@ -164,7 +95,6 @@ export function Projects() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
   const [newProject, setNewProject] = useState({ title: '', description: '' });
 
   const projectsQuery = useQuery({
@@ -185,101 +115,68 @@ export function Projects() {
     },
   });
 
-  const allProjects: Project[] = projectsQuery.data ?? [];
-
-  // Client-side search filter
-  const projects = searchTerm
-    ? allProjects.filter((p) =>
-        p.title.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : allProjects;
+  const projects = projectsQuery.data ?? [];
 
   return (
-    <div className="space-y-8">
-      {/* Page header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage your manufacturing projects from ideation to shipment.</p>
+          <p className="text-sm text-muted-foreground">Manage your manufacturing projects</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} size="lg" className="rounded-lg shadow-sm">
-          <Plus className="mr-2 h-5 w-5" />
+        <Button onClick={() => setDialogOpen(true)} className="rounded-lg">
+          <Plus className="mr-2 h-4 w-4" />
           New Project
         </Button>
       </div>
 
-      {/* Search + filter pills */}
-      <div className="space-y-4">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search projects by title..."
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        {/* Status filter pills */}
-        <div className="flex flex-wrap gap-2">
+      <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+        <TabsList>
           {statusTabs.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => setStatusFilter(tab.value)}
-              className={cn(
-                'inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
-                statusFilter === tab.value
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
-            >
-              {tab.value !== 'all' && (
-                <span className={cn('mr-2 h-2 w-2 rounded-full', statusColors[tab.value] ?? 'bg-muted-foreground')} />
-              )}
+            <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
-            </button>
+            </TabsTrigger>
           ))}
-        </div>
-      </div>
+        </TabsList>
 
-      {/* Project grid */}
-      {projectsQuery.isLoading ? (
-        <ProjectsSkeleton />
-      ) : projectsQuery.isError ? (
-        <Card>
-          <CardContent className="py-12 text-center text-destructive text-sm">
-            Failed to load projects. Please try again.
-          </CardContent>
-        </Card>
-      ) : projects.length === 0 ? (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center py-20">
-            <div className="rounded-2xl bg-muted/60 p-5 mb-5">
-              <FolderKanban className="h-10 w-10 text-muted-foreground/60" />
+        <TabsContent value={statusFilter} className="mt-6">
+          {projectsQuery.isLoading ? (
+            <ProjectsSkeleton />
+          ) : projectsQuery.isError ? (
+            <Card className="">
+              <CardContent className="py-10 text-center text-destructive text-sm">
+                Failed to load projects. Please try again.
+              </CardContent>
+            </Card>
+          ) : projects.length === 0 ? (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-16">
+                <div className="rounded-lg bg-muted/60 p-4 mb-4">
+                  <FolderKanban className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">No projects found</p>
+                <p className="text-xs text-muted-foreground/70 mb-5">Get started by creating your first project</p>
+                <Button onClick={() => setDialogOpen(true)} size="sm" className="rounded-lg">
+                  <Plus className="mr-2 h-3.5 w-3.5" />
+                  Create Project
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project: Project, i: number) => (
+                <ProjectCard key={project.id} project={project} index={i} />
+              ))}
             </div>
-            <p className="text-base font-medium text-muted-foreground mb-1">No projects yet</p>
-            <p className="text-sm text-muted-foreground/70 mb-6 max-w-xs text-center">
-              Create your first project to get started. Track everything from quotes to shipments.
-            </p>
-            <Button onClick={() => setDialogOpen(true)} className="rounded-lg">
-              <Plus className="mr-2 h-4 w-4" />
-              Create Your First Project
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-5 md:grid-cols-2">
-          {projects.map((project: Project, i: number) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))}
-        </div>
-      )}
+          )}
+        </TabsContent>
+      </Tabs>
 
       {/* Create project dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Project</DialogTitle>
+            <DialogTitle className="">Create New Project</DialogTitle>
             <DialogDescription>
               Start a new manufacturing project. You can add details later.
             </DialogDescription>
@@ -290,7 +187,7 @@ export function Projects() {
               <Input
                 placeholder="e.g., Spring Collection 2026"
                 value={newProject.title}
-                onChange={(e) => setNewProject((prev) => ({ ...prev, title: e.target.value }))}
+                onChange={(e) => setNewProject((p) => ({ ...p, title: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -298,7 +195,7 @@ export function Projects() {
               <Textarea
                 placeholder="Describe what you want to manufacture..."
                 value={newProject.description}
-                onChange={(e) => setNewProject((prev) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) => setNewProject((p) => ({ ...p, description: e.target.value }))}
               />
             </div>
           </div>

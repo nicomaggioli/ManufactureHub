@@ -21,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DataTable, type ColumnDef } from '@/components/ui/data-table';
 import { ClipboardList } from 'lucide-react';
 import { projectsApi, communicationsApi, quotesApi, samplesApi, designAssetsApi } from '@/lib/api';
-import type { Communication, Quote, Sample, DesignAsset, Project, Milestone } from '@/lib/api';
+import type { Project, Communication, Quote, Sample, DesignAsset, Milestone } from '@/lib/api';
 import { TechPack } from '@/components/design/TechPack';
 import { formatDate, formatCurrency } from '@/lib/utils';
 
@@ -98,7 +98,7 @@ function DetailSkeleton() {
 export function ProjectDetail() {
   const { id } = useParams() as { id: string };
 
-  const projectQuery = useQuery<Project>({
+  const projectQuery = useQuery({
     queryKey: ['projects', id],
     queryFn: () => projectsApi.get(id),
     enabled: !!id,
@@ -128,7 +128,7 @@ export function ProjectDetail() {
     enabled: !!id,
   });
 
-  const project = projectQuery.data;
+  const project = projectQuery.data as Project | undefined;
 
   // Derive manufacturers from project data
   const projectManufacturers = useMemo(() => {
@@ -174,7 +174,7 @@ export function ProjectDetail() {
 
   const commColumns: ColumnDef<Communication>[] = [
     { key: 'manufacturerId', header: 'Manufacturer', sortable: true, render: (row) => <span>{row.manufacturer?.name ?? 'Unknown'}</span> },
-    { key: 'subject', header: 'Subject', render: (row) => <span>{row.subject ?? 'No subject'}</span> },
+    { key: 'subject', header: 'Subject' },
     {
       key: 'status',
       header: 'Status',
@@ -184,7 +184,7 @@ export function ProjectDetail() {
         </Badge>
       ),
     },
-    { key: 'sentAt', header: 'Last Message', sortable: true, render: (row) => <span className="data-value">{formatDate(row.sentAt ?? row.createdAt)}</span> },
+    { key: 'sentAt', header: 'Sent At', sortable: true, render: (row) => <span className="data-value">{formatDate(row.sentAt ?? row.createdAt)}</span> },
   ];
 
   const quoteColumns: ColumnDef<Quote>[] = [
@@ -233,7 +233,7 @@ export function ProjectDetail() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{project.title}</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{project.description}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{project.description ?? ''}</p>
         </div>
         <Badge variant="outline" className="w-fit px-3 py-1">
           {project.status}
@@ -287,7 +287,7 @@ export function ProjectDetail() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-medium text-muted-foreground">Manufacturers</span>
-                  <span className="data-value">{projectManufacturers.length}</span>
+                  <span className="data-value">{project._count?.quotes ?? 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-medium text-muted-foreground">Created</span>
@@ -306,7 +306,7 @@ export function ProjectDetail() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {'milestones' in project && Array.isArray((project as any).milestones) && (project as any).milestones.length > 0 ? (
+                {((project as any).milestones as Milestone[] | undefined)?.length ? (
                   <div className="space-y-2.5">
                     {((project as any).milestones as Milestone[]).map((m: Milestone) => (
                       <div key={m.id} className="flex items-center gap-3">
@@ -397,7 +397,7 @@ export function ProjectDetail() {
                       <div className="h-28 bg-muted rounded-md mb-2 flex items-center justify-center text-muted-foreground text-xs uppercase tracking-wider">
                         {asset.type}
                       </div>
-                      <p className="text-sm font-medium truncate">{asset.fileName}</p>
+                      <p className="text-sm font-medium truncate">{asset.fileName ?? 'Untitled'}</p>
                       <p className="text-xs text-muted-foreground data-value">{formatDate(asset.createdAt)}</p>
                     </div>
                   ))}

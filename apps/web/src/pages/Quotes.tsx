@@ -66,12 +66,9 @@ export function Quotes() {
   });
 
   const analyzeMutation = useMutation({
-    mutationFn: (quoteId: string) => {
-      const quote = quotes.find((q: Quote) => q.id === quoteId);
-      return aiApi.analyzeQuotes(quote ? [quote as unknown as Record<string, unknown>] : []);
-    },
-    onSuccess: (data) => {
-      setAnalysis(data);
+    mutationFn: (quoteId: string) => aiApi.analyzeQuotes([{ id: quoteId }]),
+    onSuccess: (data: unknown) => {
+      setAnalysis(data as AIQuoteAnalysis);
       setAnalysisOpen(true);
     },
     onError: () => {

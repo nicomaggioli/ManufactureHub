@@ -20,7 +20,7 @@ const routeLabels: Record<string, string> = {
   design: 'Design Studio',
   manufacturers: 'Manufacturers',
   projects: 'Projects',
-  communications: 'Communications',
+  communications: 'Messages',
   quotes: 'Quotes',
   samples: 'Samples',
   settings: 'Settings',
@@ -40,14 +40,13 @@ function Breadcrumbs() {
     crumbs.push({ label, path });
   }
 
+  if (crumbs.length <= 1) return null;
+
   return (
-    <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
-      <Link to="/" className="hover:text-foreground transition-colors text-muted-foreground/70">
-        Home
-      </Link>
+    <nav className="flex items-center gap-1 text-sm text-muted-foreground">
       {crumbs.map((crumb, i) => (
-        <span key={crumb.path} className="flex items-center gap-1.5">
-          <ChevronRight className="h-3 w-3 text-muted-foreground/40" />
+        <span key={crumb.path} className="flex items-center gap-1">
+          {i > 0 && <ChevronRight className="h-3 w-3" />}
           {i < crumbs.length - 1 ? (
             <Link to={crumb.path} className="hover:text-foreground transition-colors">
               {crumb.label}
@@ -233,22 +232,16 @@ export function Header() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between h-[52px] px-5 border-b border-black/[0.06] bg-white/70 backdrop-blur-md sticky top-0 z-30">
-      {/* Left: Breadcrumbs */}
-      <div className="flex items-center gap-4 min-w-0 flex-shrink-0">
-        {/* Spacer for mobile hamburger */}
-        <div className="w-9 md:hidden" />
+    <header className="flex items-center justify-between h-[52px] px-5 border-b border-black/[0.08] toolbar sticky top-0 z-30">
+      {/* Breadcrumbs + Search */}
+      <div className="flex items-center gap-4 flex-1">
         <Breadcrumbs />
-      </div>
-
-      {/* Center: Search bar */}
-      <div className="flex-1 flex justify-center px-4">
-        <div className="relative w-full max-w-md" ref={searchRef}>
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
+        <div className="relative w-full max-w-xs ml-auto" ref={searchRef}>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             ref={searchInputRef}
             type="text"
-            placeholder="Search projects, manufacturers..."
+            placeholder="Search..."
             aria-label="Search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -260,15 +253,15 @@ export function Header() {
                 searchInputRef.current?.blur();
               }
             }}
-            className="w-full h-[34px] pl-10 pr-10 text-[13px] bg-black/[0.03] border border-black/[0.06] rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/25 focus:bg-white transition-all duration-150"
+            className="w-full h-[30px] pl-9 pr-3 text-[13px] bg-black/[0.04] border border-black/[0.08] rounded-md text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/30 focus:bg-white transition-all"
           />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/40 font-mono bg-white/70 px-1.5 py-0.5 rounded border border-black/[0.06] hidden sm:inline">
+          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/50 font-mono bg-white/60 px-1 py-px rounded border border-black/[0.08] hidden sm:inline">
             /
           </kbd>
 
           {/* Search results dropdown */}
           {searchFocused && searchTerm.trim() && searchResults && (
-            <div className="absolute top-full left-0 right-0 mt-1.5 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-lg z-50 overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 overflow-hidden">
               {!hasResults ? (
                 <div className="px-4 py-8 text-center">
                   <Search className="mx-auto h-5 w-5 text-muted-foreground/30 mb-2" />
@@ -314,7 +307,7 @@ export function Header() {
                   {searchResults.communications.length > 0 && (
                     <div>
                       <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border/50">
-                        <MessageSquare className="h-3 w-3" /> Communications
+                        <MessageSquare className="h-3 w-3" /> Messages
                       </div>
                       {searchResults.communications.map((c: Communication) => (
                         <button
@@ -322,8 +315,8 @@ export function Header() {
                           onClick={() => handleSearchNav(`/communications/${c.id}`)}
                           className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
                         >
-                          <span className="truncate">{c.subject ?? 'No subject'}</span>
-                          <span className="text-xs text-muted-foreground ml-auto shrink-0">{c.manufacturer?.name ?? 'Unknown'}</span>
+                          <span className="truncate">{c.subject}</span>
+                          <span className="text-xs text-muted-foreground ml-auto shrink-0">{c.manufacturer?.name}</span>
                         </button>
                       ))}
                     </div>
@@ -336,17 +329,19 @@ export function Header() {
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center gap-1 ml-4">
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => { setNotificationsOpen(!notificationsOpen); setMenuOpen(false); }}
-            className="relative flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-black/[0.04] transition-colors"
+            className="relative flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             aria-label="Notifications"
           >
-            <Bell className="w-[18px] h-[18px]" strokeWidth={1.5} />
+            <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white" />
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[11px] font-medium px-1">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
             )}
           </button>
 
@@ -355,7 +350,7 @@ export function Header() {
               role="dialog"
               aria-label="Notifications"
               onKeyDown={(e) => { if (e.key === 'Escape') setNotificationsOpen(false); }}
-              className="absolute right-0 top-full mt-1.5 w-80 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-lg z-50 animate-scale-in"
+              className="absolute right-0 top-full mt-1 w-80 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 animate-scale-in"
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.06]">
                 <span className="text-sm font-semibold">Notifications</span>
@@ -412,7 +407,7 @@ export function Header() {
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => { setMenuOpen(!menuOpen); setNotificationsOpen(false); }}
-            className="flex items-center gap-2 ml-1 pl-2.5 pr-2 py-1.5 rounded-lg hover:bg-black/[0.04] transition-colors"
+            className="flex items-center gap-2.5 ml-2 pl-3 pr-2 py-1.5 rounded-lg hover:bg-muted transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-xs font-semibold text-primary">
@@ -425,7 +420,7 @@ export function Header() {
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-48 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-lg py-1 z-50 animate-scale-in">
+            <div className="absolute right-0 top-full mt-1 w-48 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover py-1 z-50 animate-scale-in">
               <Link
                 to="/settings"
                 className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-black/[0.04] rounded-md mx-1 transition-colors"

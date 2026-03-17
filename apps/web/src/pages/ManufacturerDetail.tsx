@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft,
   BadgeCheck,
+  Globe,
   Mail,
   Phone,
   MapPin,
@@ -20,7 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
 import { DataTable, type ColumnDef } from '@/components/ui/data-table';
 import { manufacturersApi, aiApi, communicationsApi, quotesApi, samplesApi } from '@/lib/api';
-import type { Communication, Quote, Sample } from '@/lib/api';
+import type { Communication, Quote, Sample, AIVettingReport } from '@/lib/api';
 import { formatDate, formatCurrency, cn } from '@/lib/utils';
 
 function DetailSkeleton() {
@@ -58,18 +59,18 @@ export function ManufacturerDetail() {
 
   const quotesQuery = useQuery({
     queryKey: ['quotes', { manufacturerId: id }],
-    queryFn: () => quotesApi.list({ manufacturerId: id }),
+    queryFn: () => quotesApi.list(),
     enabled: !!id,
   });
 
   const samplesQuery = useQuery({
     queryKey: ['samples', { manufacturerId: id }],
-    queryFn: () => samplesApi.list({ manufacturerId: id }),
+    queryFn: () => samplesApi.list(),
     enabled: !!id,
   });
 
   const manufacturer = manufacturerQuery.data;
-  const vetting = vettingQuery.data;
+  const vetting = vettingQuery.data as AIVettingReport | undefined;
 
   if (manufacturerQuery.isLoading) return <DetailSkeleton />;
 
@@ -91,7 +92,7 @@ export function ManufacturerDetail() {
   }
 
   const commColumns: ColumnDef<Communication>[] = [
-    { key: 'subject', header: 'Subject', render: (row) => <span>{row.subject ?? 'No subject'}</span> },
+    { key: 'subject', header: 'Subject' },
     {
       key: 'status',
       header: 'Status',
@@ -101,7 +102,7 @@ export function ManufacturerDetail() {
         </Badge>
       ),
     },
-    { key: 'sentAt', header: 'Last Message', render: (row) => <span className="data-value">{formatDate(row.sentAt ?? row.createdAt)}</span> },
+    { key: 'sentAt', header: 'Sent At', render: (row) => <span className="data-value">{formatDate(row.sentAt ?? row.createdAt)}</span> },
   ];
 
   return (
@@ -241,7 +242,7 @@ export function ManufacturerDetail() {
 
               {/* Categories */}
               <div className="grid gap-3 sm:grid-cols-2">
-                {vetting.categories.map((cat: { name: string; score: number; notes: string }) => (
+                {vetting.categories.map((cat) => (
                   <div key={cat.name} className="rounded-md border p-3">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-xs font-medium text-muted-foreground">{cat.name}</span>
@@ -260,7 +261,7 @@ export function ManufacturerDetail() {
                     <AlertTriangle className="h-3.5 w-3.5 text-warning" /> Risks
                   </h4>
                   <ul className="space-y-1">
-                    {vetting.risks.map((risk: string, i: number) => (
+                    {vetting.risks.map((risk, i) => (
                       <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
                         <span className="text-warning mt-1">-</span> {risk}
                       </li>
@@ -276,7 +277,7 @@ export function ManufacturerDetail() {
                     <ThumbsUp className="h-3.5 w-3.5 text-primary" /> Recommendations
                   </h4>
                   <ul className="space-y-1">
-                    {vetting.recommendations.map((rec: string, i: number) => (
+                    {vetting.recommendations.map((rec, i) => (
                       <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
                         <span className="text-primary mt-1">-</span> {rec}
                       </li>
