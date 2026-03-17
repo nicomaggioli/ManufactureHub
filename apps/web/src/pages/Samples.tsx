@@ -71,7 +71,7 @@ function StatusTimeline({ currentStatus }: { currentStatus: string }) {
               {/* Dot */}
               <div
                 className={cn(
-                  'h-6 w-6 rounded-full flex items-center justify-center transition-all border-2',
+                  'h-6 w-6 rounded-full flex items-center justify-center transition-colors border-2',
                   completed
                     ? 'bg-primary border-primary text-primary-foreground'
                     : 'bg-background border-muted-foreground/20'
@@ -154,7 +154,7 @@ export function Samples() {
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Track</p>
+          <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1">Track</p>
           <h1 className="text-2xl font-semibold tracking-tight">Samples</h1>
           <p className="text-sm text-muted-foreground mt-1">Track and manage product samples from request to approval.</p>
         </div>
@@ -243,7 +243,7 @@ export function Samples() {
             return (
               <Card
                 key={sample.id}
-                className="animate-in hover:shadow-md transition-all"
+                className="animate-in hover:shadow-md transition-shadow"
                 style={{ animationDelay: `${i * 70}ms` }}
               >
                 <CardHeader className="p-5 pb-0">
@@ -266,18 +266,18 @@ export function Samples() {
                   {/* Info grid */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-lg bg-muted/40 p-3">
-                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5">Requested</p>
+                      <p className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-0.5">Requested</p>
                       <p className="text-sm font-medium data-value">{formatDate(sample.requestedAt)}</p>
                     </div>
                     {sample.receivedAt && (
                       <div className="rounded-lg bg-muted/40 p-3">
-                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5">Received</p>
+                        <p className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-0.5">Received</p>
                         <p className="text-sm font-medium data-value">{formatDate(sample.receivedAt)}</p>
                       </div>
                     )}
                     {sample.trackingNumber && (
                       <div className="rounded-lg bg-muted/40 p-3 col-span-2">
-                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-0.5">Tracking</p>
+                        <p className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-0.5">Tracking</p>
                         <a
                           href={`https://track.aftership.com/${sample.trackingNumber}`}
                           target="_blank"
@@ -294,7 +294,7 @@ export function Samples() {
                   {/* Photos */}
                   {sample.photos.length > 0 && (
                     <div>
-                      <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Photos</p>
+                      <p className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-2">Photos</p>
                       <div className="flex gap-2 overflow-x-auto pb-1">
                         {sample.photos.map((photo, j) => (
                           <img

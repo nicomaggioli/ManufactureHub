@@ -79,7 +79,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link to={`/projects/${project.id}`}>
       <Card
-        className="cursor-pointer transition-all hover:shadow-md hover:border-border/80 h-full animate-in"
+        className="cursor-pointer transition-shadow hover:shadow-md hover:border-border/80 h-full animate-in"
         style={{ animationDelay: `${index * 80}ms` }}
       >
         <CardHeader className="p-5 pb-3">
@@ -87,7 +87,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             <CardTitle className="text-base font-semibold leading-tight">
               {project.title}
             </CardTitle>
-            <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-[11px] uppercase tracking-wider">
+            <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-overline uppercase tracking-wider">
               {project.status}
             </Badge>
           </div>
@@ -100,7 +100,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         <CardContent className="p-5 pt-0 space-y-4">
           {/* Pipeline progress */}
           <div className="space-y-1.5">
-            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Pipeline</p>
+            <p className="text-overline font-medium text-muted-foreground uppercase tracking-wider">Pipeline</p>
             <PipelineIndicator status={project.status} />
           </div>
 
@@ -211,8 +211,10 @@ export function Projects() {
       {/* Search + filter pills */}
       <div className="space-y-4">
         <div className="relative max-w-md">
+          <label htmlFor="project-search" className="sr-only">Search projects</label>
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
+            id="project-search"
             placeholder="Search projects by title..."
             className="pl-10"
             value={searchTerm}
@@ -286,16 +288,18 @@ export function Projects() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Project Name</label>
+              <label htmlFor="new-project-title" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Project Name</label>
               <Input
+                id="new-project-title"
                 placeholder="e.g., Spring Collection 2026"
                 value={newProject.title}
                 onChange={(e) => setNewProject((prev) => ({ ...prev, title: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</label>
+              <label htmlFor="new-project-description" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</label>
               <Textarea
+                id="new-project-description"
                 placeholder="Describe what you want to manufacture..."
                 value={newProject.description}
                 onChange={(e) => setNewProject((prev) => ({ ...prev, description: e.target.value }))}

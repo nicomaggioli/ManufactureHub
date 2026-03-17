@@ -72,7 +72,7 @@ export function Settings() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h1 className="text-2xl font-semibold font-heading tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-semibold font-display tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">Manage your account and preferences.</p>
       </div>
 
@@ -182,7 +182,7 @@ export function Settings() {
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium">{integration.name}</p>
                     {integration.connected && (
-                      <Badge variant="success" className="text-[11px]">Connected</Badge>
+                      <Badge variant="success" className="text-overline">Connected</Badge>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{integration.description}</p>

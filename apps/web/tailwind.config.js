@@ -12,11 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        // Refined SF Pro stack — SF Pro Display first for proper rendering
-        sans: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['SF Pro Text', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
         display: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-        heading: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-        body: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
         serif: ['New York', 'Apple Garamond', 'Baskerville', 'Georgia', 'Times New Roman', 'serif'],
         mono: ['SF Mono', 'JetBrains Mono', 'ui-monospace', 'monospace'],
       },
@@ -71,10 +68,11 @@ export default {
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-        xl: 'calc(var(--radius) + 4px)',
+        sm: '4px',
+        md: '8px',
+        lg: '12px',
+        xl: '16px',
+        full: '9999px',
       },
       boxShadow: {
         // macOS-style shadows — hue-shifted (slate-tinted, not pure black)

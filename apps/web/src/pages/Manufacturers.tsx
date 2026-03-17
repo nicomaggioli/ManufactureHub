@@ -64,16 +64,16 @@ function SustainabilityBar({ score }: { score: number }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1 text-overline text-muted-foreground">
           <Leaf className="h-3 w-3 text-emerald-500" />
           Sustainability
         </span>
-        <span className="text-[11px] font-medium data-value">{score}/100</span>
+        <span className="text-overline font-medium data-value">{score}/100</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-muted-foreground/10 overflow-hidden">
         <div
           className={cn(
-            'h-full rounded-full transition-all',
+            'h-full rounded-full transition-colors',
             score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-rose-400'
           )}
           style={{ width: `${score}%` }}
@@ -91,14 +91,14 @@ function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
 }) {
   return (
     <Card
-      className="transition-all hover:shadow-md h-full animate-in relative group"
+      className="transition-shadow hover:shadow-md h-full animate-in relative group"
       style={{ animationDelay: `${index * 60}ms` }}
     >
       {/* Compare checkbox */}
       <button
         onClick={(e) => { e.preventDefault(); onToggleCompare(); }}
         className={cn(
-          'absolute top-3 right-3 h-5 w-5 rounded border flex items-center justify-center transition-all z-10',
+          'absolute top-3 right-3 h-5 w-5 rounded border flex items-center justify-center transition-colors z-10',
           selected
             ? 'bg-primary border-primary text-primary-foreground'
             : 'border-border bg-background opacity-0 group-hover:opacity-100'
@@ -136,12 +136,12 @@ function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
           {/* Specialties */}
           <div className="flex flex-wrap gap-1.5">
             {manufacturer.specialties.slice(0, 3).map((s) => (
-              <Badge key={s} variant="secondary" className="text-[11px] px-2 py-0.5 font-normal">
+              <Badge key={s} variant="secondary" className="text-overline px-2 py-0.5 font-normal">
                 {s}
               </Badge>
             ))}
             {manufacturer.specialties.length > 3 && (
-              <Badge variant="outline" className="text-[11px] px-2 py-0.5">
+              <Badge variant="outline" className="text-overline px-2 py-0.5">
                 +{manufacturer.specialties.length - 3}
               </Badge>
             )}
@@ -265,15 +265,17 @@ export function Manufacturers() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Discover</p>
+        <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1">Discover</p>
         <h1 className="text-2xl font-semibold tracking-tight">Manufacturers</h1>
         <p className="text-sm text-muted-foreground mt-1">Browse and discover verified manufacturers worldwide.</p>
       </div>
 
       {/* Search bar - prominent */}
       <div className="relative max-w-2xl">
+        <label htmlFor="mfr-search" className="sr-only">Search manufacturers</label>
         <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         <Input
+          id="mfr-search"
           placeholder="Search by name, specialty, location..."
           className="pl-12 h-12 text-base rounded-xl border-2 focus:border-primary/50"
           value={searchTerm}
@@ -364,7 +366,7 @@ export function Manufacturers() {
         {filterOpen && (
           <Card className="w-64 shrink-0 self-start animate-in">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Filters</CardTitle>
+              <CardTitle className="text-overline font-semibold text-muted-foreground uppercase tracking-wider">Filters</CardTitle>
               {hasFilters && (
                 <Button variant="ghost" size="sm" onClick={clearFilters} className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground">
                   Clear all
@@ -373,7 +375,7 @@ export function Manufacturers() {
             </CardHeader>
             <CardContent className="p-4 pt-0 space-y-5">
               <div>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Country</h4>
+                <h4 className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-2">Country</h4>
                 <div className="space-y-1.5 max-h-40 overflow-y-auto">
                   {countries.map((c) => (
                     <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
@@ -390,7 +392,7 @@ export function Manufacturers() {
               </div>
 
               <div>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Certifications</h4>
+                <h4 className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-2">Certifications</h4>
                 <div className="space-y-1.5">
                   {certificationOptions.map((c) => (
                     <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
@@ -407,7 +409,7 @@ export function Manufacturers() {
               </div>
 
               <div>
-                <h4 className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-2">MOQ Range</h4>
+                <h4 className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-2">MOQ Range</h4>
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"

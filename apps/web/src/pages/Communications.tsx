@@ -60,7 +60,7 @@ function ManufacturerAvatar({ name }: { name: string }) {
     .toUpperCase();
   return (
     <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-      <span className="text-[11px] font-semibold text-muted-foreground">{initials}</span>
+      <span className="text-overline font-semibold text-muted-foreground">{initials}</span>
     </div>
   );
 }
@@ -82,7 +82,7 @@ function ThreadListItem({
     <button
       onClick={onClick}
       className={cn(
-        'w-full text-left rounded-xl p-3.5 transition-all',
+        'w-full text-left rounded-xl p-3.5 transition-colors',
         active ? 'bg-primary/8 border border-primary/20 shadow-sm' : 'hover:bg-muted/80 border border-transparent'
       )}
     >
@@ -91,7 +91,7 @@ function ThreadListItem({
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-semibold truncate">{mfrName}</p>
-            <span className="text-[11px] text-muted-foreground data-value shrink-0">
+            <span className="text-overline text-muted-foreground data-value shrink-0">
               {formatRelativeDate(thread.sentAt ?? thread.createdAt)}
             </span>
           </div>
@@ -123,7 +123,7 @@ function MessageBubble({ message, manufacturerName }: { message: Message; manufa
         )}
       >
         {!isUser && (
-          <p className="text-[11px] font-medium text-muted-foreground mb-1">{manufacturerName}</p>
+          <p className="text-overline font-medium text-muted-foreground mb-1">{manufacturerName}</p>
         )}
         <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
         <p className={cn('text-[10px] mt-2 data-value', isUser ? 'text-primary-foreground/50' : 'text-muted-foreground/60')}>
@@ -138,7 +138,7 @@ function DateSeparator({ date }: { date: string }) {
   return (
     <div className="flex items-center gap-3 py-2">
       <div className="flex-1 border-t border-border/50" />
-      <span className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">{date}</span>
+      <span className="text-overline font-medium text-muted-foreground/60 uppercase tracking-wider">{date}</span>
       <div className="flex-1 border-t border-border/50" />
     </div>
   );
@@ -256,7 +256,7 @@ export function Communications() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Inbox</p>
+          <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1">Inbox</p>
           <h1 className="text-2xl font-semibold tracking-tight">Messages</h1>
           <p className="text-sm text-muted-foreground mt-1">Conversations with your manufacturers.</p>
         </div>
@@ -274,8 +274,10 @@ export function Communications() {
         )}>
           <div className="p-3 border-b border-border/50 shrink-0">
             <div className="relative">
+              <label htmlFor="comm-search" className="sr-only">Search conversations</label>
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
+                id="comm-search"
                 placeholder="Search conversations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -397,7 +399,9 @@ export function Communications() {
               <div className="border-t p-4 shrink-0 bg-background">
                 <div className="flex gap-3 items-end">
                   <div className="flex-1 relative">
+                    <label htmlFor="reply-input" className="sr-only">Type your message</label>
                     <Input
+                      id="reply-input"
                       placeholder="Type your message..."
                       className="pr-4 h-11 text-sm rounded-xl bg-muted/30"
                       value={replyText}

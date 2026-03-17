@@ -127,7 +127,7 @@ export function DesignHub() {
                     relative flex flex-col items-center justify-center
                     border-2 border-dashed rounded-xl
                     min-h-[200px] px-8 py-12
-                    transition-all duration-300 ease-out cursor-pointer
+                    transition-[color,background-color,border-color,box-shadow,transform] duration-300 ease-out cursor-pointer
                     ${isDragOver
                       ? 'border-primary bg-primary/[0.04] scale-[1.01] shadow-lg shadow-primary/5'
                       : 'border-muted-foreground/20 hover:border-primary/40 hover:bg-muted/20'
@@ -161,7 +161,7 @@ export function DesignHub() {
                       <div className="w-full">
                         <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-primary rounded-full transition-all duration-300 ease-out"
+                            className="h-full bg-primary rounded-full transition-[width] duration-300 ease-out"
                             style={{ width: `${uploadProgress}%` }}
                           />
                         </div>
@@ -174,14 +174,14 @@ export function DesignHub() {
                     <>
                       <div className={`
                         h-16 w-16 rounded-2xl flex items-center justify-center mb-4
-                        transition-all duration-300
+                        transition-[color,background-color,transform] duration-300
                         ${isDragOver
                           ? 'bg-primary/10 scale-110'
                           : 'bg-muted/40'
                         }
                       `}>
                         <Upload className={`
-                          h-7 w-7 transition-all duration-300
+                          h-7 w-7 transition-[color,transform] duration-300
                           ${isDragOver ? 'text-primary -translate-y-0.5' : 'text-muted-foreground/40'}
                         `} />
                       </div>
@@ -240,7 +240,7 @@ export function DesignHub() {
                   return (
                     <Card
                       key={asset.id}
-                      className="group overflow-hidden animate-in hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/20 rounded-xl"
+                      className="group overflow-hidden animate-in hover:shadow-lg transition-shadow duration-300 border-border/50 hover:border-primary/20 rounded-xl"
                       onMouseEnter={() => setHoveredAsset(asset.id)}
                       onMouseLeave={() => setHoveredAsset(null)}
                     >

@@ -149,7 +149,7 @@ export function Quotes() {
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Review</p>
+          <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1">Review</p>
           <h1 className="text-2xl font-semibold tracking-tight">Quotes</h1>
           <p className="text-sm text-muted-foreground mt-1">Compare and manage manufacturer quotes across projects.</p>
         </div>
@@ -259,7 +259,7 @@ export function Quotes() {
               {/* Project group header */}
               {projectKeys.length > 1 && (
                 <div className="mb-4">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">Project</p>
+                  <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">Project</p>
                   <h3 className="text-base font-semibold">{projectName}</h3>
                 </div>
               )}
@@ -269,7 +269,7 @@ export function Quotes() {
                   <Card
                     key={quote.id}
                     className={cn(
-                      'transition-all hover:shadow-md animate-in relative group',
+                      'transition-shadow hover:shadow-md animate-in relative group',
                       compareIds.includes(quote.id) && 'ring-2 ring-primary/40'
                     )}
                     style={{ animationDelay: `${i * 60}ms` }}
@@ -278,7 +278,7 @@ export function Quotes() {
                     <button
                       onClick={() => toggleCompare(quote.id)}
                       className={cn(
-                        'absolute top-3 right-3 h-5 w-5 rounded border flex items-center justify-center transition-all z-10',
+                        'absolute top-3 right-3 h-5 w-5 rounded border flex items-center justify-center transition-colors z-10',
                         compareIds.includes(quote.id)
                           ? 'bg-primary border-primary text-primary-foreground'
                           : 'border-border bg-background opacity-0 group-hover:opacity-100'
@@ -304,7 +304,7 @@ export function Quotes() {
 
                       {/* Unit price - prominent */}
                       <div className="text-center py-3 rounded-xl bg-muted/40">
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground mb-1">Unit Price</p>
+                        <p className="text-overline font-medium uppercase tracking-wider text-muted-foreground mb-1">Unit Price</p>
                         <p className="text-2xl font-bold data-value tracking-tight">{formatCurrency(quote.unitPrice, quote.currency)}</p>
                       </div>
 
@@ -314,28 +314,28 @@ export function Quotes() {
                           <div className="flex items-center justify-center gap-1 text-muted-foreground mb-0.5">
                             <Package className="h-3 w-3" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground">MOQ</p>
+                          <p className="text-overline text-muted-foreground">MOQ</p>
                           <p className="text-sm font-semibold data-value">{quote.moq.toLocaleString()}</p>
                         </div>
                         <div>
                           <div className="flex items-center justify-center gap-1 text-muted-foreground mb-0.5">
                             <Clock className="h-3 w-3" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground">Lead time</p>
+                          <p className="text-overline text-muted-foreground">Lead time</p>
                           <p className="text-sm font-semibold data-value">{quote.leadTimeDays}d</p>
                         </div>
                         <div>
                           <div className="flex items-center justify-center gap-1 text-muted-foreground mb-0.5">
                             <CalendarDays className="h-3 w-3" />
                           </div>
-                          <p className="text-[11px] text-muted-foreground">Valid</p>
+                          <p className="text-overline text-muted-foreground">Valid</p>
                           <p className="text-sm font-semibold data-value">{formatDate(quote.validityDate, 'MMM d')}</p>
                         </div>
                       </div>
 
                       {/* Status + actions */}
                       <div className="flex items-center justify-between pt-3 border-t border-border/50">
-                        <Badge variant={statusVariant[quote.status] ?? 'outline'} className="text-[11px]">
+                        <Badge variant={statusVariant[quote.status] ?? 'outline'} className="text-overline">
                           {quote.status}
                         </Badge>
                         <div className="flex items-center gap-1">
@@ -346,18 +346,28 @@ export function Quotes() {
                                 size="icon"
                                 className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                                 onClick={() => acceptMutation.mutate(quote.id)}
+                                disabled={acceptMutation.isPending || rejectMutation.isPending}
                                 title="Accept"
                               >
-                                <Check className="h-4 w-4" />
+                                {acceptMutation.isPending && acceptMutation.variables === quote.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Check className="h-4 w-4" />
+                                )}
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-destructive hover:bg-destructive/10"
                                 onClick={() => rejectMutation.mutate(quote.id)}
+                                disabled={acceptMutation.isPending || rejectMutation.isPending}
                                 title="Reject"
                               >
-                                <X className="h-4 w-4" />
+                                {rejectMutation.isPending && rejectMutation.variables === quote.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <X className="h-4 w-4" />
+                                )}
                               </Button>
                             </>
                           )}
@@ -404,7 +414,7 @@ export function Quotes() {
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div className="text-center py-3 rounded-lg bg-muted/40">
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Unit Price</p>
+                    <p className="text-overline text-muted-foreground uppercase tracking-wider mb-1">Unit Price</p>
                     <p className="text-xl font-bold data-value">{formatCurrency(q.unitPrice, q.currency)}</p>
                   </div>
                   <div className="space-y-2.5">
@@ -422,12 +432,12 @@ export function Quotes() {
                     </div>
                     <div className="flex justify-between text-sm items-center">
                       <span className="text-muted-foreground">Status</span>
-                      <Badge variant={statusVariant[q.status] ?? 'outline'} className="text-[11px]">{q.status}</Badge>
+                      <Badge variant={statusVariant[q.status] ?? 'outline'} className="text-overline">{q.status}</Badge>
                     </div>
                   </div>
                   {q.notes && (
                     <div className="pt-3 border-t">
-                      <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-1">Notes</p>
+                      <p className="text-overline text-muted-foreground uppercase tracking-wider mb-1">Notes</p>
                       <p className="text-xs text-muted-foreground">{q.notes}</p>
                     </div>
                   )}
@@ -449,15 +459,15 @@ export function Quotes() {
           {analysis ? (
             <div className="space-y-5">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Competitiveness</p>
+                <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Competitiveness</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{analysis.competitiveness}</p>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Market Comparison</p>
+                <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Market Comparison</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{analysis.marketComparison}</p>
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Negotiation Tips</p>
+                <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Negotiation Tips</p>
                 <ul className="space-y-1.5">
                   {analysis.negotiationTips.map((tip, i) => (
                     <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
@@ -467,7 +477,7 @@ export function Quotes() {
                 </ul>
               </div>
               <div className="rounded-xl bg-primary/5 border border-primary/20 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Recommendation</p>
+                <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Recommendation</p>
                 <p className="text-sm font-semibold text-primary">{analysis.recommendation}</p>
               </div>
             </div>

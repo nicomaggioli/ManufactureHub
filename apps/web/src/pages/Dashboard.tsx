@@ -162,11 +162,11 @@ const statCards = [
 // ── Pipeline stages ────────────────────────────────────────────────────
 
 const pipelineStages = [
-  { key: 'ideation', label: 'Ideation', gradient: 'from-slate-100 to-slate-50', text: 'text-slate-700', ring: 'ring-slate-200' },
-  { key: 'sourcing', label: 'Sourcing', gradient: 'from-blue-100 to-blue-50', text: 'text-blue-700', ring: 'ring-blue-200' },
-  { key: 'sampling', label: 'Sampling', gradient: 'from-amber-100 to-amber-50', text: 'text-amber-700', ring: 'ring-amber-200' },
-  { key: 'production', label: 'Production', gradient: 'from-emerald-100 to-emerald-50', text: 'text-emerald-700', ring: 'ring-emerald-200' },
-  { key: 'shipped', label: 'Shipped', gradient: 'from-purple-100 to-purple-50', text: 'text-purple-700', ring: 'ring-purple-200' },
+  { key: 'ideation', label: 'Ideation', badge: '1', gradient: 'from-slate-100 to-slate-50', text: 'text-slate-700', ring: 'ring-slate-200' },
+  { key: 'sourcing', label: 'Sourcing', badge: '2', gradient: 'from-blue-100 to-blue-50', text: 'text-blue-700', ring: 'ring-blue-200' },
+  { key: 'sampling', label: 'Sampling', badge: '3', gradient: 'from-amber-100 to-amber-50', text: 'text-amber-700', ring: 'ring-amber-200' },
+  { key: 'production', label: 'Production', badge: '4', gradient: 'from-emerald-100 to-emerald-50', text: 'text-emerald-700', ring: 'ring-emerald-200' },
+  { key: 'shipped', label: 'Shipped', badge: '5', gradient: 'from-purple-100 to-purple-50', text: 'text-purple-700', ring: 'ring-purple-200' },
 ] as const;
 
 const reminderTypeDot: Record<string, string> = {
@@ -214,7 +214,7 @@ function PipelineSkeleton() {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3">
+    <h2 className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground mb-3">
       {children}
     </h2>
   );
@@ -262,7 +262,7 @@ export function Dashboard() {
       {/* ── Page Header ─────────────────────────────────────────────── */}
       <div className="animate-slide-up">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {greeting} <span className="font-accent">{timeWord}</span>
+          {greeting} <span className="font-medium">{timeWord}</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           {getTodayFormatted()}
@@ -297,13 +297,14 @@ export function Dashboard() {
                     <Link
                       key={stage.key}
                       to={`/projects?status=${stage.key}`}
-                      className={`relative z-10 flex-1 group transition-all duration-200 hover:scale-105 ${idx > 0 ? 'ml-2' : ''}`}
+                      className={`relative z-10 flex-1 group transition-[transform,box-shadow] duration-200 hover:scale-105 ${idx > 0 ? 'ml-2' : ''}`}
                     >
                       <div
                         className={`flex flex-col items-center justify-center py-4 px-2 rounded-xl bg-gradient-to-b ${stage.gradient} ring-1 ${stage.ring} group-hover:shadow-md transition-shadow`}
                       >
+                        <span className="text-[10px] font-semibold text-muted-foreground/60 mb-0.5">{stage.badge}</span>
                         <span className={`text-2xl font-bold ${stage.text} data-value`}>{count}</span>
-                        <span className="text-[11px] font-medium text-muted-foreground mt-1">{stage.label}</span>
+                        <span className="text-overline font-medium text-muted-foreground mt-1">{stage.label}</span>
                       </div>
                       {idx < pipelineStages.length - 1 && (
                         <ChevronRight className="absolute -right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 z-20" />
@@ -383,7 +384,7 @@ export function Dashboard() {
                                   {formatRelativeDate(item.timestamp)}
                                 </span>
                                 {item.project && (
-                                  <Badge variant="outline" className="text-[11px]">
+                                  <Badge variant="outline" className="text-overline">
                                     {item.project}
                                   </Badge>
                                 )}
@@ -440,11 +441,11 @@ export function Dashboard() {
                         className={`absolute -right-2 -bottom-2 h-16 w-16 ${sc.iconBg} opacity-50`}
                         strokeWidth={1}
                       />
-                      <p className="text-[11px] font-medium text-muted-foreground relative z-10">{sc.title}</p>
+                      <p className="text-overline font-medium text-muted-foreground relative z-10">{sc.title}</p>
                       <p className={`text-3xl font-bold tracking-tight mt-1 ${sc.accent} relative z-10 data-value`}>
                         {sc.getValue(stats)}
                       </p>
-                      <p className="text-[11px] text-muted-foreground mt-1 relative z-10">
+                      <p className="text-overline text-muted-foreground mt-1 relative z-10">
                         {sc.getSub(stats)}
                       </p>
                     </CardContent>
@@ -460,42 +461,42 @@ export function Dashboard() {
             <div className="space-y-2">
               <Link
                 to="/design"
-                className="group flex items-center gap-3 p-4 rounded-xl border-2 border-primary/20 bg-primary/[0.03] transition-all duration-150 hover:border-primary/40 hover:bg-primary/[0.06] hover:shadow-sm"
+                className="group flex items-center gap-3 p-4 rounded-xl border-2 border-primary/20 bg-primary/[0.03] transition-[color,background-color,border-color,box-shadow] duration-150 hover:border-primary/40 hover:bg-primary/[0.06] hover:shadow-sm"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 shrink-0">
                   <Plus className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm">Create Project</h3>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Design a new product mockup</p>
+                  <p className="text-overline text-muted-foreground mt-0.5">Design a new product mockup</p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </Link>
 
               <Link
                 to="/manufacturers"
-                className="group flex items-center gap-3 p-4 rounded-xl border border-border bg-card transition-all duration-150 hover:shadow-sm hover:border-border/80"
+                className="group flex items-center gap-3 p-4 rounded-xl border border-border bg-card transition-[color,background-color,border-color,box-shadow] duration-150 hover:shadow-sm hover:border-border/80"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 shrink-0">
                   <Search className="h-5 w-5 text-emerald-500" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm">Find Manufacturers</h3>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Browse verified suppliers</p>
+                  <p className="text-overline text-muted-foreground mt-0.5">Browse verified suppliers</p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </Link>
 
               <Link
                 to="/communications"
-                className="group flex items-center gap-3 p-4 rounded-xl border border-border bg-card transition-all duration-150 hover:shadow-sm hover:border-border/80"
+                className="group flex items-center gap-3 p-4 rounded-xl border border-border bg-card transition-[color,background-color,border-color,box-shadow] duration-150 hover:shadow-sm hover:border-border/80"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 shrink-0">
                   <PenLine className="h-5 w-5 text-indigo-500" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm">Draft Message</h3>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Compose a new message</p>
+                  <p className="text-overline text-muted-foreground mt-0.5">Compose a new message</p>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
               </Link>
@@ -536,7 +537,7 @@ export function Dashboard() {
                         return (
                           <div
                             key={reminder.id}
-                            className={`flex items-start gap-3 px-4 py-3 border-l-[3px] ${urgencyBorder[urgency]} transition-opacity ${reminder.completed ? 'opacity-40' : ''}`}
+                            className={`flex items-start gap-3 px-4 py-3 border-l-[3px] ${urgencyBorder[urgency]} ${reminder.completed ? 'opacity-40' : ''}`}
                           >
                             <button
                               type="button"
@@ -568,7 +569,7 @@ export function Dashboard() {
                                 </span>
                                 {reminder.projectName && (
                                   <Link to={`/projects/${reminder.projectId}`}>
-                                    <Badge variant="outline" className="text-[11px] cursor-pointer hover:bg-muted">
+                                    <Badge variant="outline" className="text-overline cursor-pointer hover:bg-muted">
                                       {reminder.projectName}
                                     </Badge>
                                   </Link>

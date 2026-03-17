@@ -21,18 +21,19 @@ export function Login() {
       <div className="w-full max-w-[320px] space-y-5">
         {/* Logo + App Name */}
         <div className="text-center space-y-2">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-b from-primary to-blue-600 text-white text-2xl font-bold font-heading shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-[inset_0_-1px_2px_rgba(0,0,0,0.15)] text-white text-2xl font-bold font-serif">
             R
           </div>
-          <h1 className="text-[20px] font-semibold font-heading tracking-tight mt-3">Sign in to RAVI</h1>
-          <p className="text-[13px] text-muted-foreground">Manufacturing management platform</p>
+          <h1 className="text-xl font-semibold font-display tracking-tight mt-3">Sign in to RAVI</h1>
+          <p className="text-sm text-muted-foreground">Manufacturing management platform</p>
         </div>
 
-        <div className="bg-white border border-black/[0.08] rounded-xl p-5 shadow-elevated">
+        <div className="bg-card border border-border rounded-xl p-5 shadow-elevated">
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div className="space-y-1">
-              <label className="text-[12px] font-medium text-muted-foreground">Email</label>
+              <label htmlFor="login-email" className="text-xs font-medium text-muted-foreground">Email</label>
               <Input
+                id="login-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -41,8 +42,9 @@ export function Login() {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[12px] font-medium text-muted-foreground">Password</label>
+              <label htmlFor="login-password" className="text-xs font-medium text-muted-foreground">Password</label>
               <Input
+                id="login-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -55,7 +57,7 @@ export function Login() {
           </form>
         </div>
 
-        <p className="text-center text-[11px] text-muted-foreground/60">
+        <p className="text-center text-overline text-muted-foreground/60">
           Demo Mode &mdash; any credentials work
         </p>
       </div>

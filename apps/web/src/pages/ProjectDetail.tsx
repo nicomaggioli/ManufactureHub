@@ -348,13 +348,13 @@ export function ProjectDetail() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {projectManufacturers.map((mfr) => (
                 <Link key={mfr.id} to={`/manufacturers/${mfr.id}`}>
-                  <Card className="h-full hover:shadow-card-hover transition-all cursor-pointer animate-in">
+                  <Card className="h-full hover:shadow-card-hover transition-shadow cursor-pointer animate-in">
                     <CardContent className="p-5">
                       <p className="font-semibold text-sm">{mfr.name}</p>
                       <div className="flex flex-wrap gap-1.5 mt-3">
-                        {mfr.hasComms && <Badge variant="secondary" className="text-[11px]">Messages</Badge>}
-                        {mfr.hasQuotes && <Badge variant="secondary" className="text-[11px]">Quotes</Badge>}
-                        {mfr.hasSamples && <Badge variant="secondary" className="text-[11px]">Samples</Badge>}
+                        {mfr.hasComms && <Badge variant="secondary" className="text-overline">Messages</Badge>}
+                        {mfr.hasQuotes && <Badge variant="secondary" className="text-overline">Quotes</Badge>}
+                        {mfr.hasSamples && <Badge variant="secondary" className="text-overline">Samples</Badge>}
                       </div>
                     </CardContent>
                   </Card>
