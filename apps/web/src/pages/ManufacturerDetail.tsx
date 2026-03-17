@@ -130,8 +130,7 @@ export function ManufacturerDetail() {
 
       <div className="grid gap-5 lg:grid-cols-3">
         {/* Company Info */}
-        <Card className="lg:col-span-2 animate-in relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
+        <Card className="lg:col-span-2 animate-in">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Company Information</CardTitle>
           </CardHeader>
