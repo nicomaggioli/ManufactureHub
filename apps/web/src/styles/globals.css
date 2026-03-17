@@ -87,7 +87,6 @@
 
 @layer components {
   .data-value {
-    font-family: 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
     @apply tabular-nums tracking-tight;
   }
 

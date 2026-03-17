@@ -12,10 +12,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        // macOS system font stack
+        // macOS system font stack — one font for everything
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
         heading: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
         body: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
-        mono: ['SF Mono', 'JetBrains Mono', 'ui-monospace', 'monospace'],
+        mono: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Text', 'Helvetica Neue', 'Helvetica', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
