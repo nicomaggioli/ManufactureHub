@@ -20,9 +20,9 @@ export function AppLayout() {
         <Header />
         <main
           ref={mainRef}
-          className="flex-1 overflow-y-auto transition-[padding] duration-200"
+          className="flex-1 overflow-y-auto transition-all duration-200"
         >
-          <div className="px-6 py-6 max-w-[1400px] mx-auto sm:px-7 lg:px-8">
+          <div className="px-6 py-5 max-w-[1200px] mx-auto sm:px-7 lg:px-8">
             <Outlet />
           </div>
         </main>

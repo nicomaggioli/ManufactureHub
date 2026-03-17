@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   FileText,
@@ -7,16 +7,14 @@ import {
   GitCompareArrows,
   Sparkles,
   Loader2,
-  ArrowUpDown,
-  Clock,
-  Factory,
-  CalendarDays,
-  Package,
+  Filter,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DataTable, type ColumnDef } from '@/components/ui/data-table';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -26,38 +24,20 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/toast';
 import { quotesApi, aiApi, type Quote, type AIQuoteAnalysis } from '@/lib/api';
-import { formatCurrency, formatDate, cn } from '@/lib/utils';
+import { formatCurrency, formatDate } from '@/lib/utils';
 
-const statusFilters = [
-  { value: 'all', label: 'All' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'accepted', label: 'Accepted' },
-  { value: 'rejected', label: 'Rejected' },
-  { value: 'expired', label: 'Expired' },
-];
+const statusFilters = ['all', 'pending', 'accepted', 'rejected', 'expired'];
 
-const statusPillColors: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-800 border-amber-200',
-  accepted: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  rejected: 'bg-rose-100 text-rose-800 border-rose-200',
-  expired: 'bg-slate-100 text-slate-600 border-slate-200',
-  analyzing: 'bg-blue-100 text-blue-800 border-blue-200',
+const statusVariant: Record<string, 'default' | 'success' | 'destructive' | 'secondary' | 'warning'> = {
+  pending: 'warning',
+  accepted: 'success',
+  rejected: 'destructive',
+  expired: 'secondary',
 };
-
-const statusDotColors: Record<string, string> = {
-  pending: 'bg-amber-500',
-  accepted: 'bg-emerald-500',
-  rejected: 'bg-rose-500',
-  expired: 'bg-slate-400',
-};
-
-type SortKey = 'unitPrice' | 'leadTimeDays' | 'createdAt';
 
 export function Quotes() {
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState('all');
-  const [sortBy, setSortBy] = useState<SortKey>('createdAt');
-  const [sortAsc, setSortAsc] = useState(true);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [compareOpen, setCompareOpen] = useState(false);
   const [analysisOpen, setAnalysisOpen] = useState(false);
@@ -107,338 +87,202 @@ export function Quotes() {
     );
   };
 
-  const handleSort = (key: SortKey) => {
-    if (sortBy === key) {
-      setSortAsc(!sortAsc);
-    } else {
-      setSortBy(key);
-      setSortAsc(true);
-    }
-  };
-
-  // Sort quotes
-  const sortedQuotes = useMemo(() => {
-    const sorted = [...quotes].sort((a, b) => {
-      const aVal = a[sortBy];
-      const bVal = b[sortBy];
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return sortAsc ? aVal - bVal : bVal - aVal;
-      }
-      return sortAsc
-        ? String(aVal).localeCompare(String(bVal))
-        : String(bVal).localeCompare(String(aVal));
-    });
-    return sorted;
-  }, [quotes, sortBy, sortAsc]);
-
-  // Group by project
-  const groupedByProject = useMemo(() => {
-    const groups: Record<string, Quote[]> = {};
-    sortedQuotes.forEach((q) => {
-      const key = q.projectName || q.projectId;
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(q);
-    });
-    return groups;
-  }, [sortedQuotes]);
-
   const compareQuotes = quotes.filter((q: Quote) => compareIds.includes(q.id));
-  const projectKeys = Object.keys(groupedByProject);
+
+  const columns: ColumnDef<Quote>[] = [
+    {
+      key: 'select',
+      header: '',
+      className: 'w-10',
+      render: (row) => (
+        <input
+          type="checkbox"
+          checked={compareIds.includes(row.id)}
+          onChange={() => toggleCompare(row.id)}
+          className="rounded border-input"
+        />
+      ),
+    },
+    { key: 'projectName', header: 'Project', sortable: true },
+    { key: 'manufacturerName', header: 'Manufacturer', sortable: true },
+    {
+      key: 'unitPrice',
+      header: 'Unit Price',
+      sortable: true,
+      render: (row) => <span className="data-value font-semibold">{formatCurrency(row.unitPrice, row.currency)}</span>,
+    },
+    { key: 'moq', header: 'MOQ', sortable: true, render: (row) => <span className="data-value">{row.moq}</span> },
+    {
+      key: 'leadTimeDays',
+      header: 'Lead Time',
+      sortable: true,
+      render: (row) => <span className="data-value">{row.leadTimeDays} days</span>,
+    },
+    {
+      key: 'validityDate',
+      header: 'Valid Until',
+      sortable: true,
+      render: (row) => <span className="data-value">{formatDate(row.validityDate)}</span>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (row) => (
+        <Badge variant={statusVariant[row.status] ?? 'outline'}>{row.status}</Badge>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-1">
+          {row.status === 'pending' && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-green-600"
+                onClick={(e) => { e.stopPropagation(); acceptMutation.mutate(row.id); }}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-destructive"
+                onClick={(e) => { e.stopPropagation(); rejectMutation.mutate(row.id); }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={(e) => {
+              e.stopPropagation();
+              setAnalysisQuoteId(row.id);
+              analyzeMutation.mutate(row.id);
+            }}
+          >
+            {analyzeMutation.isPending && analysisQuoteId === row.id ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[17px] font-bold tracking-tight font-display">Quotes</h1>
-          <p className="text-sm text-muted-foreground font-sans mt-1">Compare and manage manufacturer quotes across projects.</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Quotes</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Review and compare manufacturer quotes.</p>
         </div>
         {compareIds.length >= 2 && (
-          <Button onClick={() => setCompareOpen(true)} size="sm" variant="outline" className="rounded-md">
+          <Button onClick={() => setCompareOpen(true)}>
             <GitCompareArrows className="mr-2 h-4 w-4" />
             Compare ({compareIds.length})
           </Button>
         )}
       </div>
 
-      {/* Filters + sort */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Status pills */}
-        <div className="flex flex-wrap gap-2">
+      <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+        <TabsList>
           {statusFilters.map((s) => (
-            <button
-              key={s.value}
-              onClick={() => setStatusFilter(s.value)}
-              className={cn(
-                'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors',
-                statusFilter === s.value
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
-            >
-              {s.value !== 'all' && (
-                <span className={cn('mr-1.5 h-2 w-2 rounded-full', statusDotColors[s.value] ?? 'bg-muted-foreground')} />
-              )}
-              {s.label}
-            </button>
+            <TabsTrigger key={s} value={s} className="capitalize">
+              {s}
+            </TabsTrigger>
           ))}
-        </div>
+        </TabsList>
 
-        {/* Sort buttons */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground font-sans">Sort by:</span>
-          {[
-            { key: 'unitPrice' as SortKey, label: 'Price' },
-            { key: 'leadTimeDays' as SortKey, label: 'Lead time' },
-            { key: 'createdAt' as SortKey, label: 'Date' },
-          ].map((opt) => (
-            <button
-              key={opt.key}
-              onClick={() => handleSort(opt.key)}
-              className={cn(
-                'inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors',
-                sortBy === opt.key
-                  ? 'bg-foreground/10 text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {opt.label}
-              {sortBy === opt.key && (
-                <ArrowUpDown className="h-3 w-3" />
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Compare hint */}
-      {compareIds.length > 0 && compareIds.length < 2 && (
-        <Card className="px-4 py-3">
-          <p className="text-sm text-muted-foreground font-sans">
-            Select <span className="font-medium">{2 - compareIds.length} more</span> quote(s) to compare side by side.
-          </p>
-        </Card>
-      )}
-
-      {/* Quotes grid */}
-      {quotesQuery.isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-4 space-y-3">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-8 w-24" />
-                <div className="flex gap-4">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-16" />
-                </div>
+        <TabsContent value={statusFilter} className="mt-5">
+          {quotesQuery.isLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-11 w-full" />
+              ))}
+            </div>
+          ) : quotesQuery.isError ? (
+            <Card>
+              <CardContent className="py-12 text-center text-destructive">
+                Failed to load quotes.
               </CardContent>
             </Card>
-          ))}
-        </div>
-      ) : quotesQuery.isError ? (
-        <Card>
-          <CardContent className="py-16 text-center text-destructive text-sm">
-            Failed to load quotes.
-          </CardContent>
-        </Card>
-      ) : quotes.length === 0 ? (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center py-16">
-            <p className="text-sm font-semibold font-display text-muted-foreground mb-1">No quotes found</p>
-            <p className="text-sm text-muted-foreground/70 font-sans">Request quotes from manufacturers to see them here.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-8">
-          {projectKeys.map((projectName) => (
-            <div key={projectName}>
-              {/* Project group header */}
-              {projectKeys.length > 1 && (
-                <div className="mb-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-0.5">Project</p>
-                  <h3 className="text-sm font-semibold font-display">{projectName}</h3>
-                </div>
-              )}
+          ) : (
+            <Card className="animate-in">
+              <CardContent className="pt-5">
+                <DataTable
+                  columns={columns}
+                  data={quotes}
+                  keyExtractor={(r) => r.id}
+                  emptyMessage="No quotes found"
+                />
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
 
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {groupedByProject[projectName].map((quote, i) => (
-                  <Card
-                    key={quote.id}
-                    className={cn(
-                      'bg-card border rounded-md transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-md relative group',
-                      compareIds.includes(quote.id) && 'ring-2 ring-primary/40'
-                    )}
-                    style={{ animationDelay: `${i * 60}ms` }}
-                  >
-                    {/* Compare checkbox */}
-                    <button
-                      onClick={() => toggleCompare(quote.id)}
-                      className={cn(
-                        'absolute top-3 right-3 h-5 w-5 rounded border flex items-center justify-center transition-colors z-10',
-                        compareIds.includes(quote.id)
-                          ? 'bg-primary border-primary text-primary-foreground'
-                          : 'border-border bg-background opacity-0 group-hover:opacity-100'
-                      )}
-                      title="Select to compare"
-                    >
-                      {compareIds.includes(quote.id) && <span className="text-[10px] font-bold">&#10003;</span>}
-                    </button>
-
-                    <CardContent className="p-4 space-y-4">
-                      {/* Manufacturer name */}
-                      <div className="flex items-start gap-3 pr-6">
-                        <div className="h-9 w-9 rounded-md bg-muted flex items-center justify-center shrink-0">
-                          <Factory className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold font-display truncate">{quote.manufacturerName}</p>
-                          {projectKeys.length <= 1 && (
-                            <p className="text-xs text-muted-foreground font-sans truncate">{quote.projectName}</p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Key data grid */}
-                      <div className="grid grid-cols-3 gap-3">
-                        <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Price</p>
-                          <p className="text-sm font-bold data-value font-display">{formatCurrency(quote.unitPrice, quote.currency)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">MOQ</p>
-                          <p className="text-sm font-semibold data-value">{quote.moq.toLocaleString()}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Lead</p>
-                          <p className="text-sm font-semibold data-value">{quote.leadTimeDays}d</p>
-                        </div>
-                      </div>
-
-                      {/* Valid date */}
-                      <p className="text-xs text-muted-foreground font-sans">
-                        Valid until <span className="data-value font-medium">{formatDate(quote.validityDate, 'MMM d')}</span>
-                      </p>
-
-                      {/* Status + actions */}
-                      <div className="flex items-center justify-between pt-3 border-t border-border/50">
-                        <span className={cn(
-                          'inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider border',
-                          statusPillColors[quote.status] ?? 'bg-muted text-muted-foreground border-border'
-                        )}>
-                          {quote.status}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          {quote.status === 'pending' && (
-                            <>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-7 w-7 text-emerald-600 hover:text-emerald-700 border-emerald-200 hover:border-emerald-300"
-                                onClick={() => acceptMutation.mutate(quote.id)}
-                                disabled={acceptMutation.isPending || rejectMutation.isPending}
-                                title="Accept"
-                              >
-                                {acceptMutation.isPending && acceptMutation.variables === quote.id ? (
-                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                  <Check className="h-3.5 w-3.5" />
-                                )}
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-7 w-7 text-destructive border-rose-200 hover:border-rose-300"
-                                onClick={() => rejectMutation.mutate(quote.id)}
-                                disabled={acceptMutation.isPending || rejectMutation.isPending}
-                                title="Reject"
-                              >
-                                {rejectMutation.isPending && rejectMutation.variables === quote.id ? (
-                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                  <X className="h-3.5 w-3.5" />
-                                )}
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => {
-                              setAnalysisQuoteId(quote.id);
-                              analyzeMutation.mutate(quote.id);
-                            }}
-                            title="AI Analysis"
-                          >
-                            {analyzeMutation.isPending && analysisQuoteId === quote.id ? (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            ) : (
-                              <Sparkles className="h-3.5 w-3.5" />
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Compare dialog - side by side cards */}
+      {/* Compare dialog */}
       <Dialog open={compareOpen} onOpenChange={setCompareOpen}>
-        <DialogContent className="max-w-5xl">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle className="text-[17px] font-bold tracking-tight font-display">Compare Quotes</DialogTitle>
-            <DialogDescription className="font-sans">Side-by-side comparison of selected quotes.</DialogDescription>
+            <DialogTitle className="text-lg font-semibold tracking-tight">Compare Quotes</DialogTitle>
+            <DialogDescription>Side-by-side comparison of selected quotes.</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${compareQuotes.length}, minmax(0, 1fr))` }}>
-            {compareQuotes.map((q) => (
-              <Card key={q.id} className="overflow-hidden border rounded-md">
-                <CardHeader className="p-4 pb-3 bg-card border-b">
-                  <CardTitle className="text-sm font-semibold font-display">{q.manufacturerName}</CardTitle>
-                  <p className="text-xs text-muted-foreground font-sans">{q.projectName}</p>
-                </CardHeader>
-                <CardContent className="p-4 space-y-4">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1">Unit Price</p>
-                    <p className="text-xl font-bold data-value font-display">{formatCurrency(q.unitPrice, q.currency)}</p>
-                  </div>
-                  <div className="space-y-2.5">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground font-sans">MOQ</span>
-                      <span className="font-medium data-value">{q.moq.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground font-sans">Lead Time</span>
-                      <span className="font-medium data-value">{q.leadTimeDays} days</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground font-sans">Valid Until</span>
-                      <span className="font-medium data-value">{formatDate(q.validityDate)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm items-center">
-                      <span className="text-muted-foreground font-sans">Status</span>
-                      <span className={cn(
-                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider border',
-                        statusPillColors[q.status] ?? 'bg-muted text-muted-foreground border-border'
-                      )}>
-                        {q.status}
-                      </span>
-                    </div>
-                  </div>
-                  {q.notes && (
-                    <div className="pt-3 border-t">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-1">Notes</p>
-                      <p className="text-xs text-muted-foreground font-sans">{q.notes}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="p-2.5 text-left text-xs font-medium text-muted-foreground">Attribute</th>
+                  {compareQuotes.map((q) => (
+                    <th key={q.id} className="p-2.5 text-left font-semibold">{q.manufacturerName}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b">
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Project</td>
+                  {compareQuotes.map((q) => <td key={q.id} className="p-2.5">{q.projectName}</td>)}
+                </tr>
+                <tr className="border-b">
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Unit Price</td>
+                  {compareQuotes.map((q) => (
+                    <td key={q.id} className="p-2.5 font-semibold data-value">{formatCurrency(q.unitPrice, q.currency)}</td>
+                  ))}
+                </tr>
+                <tr className="border-b">
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">MOQ</td>
+                  {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{q.moq.toLocaleString()}</td>)}
+                </tr>
+                <tr className="border-b">
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Lead Time</td>
+                  {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{q.leadTimeDays} days</td>)}
+                </tr>
+                <tr className="border-b">
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Valid Until</td>
+                  {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{formatDate(q.validityDate)}</td>)}
+                </tr>
+                <tr className="border-b">
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Status</td>
+                  {compareQuotes.map((q) => (
+                    <td key={q.id} className="p-2.5">
+                      <Badge variant={statusVariant[q.status] ?? 'outline'}>{q.status}</Badge>
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="p-2.5 text-xs font-medium text-muted-foreground">Notes</td>
+                  {compareQuotes.map((q) => <td key={q.id} className="p-2.5 text-xs">{q.notes || '--'}</td>)}
+                </tr>
+              </tbody>
+            </table>
           </div>
         </DialogContent>
       </Dialog>
@@ -447,34 +291,34 @@ export function Quotes() {
       <Dialog open={analysisOpen} onOpenChange={setAnalysisOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-[17px] font-bold tracking-tight font-display">
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight">
               <Sparkles className="h-5 w-5 text-primary" /> AI Quote Analysis
             </DialogTitle>
           </DialogHeader>
           {analysis ? (
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-1.5">Competitiveness</p>
-                <p className="text-sm text-muted-foreground font-sans leading-relaxed">{analysis.competitiveness}</p>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Competitiveness</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{analysis.competitiveness}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-1.5">Market Comparison</p>
-                <p className="text-sm text-muted-foreground font-sans leading-relaxed">{analysis.marketComparison}</p>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Market Comparison</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">{analysis.marketComparison}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-1.5">Negotiation Tips</p>
-                <ul className="space-y-1.5">
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Negotiation Tips</h4>
+                <ul className="space-y-1">
                   {analysis.negotiationTips.map((tip, i) => (
-                    <li key={i} className="text-sm text-muted-foreground font-sans flex items-start gap-2">
-                      <span className="text-primary mt-0.5 font-bold">-</span> {tip}
+                    <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                      <span className="text-primary mt-0.5">-</span> {tip}
                     </li>
                   ))}
                 </ul>
               </div>
-              <Card className="p-4 border">
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-1.5">Recommendation</p>
-                <p className="text-sm font-semibold text-primary font-display">{analysis.recommendation}</p>
-              </Card>
+              <div>
+                <h4 className="text-xs font-medium text-muted-foreground mb-1.5">Recommendation</h4>
+                <p className="text-sm font-semibold text-primary">{analysis.recommendation}</p>
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center py-8">

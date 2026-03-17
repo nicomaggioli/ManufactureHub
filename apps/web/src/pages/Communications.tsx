@@ -60,7 +60,7 @@ function ManufacturerAvatar({ name }: { name: string }) {
     .toUpperCase();
   return (
     <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-      <span className="text-overline font-semibold text-muted-foreground">{initials}</span>
+      <span className="text-[11px] font-semibold text-muted-foreground">{initials}</span>
     </div>
   );
 }
@@ -82,21 +82,21 @@ function ThreadListItem({
     <button
       onClick={onClick}
       className={cn(
-        'w-full text-left rounded-md p-3 transition-colors',
-        active ? 'bg-muted border border-border shadow-sm' : 'hover:bg-muted/50 border border-transparent'
+        'w-full text-left rounded-xl p-3.5 transition-all',
+        active ? 'bg-primary/8 border border-primary/20 shadow-sm' : 'hover:bg-muted/80 border border-transparent'
       )}
     >
       <div className="flex items-start gap-3">
         <ManufacturerAvatar name={mfrName} />
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-semibold font-display truncate">{mfrName}</p>
-            <span className="text-overline text-muted-foreground data-value shrink-0">
+            <p className="text-sm font-semibold truncate">{mfrName}</p>
+            <span className="text-[11px] text-muted-foreground data-value shrink-0">
               {formatRelativeDate(thread.sentAt ?? thread.createdAt)}
             </span>
           </div>
-          <p className="text-xs font-medium text-foreground/80 truncate mt-0.5 font-sans">{thread.subject ?? 'No subject'}</p>
-          <p className="text-xs text-muted-foreground truncate mt-0.5 line-clamp-1 font-sans">{thread.body}</p>
+          <p className="text-xs font-medium text-foreground/80 truncate mt-0.5">{thread.subject ?? 'No subject'}</p>
+          <p className="text-xs text-muted-foreground truncate mt-0.5 line-clamp-1">{thread.body}</p>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0 mt-0.5">
           <StatusIcon className={cn('h-3.5 w-3.5',
@@ -116,17 +116,17 @@ function MessageBubble({ message, manufacturerName }: { message: Message; manufa
       {!isUser && <ManufacturerAvatar name={manufacturerName} />}
       <div
         className={cn(
-          'max-w-[70%] px-4 py-3',
+          'max-w-[70%] rounded-2xl px-4 py-3',
           isUser
-            ? 'bg-primary text-white rounded-[10px_10px_4px_10px]'
-            : 'bg-muted rounded-[10px_10px_10px_4px]'
+            ? 'bg-primary text-primary-foreground rounded-br-md'
+            : 'bg-muted rounded-bl-md'
         )}
       >
         {!isUser && (
-          <p className="text-overline font-medium text-muted-foreground mb-1">{manufacturerName}</p>
+          <p className="text-[11px] font-medium text-muted-foreground mb-1">{manufacturerName}</p>
         )}
-        <p className="text-sm font-sans whitespace-pre-wrap leading-relaxed">{message.content}</p>
-        <p className={cn('text-[10px] mt-2 data-value', isUser ? 'text-white/50' : 'text-muted-foreground/60')}>
+        <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+        <p className={cn('text-[10px] mt-2 data-value', isUser ? 'text-primary-foreground/50' : 'text-muted-foreground/60')}>
           {formatDateTime(message.createdAt)}
         </p>
       </div>
@@ -138,7 +138,7 @@ function DateSeparator({ date }: { date: string }) {
   return (
     <div className="flex items-center gap-3 py-2">
       <div className="flex-1 border-t border-border/50" />
-      <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider">{date}</span>
+      <span className="text-[11px] font-medium text-muted-foreground/60 uppercase tracking-wider">{date}</span>
       <div className="flex-1 border-t border-border/50" />
     </div>
   );
@@ -256,27 +256,26 @@ export function Communications() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[17px] font-bold tracking-tight font-display">Messages</h1>
-          <p className="text-sm text-muted-foreground font-sans mt-1">Conversations with your manufacturers.</p>
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mb-1">Inbox</p>
+          <h1 className="text-2xl font-semibold tracking-tight">Messages</h1>
+          <p className="text-sm text-muted-foreground mt-1">Conversations with your manufacturers.</p>
         </div>
-        <Button onClick={() => setComposerOpen(true)} size="sm" variant="outline" className="rounded-md">
+        <Button onClick={() => setComposerOpen(true)} className="rounded-lg">
           <Plus className="mr-2 h-4 w-4" />
           Compose
         </Button>
       </div>
 
-      <div className="flex gap-0 h-[calc(100vh-220px)] rounded-md border border-border overflow-hidden bg-background">
+      <div className="flex gap-0 h-[calc(100vh-220px)] rounded-xl border border-border overflow-hidden bg-background">
         {/* Thread list sidebar */}
         <div className={cn(
-          'w-full sm:w-96 shrink-0 flex flex-col border-r border-border bg-card',
+          'w-full sm:w-96 shrink-0 flex flex-col border-r border-border bg-muted/20',
           mobileShowDetail ? 'hidden sm:flex' : 'flex'
         )}>
           <div className="p-3 border-b border-border/50 shrink-0">
             <div className="relative">
-              <label htmlFor="comm-search" className="sr-only">Search conversations</label>
               <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
-                id="comm-search"
                 placeholder="Search conversations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -299,9 +298,9 @@ export function Communications() {
               </div>
             ) : filteredThreads.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Inbox className="h-8 w-8 mb-3 text-muted-foreground/30" />
-                <p className="text-sm font-medium font-display">No conversations</p>
-                <p className="text-xs text-muted-foreground/60 mt-1 font-sans">Start a new conversation to get going.</p>
+                <Inbox className="h-10 w-10 mb-3 text-muted-foreground/30" />
+                <p className="text-sm font-medium">No conversations</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">Start a new conversation to get going.</p>
               </div>
             ) : (
               filteredThreads.map((thread) => (
@@ -323,41 +322,43 @@ export function Communications() {
         )}>
           {!activeThread ? (
             <div className="flex flex-1 flex-col items-center justify-center text-muted-foreground p-8">
-              <MessageSquare className="h-8 w-8 text-muted-foreground/20 mb-3" />
-              <p className="text-sm font-semibold font-display mb-1">No conversation selected</p>
-              <p className="text-sm text-muted-foreground/60 mb-5 font-sans">Pick a conversation from the sidebar or start a new one.</p>
-              <Button variant="outline" size="sm" className="rounded-md" onClick={() => setComposerOpen(true)}>
+              <div className="rounded-2xl bg-muted/60 p-5 mb-5">
+                <MessageSquare className="h-10 w-10 text-muted-foreground/30" />
+              </div>
+              <p className="text-base font-medium mb-1">No conversation selected</p>
+              <p className="text-sm text-muted-foreground/60 mb-5">Pick a conversation from the sidebar or start a new one.</p>
+              <Button variant="outline" className="rounded-lg" onClick={() => setComposerOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" /> Start New Conversation
               </Button>
             </div>
           ) : (
             <>
               {/* Thread header */}
-              <div className="border-b shrink-0 px-5 py-3.5 bg-card">
+              <div className="border-b shrink-0 px-5 py-3.5 bg-background">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
                     {/* Mobile back button */}
                     <button
                       onClick={() => setMobileShowDetail(false)}
-                      className="sm:hidden mt-0.5 p-1 rounded-md hover:bg-muted"
+                      className="sm:hidden mt-0.5 p-1 rounded-lg hover:bg-muted"
                     >
                       <ArrowLeft className="h-5 w-5" />
                     </button>
                     <ManufacturerAvatar name={manufacturerName} />
                     <div>
-                      <h2 className="text-sm font-semibold font-display">{activeThread.subject ?? 'No subject'}</h2>
+                      <h2 className="text-sm font-semibold">{activeThread.subject ?? 'No subject'}</h2>
                       <div className="flex items-center gap-2 mt-1">
                         <Link
                           to={`/manufacturers/${activeThread.manufacturerId}`}
-                          className="text-xs text-primary hover:underline flex items-center gap-1 font-sans"
+                          className="text-xs text-primary hover:underline flex items-center gap-1"
                         >
                           {manufacturerName}
                           <ArrowUpRight className="h-3 w-3" />
                         </Link>
-                        <span className="text-muted-foreground text-xs font-sans">in</span>
+                        <span className="text-muted-foreground text-xs">in</span>
                         <Link
                           to={`/projects/${activeThread.projectId}`}
-                          className="text-xs text-muted-foreground hover:text-foreground font-sans"
+                          className="text-xs text-muted-foreground hover:text-foreground"
                         >
                           {projectNames[activeThread.projectId] ?? 'Project'}
                         </Link>
@@ -371,7 +372,7 @@ export function Communications() {
               </div>
 
               {/* Messages - chat bubbles */}
-              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1 bg-background">
+              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1 bg-muted/10">
                 {groupedMessages.map((group) => (
                   <div key={group.date} className="space-y-3">
                     <DateSeparator date={group.date} />
@@ -393,14 +394,12 @@ export function Communications() {
               </div>
 
               {/* Reply input */}
-              <div className="border-t p-4 shrink-0 bg-card">
+              <div className="border-t p-4 shrink-0 bg-background">
                 <div className="flex gap-3 items-end">
                   <div className="flex-1 relative">
-                    <label htmlFor="reply-input" className="sr-only">Type your message</label>
                     <Input
-                      id="reply-input"
                       placeholder="Type your message..."
-                      className="pr-4 h-11 text-sm rounded-md bg-background"
+                      className="pr-4 h-11 text-sm rounded-xl bg-muted/30"
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyDown={handleKeyDown}
@@ -408,7 +407,7 @@ export function Communications() {
                   </div>
                   <Button
                     size="icon"
-                    className="h-11 w-11 rounded-md shrink-0"
+                    className="h-11 w-11 rounded-xl shrink-0"
                     disabled={!replyText.trim()}
                     onClick={handleSendReply}
                   >

@@ -13,7 +13,7 @@ import {
 import type { Project, Manufacturer, Communication, Reminder, ActivityItem } from '@/lib/api';
 import { formatRelativeDate } from '@/lib/utils';
 
-// ── Route labels ────────────────────────────────────────────────────────
+// ── Breadcrumbs ──────────────────────────────────────────────────────────
 
 const routeLabels: Record<string, string> = {
   '': 'Dashboard',
@@ -26,28 +26,11 @@ const routeLabels: Record<string, string> = {
   settings: 'Settings',
 };
 
-// ── Page title ──────────────────────────────────────────────────────────
-
-function PageTitle() {
-  const location = useLocation();
-  const segments = location.pathname.replace(/^\//, '').split('/').filter(Boolean);
-  const currentSegment = segments[0] ?? '';
-  const title = routeLabels[currentSegment] ?? 'Dashboard';
-
-  return (
-    <h1 className="text-[17px] font-bold text-foreground tracking-tight font-display">
-      {title}
-    </h1>
-  );
-}
-
-// ── Breadcrumbs ──────────────────────────────────────────────────────────
-
 function Breadcrumbs() {
   const location = useLocation();
   const segments = location.pathname.replace(/^\//, '').split('/').filter(Boolean);
 
-  if (segments.length <= 1) return null;
+  if (segments.length === 0) return null;
 
   const crumbs: { label: string; path: string }[] = [];
   for (let i = 0; i < segments.length; i++) {
@@ -58,19 +41,19 @@ function Breadcrumbs() {
   }
 
   return (
-    <nav className="flex items-center gap-1 text-xs text-muted-foreground/70">
-      <Link to="/" className="hover:text-foreground transition-colors">
+    <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+      <Link to="/" className="hover:text-foreground transition-colors text-muted-foreground/70">
         Home
       </Link>
       {crumbs.map((crumb, i) => (
-        <span key={crumb.path} className="flex items-center gap-1">
-          <ChevronRight className="h-2.5 w-2.5 text-muted-foreground/40" />
+        <span key={crumb.path} className="flex items-center gap-1.5">
+          <ChevronRight className="h-3 w-3 text-muted-foreground/40" />
           {i < crumbs.length - 1 ? (
             <Link to={crumb.path} className="hover:text-foreground transition-colors">
               {crumb.label}
             </Link>
           ) : (
-            <span className="text-muted-foreground">{crumb.label}</span>
+            <span className="text-foreground font-medium">{crumb.label}</span>
           )}
         </span>
       ))}
@@ -249,24 +232,12 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Focus first item when notifications panel opens
-  useEffect(() => {
-    if (notificationsOpen) {
-      requestAnimationFrame(() => {
-        const panel = notifRef.current?.querySelector('[role="dialog"]');
-        const firstFocusable = panel?.querySelector<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
-        firstFocusable?.focus();
-      });
-    }
-  }, [notificationsOpen]);
-
   return (
-    <header className="flex items-center justify-between h-[54px] px-5 border-b border-border bg-card sticky top-0 z-30">
-      {/* Left: Page title + breadcrumbs */}
-      <div className="flex flex-col justify-center min-w-0 flex-shrink-0">
+    <header className="flex items-center justify-between h-[52px] px-5 border-b border-black/[0.06] bg-white/70 backdrop-blur-md sticky top-0 z-30">
+      {/* Left: Breadcrumbs */}
+      <div className="flex items-center gap-4 min-w-0 flex-shrink-0">
         {/* Spacer for mobile hamburger */}
         <div className="w-9 md:hidden" />
-        <PageTitle />
         <Breadcrumbs />
       </div>
 
@@ -289,15 +260,15 @@ export function Header() {
                 searchInputRef.current?.blur();
               }
             }}
-            className="w-full h-[34px] pl-10 pr-10 text-sm bg-muted/50 border border-border rounded-md text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/25 focus:bg-card transition-colors duration-150"
+            className="w-full h-[34px] pl-10 pr-10 text-[13px] bg-black/[0.03] border border-black/[0.06] rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/25 focus:bg-white transition-all duration-150"
           />
-          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/40 font-mono bg-muted/70 px-1.5 py-0.5 rounded border border-border hidden sm:inline">
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/40 font-mono bg-white/70 px-1.5 py-0.5 rounded border border-black/[0.06] hidden sm:inline">
             /
           </kbd>
 
           {/* Search results dropdown */}
           {searchFocused && searchTerm.trim() && searchResults && (
-            <div className="absolute top-full left-0 right-0 mt-1.5 bg-card border border-border rounded-md shadow-elevated z-50 overflow-hidden" role="listbox">
+            <div className="absolute top-full left-0 right-0 mt-1.5 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-lg z-50 overflow-hidden">
               {!hasResults ? (
                 <div className="px-4 py-8 text-center">
                   <Search className="mx-auto h-5 w-5 text-muted-foreground/30 mb-2" />
@@ -314,9 +285,8 @@ export function Header() {
                       {searchResults.projects.map((p: Project) => (
                         <button
                           key={p.id}
-                          role="option"
                           onClick={() => handleSearchNav(`/projects/${p.id}`)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted/50 transition-colors flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
                         >
                           <span className="truncate">{p.title}</span>
                           <span className="text-xs text-muted-foreground ml-auto shrink-0">{p.status}</span>
@@ -326,15 +296,14 @@ export function Header() {
                   )}
                   {searchResults.manufacturers.length > 0 && (
                     <div>
-                      <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border">
+                      <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border/50">
                         <Factory className="h-3 w-3" /> Manufacturers
                       </div>
                       {searchResults.manufacturers.map((m: Manufacturer) => (
                         <button
                           key={m.id}
-                          role="option"
                           onClick={() => handleSearchNav(`/manufacturers/${m.id}`)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted/50 transition-colors flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
                         >
                           <span className="truncate">{m.name}</span>
                           <span className="text-xs text-muted-foreground ml-auto shrink-0">{m.country}</span>
@@ -344,15 +313,14 @@ export function Header() {
                   )}
                   {searchResults.communications.length > 0 && (
                     <div>
-                      <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border">
+                      <div className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 border-t border-border/50">
                         <MessageSquare className="h-3 w-3" /> Communications
                       </div>
                       {searchResults.communications.map((c: Communication) => (
                         <button
                           key={c.id}
-                          role="option"
                           onClick={() => handleSearchNav(`/communications/${c.id}`)}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted/50 transition-colors flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
                         >
                           <span className="truncate">{c.subject ?? 'No subject'}</span>
                           <span className="text-xs text-muted-foreground ml-auto shrink-0">{c.manufacturer?.name ?? 'Unknown'}</span>
@@ -373,12 +341,12 @@ export function Header() {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => { setNotificationsOpen(!notificationsOpen); setMenuOpen(false); }}
-            className="relative flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            className="relative flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-black/[0.04] transition-colors"
             aria-label="Notifications"
           >
             <Bell className="w-[18px] h-[18px]" strokeWidth={1.5} />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-card" />
+              <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white" />
             )}
           </button>
 
@@ -386,20 +354,10 @@ export function Header() {
             <div
               role="dialog"
               aria-label="Notifications"
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') setNotificationsOpen(false);
-                if (e.key === 'Tab') {
-                  const focusable = e.currentTarget.querySelectorAll<HTMLElement>('a, button, [tabindex]:not([tabindex="-1"])');
-                  if (focusable.length === 0) return;
-                  const first = focusable[0];
-                  const last = focusable[focusable.length - 1];
-                  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-                  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-                }
-              }}
-              className="absolute right-0 top-full mt-1.5 w-80 bg-card border border-border rounded-md shadow-elevated z-50 animate-scale-in"
+              onKeyDown={(e) => { if (e.key === 'Escape') setNotificationsOpen(false); }}
+              className="absolute right-0 top-full mt-1.5 w-80 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-lg z-50 animate-scale-in"
             >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.06]">
                 <span className="text-sm font-semibold">Notifications</span>
                 {unreadCount > 0 && (
                   <button
@@ -425,7 +383,7 @@ export function Header() {
                         key={notif.id}
                         to={notif.path}
                         onClick={() => setNotificationsOpen(false)}
-                        className={`flex items-start gap-3 px-4 py-3 hover:bg-muted/30 transition-colors border-b border-border last:border-0 ${isUnread ? '' : 'opacity-60'}`}
+                        className={`flex items-start gap-3 px-4 py-3 hover:bg-black/[0.03] transition-colors border-b border-black/[0.04] last:border-0 ${isUnread ? '' : 'opacity-60'}`}
                       >
                         <div className={`flex h-7 w-7 items-center justify-center rounded-full shrink-0 mt-0.5 ${notif.iconColor}`}>
                           <Icon className="h-3.5 w-3.5" />
@@ -454,7 +412,7 @@ export function Header() {
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => { setMenuOpen(!menuOpen); setNotificationsOpen(false); }}
-            className="flex items-center gap-2 ml-1 pl-2.5 pr-2 py-1.5 rounded-md hover:bg-muted/50 transition-colors"
+            className="flex items-center gap-2 ml-1 pl-2.5 pr-2 py-1.5 rounded-lg hover:bg-black/[0.04] transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-xs font-semibold text-primary">
@@ -467,10 +425,10 @@ export function Header() {
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-48 bg-card border border-border rounded-md shadow-elevated py-1 z-50 animate-scale-in">
+            <div className="absolute right-0 top-full mt-1.5 w-48 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-lg py-1 z-50 animate-scale-in">
               <Link
                 to="/settings"
-                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted/50 rounded-md mx-1 transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-black/[0.04] rounded-md mx-1 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 <Settings className="w-4 h-4 text-muted-foreground" />
@@ -479,7 +437,7 @@ export function Header() {
               <div className="border-t border-border my-1" />
               <button
                 onClick={() => signOut()}
-                className="flex items-center gap-2.5 px-3 py-2 text-sm text-destructive hover:bg-destructive/5 rounded-md mx-1 transition-colors w-[calc(100%-8px)] text-left"
+                className="flex items-center gap-2.5 px-3 py-2 text-sm text-destructive hover:bg-destructive/5 rounded-lg mx-1 transition-colors w-[calc(100%-8px)] text-left"
               >
                 <LogOut className="w-4 h-4" />
                 Sign out
