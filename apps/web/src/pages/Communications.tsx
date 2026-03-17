@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
-import { MessageSquare, Send, Clock, CheckCircle2, AlertCircle, Plus, Inbox, ArrowUpRight, Archive, XCircle, FileEdit } from 'lucide-react';
+import { MessageSquare, Send, CheckCircle2, Plus, Inbox, ArrowUpRight, Archive, XCircle, FileEdit, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,39 +9,71 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { communicationsApi, type Communication } from '@/lib/api';
 import { formatRelativeDate, formatDateTime, cn } from '@/lib/utils';
-import { MessageComposer } from './MessageComposer';
 
-const statusConfig = {
-  draft: { label: 'Draft', icon: FileEdit, variant: 'secondary' as const },
-  sent: { label: 'Sent', icon: Send, variant: 'default' as const },
-  delivered: { label: 'Delivered', icon: CheckCircle2, variant: 'success' as const },
-  failed: { label: 'Failed', icon: XCircle, variant: 'destructive' as const },
-  archived: { label: 'Archived', icon: Archive, variant: 'outline' as const },
+const statusConfig: Record<string, { label: string; icon: React.ElementType; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+  draft: { label: 'Draft', icon: FileEdit, variant: 'secondary' },
+  sent: { label: 'Sent', icon: Send, variant: 'default' },
+  delivered: { label: 'Delivered', icon: CheckCircle2, variant: 'default' },
+  failed: { label: 'Failed', icon: XCircle, variant: 'destructive' },
+  archived: { label: 'Archived', icon: Archive, variant: 'outline' },
 };
 
-// Map projectIds to names for breadcrumb context
-const projectNames: Record<string, string> = {
-  p1: 'Spring Collection 2026',
-  p2: 'Denim Capsule Line',
-  p3: 'Athleisure Basics',
-  p4: 'Resort Swim 2027',
-  p5: 'Winter Outerwear',
-  p6: 'Leather Accessories',
-  p7: 'Organic Kids Line',
-};
+interface Thread {
+  id: string;
+  subject: string;
+  manufacturerId: string;
+  manufacturerName: string;
+  projectId: string;
+  projectTitle: string;
+  messages: Communication[];
+  lastMessageAt: string;
+  latestStatus: string;
+}
+
+function groupIntoThreads(comms: Communication[]): Thread[] {
+  const map = new Map<string, Communication[]>();
+  for (const c of comms) {
+    // Group by manufacturer + base subject (strip "Re: " prefixes)
+    const baseSubject = (c.subject ?? '').replace(/^Re:\s*/i, '');
+    const key = `${c.manufacturerId}::${baseSubject}`;
+    const existing = map.get(key) ?? [];
+    existing.push(c);
+    map.set(key, existing);
+  }
+
+  const threads: Thread[] = [];
+  for (const [, msgs] of map) {
+    const sorted = msgs.sort((a, b) => new Date(a.sentAt ?? a.createdAt).getTime() - new Date(b.sentAt ?? b.createdAt).getTime());
+    const latest = sorted[sorted.length - 1];
+    const first = sorted[0];
+    threads.push({
+      id: first.id,
+      subject: (first.subject ?? '').replace(/^Re:\s*/i, ''),
+      manufacturerId: first.manufacturerId,
+      manufacturerName: first.manufacturer?.name ?? 'Unknown',
+      projectId: first.projectId,
+      projectTitle: first.project?.title ?? first.projectId,
+      messages: sorted,
+      lastMessageAt: latest.sentAt ?? latest.createdAt,
+      latestStatus: latest.status,
+    });
+  }
+
+  return threads.sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+}
 
 function ThreadListItem({
   thread,
   active,
   onClick,
 }: {
-  thread: Communication;
+  thread: Thread;
   active: boolean;
   onClick: () => void;
 }) {
-  const config = statusConfig[thread.status];
+  const config = statusConfig[thread.latestStatus] ?? statusConfig.sent;
   const StatusIcon = config.icon;
-  const projectName = thread.project?.title ?? projectNames[thread.projectId] ?? thread.projectId;
+  const lastMsg = thread.messages[thread.messages.length - 1];
 
   return (
     <button
@@ -53,72 +85,121 @@ function ThreadListItem({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium truncate">{thread.manufacturer?.name ?? 'Unknown'}</p>
-          <p className="text-xs text-muted-foreground truncate mt-0.5">{thread.subject ?? '(no subject)'}</p>
+          <p className="text-sm font-medium truncate">{thread.manufacturerName}</p>
+          <p className="text-xs text-muted-foreground truncate mt-0.5">{thread.subject}</p>
         </div>
         <StatusIcon className={cn('h-3.5 w-3.5 shrink-0 mt-0.5',
-          thread.status === 'delivered' ? 'text-emerald-500' :
-          thread.status === 'failed' ? 'text-rose-500' : 'text-amber-500'
+          thread.latestStatus === 'delivered' ? 'text-emerald-500' :
+          thread.latestStatus === 'failed' ? 'text-rose-500' : 'text-amber-500'
         )} />
       </div>
       <div className="flex items-center gap-2 mt-1.5">
-        <Badge variant="outline" className="text-[9px] px-1.5 py-0">{projectName}</Badge>
-        <span className="text-[11px] text-muted-foreground data-value">{formatRelativeDate(thread.sentAt ?? thread.createdAt)}</span>
+        <Badge variant="outline" className="text-[9px] px-1.5 py-0">{thread.projectTitle}</Badge>
+        <span className="text-[11px] text-muted-foreground">{formatRelativeDate(thread.lastMessageAt)}</span>
+        {thread.messages.length > 1 && (
+          <span className="text-[10px] text-muted-foreground/60">{thread.messages.length} msgs</span>
+        )}
       </div>
     </button>
   );
 }
 
+function ComposeView({ onClose }: { onClose: () => void }) {
+  const [to, setTo] = useState('');
+  const [subject, setSubject] = useState('');
+  const [body, setBody] = useState('');
+
+  const handleSend = async () => {
+    if (!body.trim()) return;
+    await communicationsApi.send({
+      projectId: 'p1',
+      manufacturerId: 'm1',
+      subject,
+      body,
+      direction: 'sent',
+      status: 'sent',
+    });
+    onClose();
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="sm" onClick={onClose}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> Back
+        </Button>
+        <h1 className="text-2xl font-semibold tracking-tight">New Message</h1>
+      </div>
+      <Card>
+        <CardContent className="pt-5 space-y-4">
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">To</label>
+            <Input placeholder="Manufacturer name or email..." value={to} onChange={(e) => setTo(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">Subject</label>
+            <Input placeholder="Subject line..." value={subject} onChange={(e) => setSubject(e.target.value)} />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-1 block">Message</label>
+            <textarea
+              className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              placeholder="Write your message..."
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={handleSend} disabled={!body.trim()}>
+              <Send className="mr-2 h-4 w-4" /> Send
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export function Communications() {
   const { id: urlThreadId } = useParams<{ id?: string }>();
-  const queryClient = useQueryClient();
-  const [selectedThread, setSelectedThread] = useState<string | null>(urlThreadId ?? null);
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(urlThreadId ?? null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const threadsQuery = useQuery<Communication[]>({
+  const commsQuery = useQuery<Communication[]>({
     queryKey: ['communications'],
     queryFn: () => communicationsApi.list(),
   });
 
-  const threads: Communication[] = threadsQuery.data ?? [];
+  const allComms: Communication[] = commsQuery.data ?? [];
+  const threads = useMemo(() => groupIntoThreads(allComms), [allComms]);
+
   const filteredThreads = searchTerm
     ? threads.filter(
         (t) =>
-          (t.manufacturer?.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (t.subject ?? '').toLowerCase().includes(searchTerm.toLowerCase())
+          t.manufacturerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          t.subject.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : threads;
 
-  const activeThread = threads.find((t) => t.id === selectedThread);
+  const activeThread = threads.find((t) => t.id === selectedThreadId);
 
-  // Sync selectedThread from URL param when it changes
   useEffect(() => {
-    if (urlThreadId) {
-      setSelectedThread(urlThreadId);
-    }
+    if (urlThreadId) setSelectedThreadId(urlThreadId);
   }, [urlThreadId]);
 
-  // Auto-select first thread if none selected
   useEffect(() => {
-    if (!selectedThread && threads.length > 0) {
-      setSelectedThread(threads[0].id);
-    }
-  }, [threads, selectedThread]);
+    if (!selectedThreadId && threads.length > 0) setSelectedThreadId(threads[0].id);
+  }, [threads, selectedThreadId]);
 
-  // Scroll to bottom when thread changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeThread?.id]);
 
   if (composerOpen) {
-    return <MessageComposer onClose={(newThreadId?: string) => {
-      setComposerOpen(false);
-      if (newThreadId) {
-        setSelectedThread(newThreadId);
-      }
-    }} />;
+    return <ComposeView onClose={() => setComposerOpen(false)} />;
   }
 
   return (
@@ -146,7 +227,7 @@ export function Communications() {
             />
           </CardHeader>
           <CardContent className="flex-1 overflow-y-auto px-2 pb-2 space-y-1">
-            {threadsQuery.isLoading ? (
+            {commsQuery.isLoading ? (
               <div className="space-y-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Skeleton key={i} className="h-16 w-full" />
@@ -162,8 +243,8 @@ export function Communications() {
                 <ThreadListItem
                   key={thread.id}
                   thread={thread}
-                  active={selectedThread === thread.id}
-                  onClick={() => setSelectedThread(thread.id)}
+                  active={selectedThreadId === thread.id}
+                  onClick={() => setSelectedThreadId(thread.id)}
                 />
               ))
             )}
@@ -186,13 +267,13 @@ export function Communications() {
               <CardHeader className="border-b shrink-0 pb-3 pt-4 px-5">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-sm font-semibold">{activeThread.subject ?? '(no subject)'}</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{activeThread.subject}</CardTitle>
                     <div className="flex items-center gap-2 mt-1.5">
                       <Link
                         to={`/manufacturers/${activeThread.manufacturerId}`}
                         className="text-xs text-primary hover:underline flex items-center gap-1"
                       >
-                        {activeThread.manufacturer?.name ?? 'Unknown'}
+                        {activeThread.manufacturerName}
                         <ArrowUpRight className="h-3 w-3" />
                       </Link>
                       <span className="text-muted-foreground">·</span>
@@ -200,31 +281,33 @@ export function Communications() {
                         to={`/projects/${activeThread.projectId}`}
                         className="text-xs text-muted-foreground hover:text-foreground"
                       >
-                        {activeThread.project?.title ?? projectNames[activeThread.projectId] ?? 'Project'}
+                        {activeThread.projectTitle}
                       </Link>
                     </div>
                   </div>
-                  <Badge variant={statusConfig[activeThread.status].variant}>
-                    {statusConfig[activeThread.status].label}
+                  <Badge variant={(statusConfig[activeThread.latestStatus] ?? statusConfig.sent).variant}>
+                    {(statusConfig[activeThread.latestStatus] ?? statusConfig.sent).label}
                   </Badge>
                 </div>
               </CardHeader>
 
-              {/* Message body (flat model - single communication) */}
+              {/* Messages */}
               <CardContent className="flex-1 overflow-y-auto p-5 space-y-3">
-                <div className={cn('flex', activeThread.direction === 'sent' ? 'justify-end' : 'justify-start')}>
-                  <div
-                    className={cn(
-                      'max-w-[70%] rounded-xl px-4 py-3',
-                      activeThread.direction === 'sent' ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                    )}
-                  >
-                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{activeThread.body}</p>
-                    <p className={cn('text-[11px] mt-1.5 data-value', activeThread.direction === 'sent' ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
-                      {formatDateTime(activeThread.sentAt ?? activeThread.createdAt)}
-                    </p>
+                {activeThread.messages.map((msg) => (
+                  <div key={msg.id} className={cn('flex', msg.direction === 'sent' ? 'justify-end' : 'justify-start')}>
+                    <div
+                      className={cn(
+                        'max-w-[70%] rounded-xl px-4 py-3',
+                        msg.direction === 'sent' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                      )}
+                    >
+                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.body}</p>
+                      <p className={cn('text-[11px] mt-1.5', msg.direction === 'sent' ? 'text-primary-foreground/60' : 'text-muted-foreground')}>
+                        {formatDateTime(msg.sentAt ?? msg.createdAt)}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ))}
                 <div ref={messagesEndRef} />
               </CardContent>
             </>
