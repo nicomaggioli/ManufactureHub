@@ -35,9 +35,15 @@ export function DesignHub() {
 
   const uploadMutation = useMutation({
     mutationFn: (files: FileList) => {
-      const formData = new FormData();
-      Array.from(files).forEach((file) => formData.append('files', file));
-      return designAssetsApi.upload(formData);
+      // In a real flow, files would be uploaded to S3 first, then metadata created.
+      // For now, create asset metadata with placeholder URLs.
+      const file = files[0];
+      return designAssetsApi.create({
+        projectId: 'p1',
+        type: 'reference',
+        fileName: file?.name,
+        fileUrl: URL.createObjectURL(file),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['design-assets'] });
@@ -135,16 +141,16 @@ export function DesignHub() {
                     <Card key={asset.id} className="group overflow-hidden animate-in hover:border-primary/30 transition-colors">
                       <div className="relative h-36 bg-muted flex items-center justify-center">
                         {asset.thumbnailUrl ? (
-                          <img src={asset.thumbnailUrl} alt={asset.name} className="h-full w-full object-cover" />
+                          <img src={asset.thumbnailUrl} alt={asset.fileName} className="h-full w-full object-cover" />
                         ) : (
                           <Icon className="h-10 w-10 text-muted-foreground/30" />
                         )}
                       </div>
                       <CardContent className="p-2.5">
-                        <p className="text-sm font-medium truncate">{asset.name}</p>
+                        <p className="text-sm font-medium truncate">{asset.fileName}</p>
                         <div className="flex items-center justify-between mt-1">
                           <Badge variant="secondary">{asset.type}</Badge>
-                          <span className="text-xs text-muted-foreground data-value">{formatDate(asset.uploadedAt)}</span>
+                          <span className="text-xs text-muted-foreground data-value">{formatDate(asset.createdAt)}</span>
                         </div>
                       </CardContent>
                     </Card>

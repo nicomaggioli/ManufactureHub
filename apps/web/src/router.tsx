@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate, type RouterProviderProps } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Dashboard } from '@/pages/Dashboard';
 import { Projects } from '@/pages/Projects';
@@ -26,7 +26,7 @@ function LoginGuard({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-export const router = createBrowserRouter([
+export const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
     path: '/login',
     element: <LoginGuard><Login /></LoginGuard>,

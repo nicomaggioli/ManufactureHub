@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import Redis from "ioredis";
-import { config } from "../config";
+import { getRedisClient } from "../lib/redis";
 import { logger } from "../config/logger";
 
 const LIMITS: Record<string, number> = {
@@ -10,22 +9,6 @@ const LIMITS: Record<string, number> = {
 };
 
 const WINDOW_SECONDS = 3600; // 1 hour
-
-let redis: Redis | null = null;
-
-function getRedis(): Redis | null {
-  if (!config.redis.enabled) return null;
-  if (!redis) {
-    redis = new Redis(config.redis.url!, {
-      maxRetriesPerRequest: 1,
-      enableReadyCheck: false,
-    });
-    redis.on("error", (err) => {
-      logger.error("Rate limiter Redis error", { error: err.message });
-    });
-  }
-  return redis;
-}
 
 /**
  * Redis-backed sliding-window rate limiter.
@@ -45,7 +28,7 @@ export function rateLimiter(
   const now = Date.now();
   const windowStart = now - WINDOW_SECONDS * 1000;
 
-  const client = getRedis();
+  const client = getRedisClient();
 
   // If Redis is not available, skip rate limiting
   if (!client) {
@@ -73,7 +56,7 @@ export function rateLimiter(
       res.setHeader("X-RateLimit-Reset", Math.ceil((now + WINDOW_SECONDS * 1000) / 1000));
 
       if (count >= limit) {
-        const retryAfter = Math.ceil(WINDOW_SECONDS - (now - windowStart) / 1000);
+        const retryAfter = WINDOW_SECONDS; // Worst case: wait the full window
         res.setHeader("Retry-After", retryAfter);
         res.status(429).json({
           success: false,

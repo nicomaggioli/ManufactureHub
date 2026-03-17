@@ -1,9 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { SampleService } from "../services/SampleService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
 import { validate } from "../middleware/validate";
-import { NotFoundError } from "../services/ProjectService";
+import { asyncHandler } from "../middleware/asyncHandler";
 import {
   createSampleSchema,
   updateSampleSchema,
@@ -18,126 +18,86 @@ const auditService = new AuditService();
 router.use(requireAuth);
 
 // GET /api/v1/samples
-router.get("/", validate(listSamplesQuery, "query"), async (req: Request, res: Response) => {
-  try {
-    const result = await sampleService.list(
-      {
-        projectId: req.query.projectId as string | undefined,
-        manufacturerId: req.query.manufacturerId as string | undefined,
-        status: req.query.status as any,
-      },
-      {
-        cursor: req.query.cursor as string | undefined,
-        limit: (req.query.limit as unknown as number) ?? 20,
-      }
-    );
+router.get("/", validate(listSamplesQuery, "query"), asyncHandler(async (req, res) => {
+  const result = await sampleService.list(
+    {
+      projectId: req.query.projectId as string | undefined,
+      manufacturerId: req.query.manufacturerId as string | undefined,
+      status: req.query.status as any,
+    },
+    {
+      cursor: req.query.cursor as string | undefined,
+      limit: (req.query.limit as unknown as number) ?? 20,
+    }
+  );
 
-    res.json({ success: true, data: result });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: result });
+}));
 
 // POST /api/v1/samples
-router.post("/", validate(createSampleSchema), async (req: Request, res: Response) => {
-  try {
-    const sample = await sampleService.create(req.body);
+router.post("/", validate(createSampleSchema), asyncHandler(async (req, res) => {
+  const sample = await sampleService.create(req.body);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "sample",
-      entityId: sample.id,
-      action: "create",
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "sample",
+    entityId: sample.id,
+    action: "create",
+  });
 
-    res.status(201).json({ success: true, data: sample });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.status(201).json({ success: true, data: sample });
+}));
 
 // GET /api/v1/samples/:id
-router.get("/:id", async (req: Request, res: Response) => {
-  try {
-    const sample = await sampleService.getById(req.params.id as string);
-    res.json({ success: true, data: sample });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+router.get("/:id", asyncHandler(async (req, res) => {
+  const sample = await sampleService.getById(req.params.id as string);
+  res.json({ success: true, data: sample });
+}));
 
 // PUT /api/v1/samples/:id
-router.put("/:id", validate(updateSampleSchema), async (req: Request, res: Response) => {
-  try {
-    const sample = await sampleService.update(req.params.id as string, req.body);
+router.put("/:id", validate(updateSampleSchema), asyncHandler(async (req, res) => {
+  const sample = await sampleService.update(req.params.id as string, req.body);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "sample",
-      entityId: sample.id,
-      action: "update",
-      diffJson: req.body,
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "sample",
+    entityId: sample.id,
+    action: "update",
+    diffJson: req.body,
+  });
 
-    res.json({ success: true, data: sample });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: sample });
+}));
 
 // DELETE /api/v1/samples/:id
-router.delete("/:id", async (req: Request, res: Response) => {
-  try {
-    await sampleService.delete(req.params.id as string);
+router.delete("/:id", asyncHandler(async (req, res) => {
+  await sampleService.delete(req.params.id as string);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "sample",
-      entityId: req.params.id as string,
-      action: "delete",
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "sample",
+    entityId: req.params.id as string,
+    action: "delete",
+  });
 
-    res.json({ success: true, data: null });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: null });
+}));
 
 // PUT /api/v1/samples/:id/status
-router.put("/:id/status", validate(updateSampleStatusSchema), async (req: Request, res: Response) => {
-  try {
-    const { status } = req.body;
+router.put("/:id/status", validate(updateSampleStatusSchema), asyncHandler(async (req, res) => {
+  const { status } = req.body;
 
-    const sample = await sampleService.updateStatus(req.params.id as string, status);
+  const sample = await sampleService.updateStatus(req.params.id as string, status);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "sample",
-      entityId: sample.id,
-      action: "status_change",
-      diffJson: { status },
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "sample",
+    entityId: sample.id,
+    action: "status_change",
+    diffJson: { status },
+  });
 
-    res.json({ success: true, data: sample });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: sample });
+}));
 
 export default router;

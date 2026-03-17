@@ -1,23 +1,8 @@
-import Redis from "ioredis";
-import { config } from "../config";
+import { getRedisClient } from "../lib/redis";
 import { logger } from "../config/logger";
 
-let client: Redis | null = null;
-
-function getClient(): Redis | null {
-  if (!config.redis.enabled) {
-    return null;
-  }
-  if (!client) {
-    client = new Redis(config.redis.url!, {
-      maxRetriesPerRequest: 2,
-      enableReadyCheck: false,
-    });
-    client.on("error", (err) => {
-      logger.error("Cache Redis error", { error: err.message });
-    });
-  }
-  return client;
+function getClient() {
+  return getRedisClient();
 }
 
 export const cache = {

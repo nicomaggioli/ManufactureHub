@@ -5,6 +5,13 @@ import { logger } from '../config/logger';
 import { createEmailQueue, EmailJobData } from './emailWorker';
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ---------------------------------------------------------------------------
 // Queue
 // ---------------------------------------------------------------------------
 export const FOLLOW_UP_QUEUE_NAME = 'follow-up';
@@ -168,8 +175,8 @@ export function createFollowUpWorker(connection: any): Worker {
             subject: `Follow-up draft ready: ${comm.manufacturer.name}`,
             html: [
               `<h2>Follow-up Draft Ready for Review</h2>`,
-              `<p>A follow-up draft has been created for <strong>${comm.manufacturer.name}</strong> ` +
-                `on project <strong>${comm.project.title}</strong>.</p>`,
+              `<p>A follow-up draft has been created for <strong>${escapeHtml(comm.manufacturer.name)}</strong> ` +
+                `on project <strong>${escapeHtml(comm.project.title)}</strong>.</p>`,
               `<hr/>`,
               `<p><strong>Subject:</strong> ${followUp.subject}</p>`,
               `<p>${followUp.body.replace(/\n/g, '<br/>')}</p>`,

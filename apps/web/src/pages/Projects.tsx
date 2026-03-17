@@ -48,7 +48,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         <CardHeader className="p-4 pb-2">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-sm font-semibold leading-tight">
-              {project.name}
+              {project.title}
             </CardTitle>
             <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-[11px] uppercase tracking-wider">
               {project.status}
@@ -60,7 +60,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <Factory className="h-3 w-3" />
-              <span className="data-value">{project.manufacturerCount}</span> mfrs
+              <span className="data-value">{project._count?.quotes ?? 0}</span> quotes
             </span>
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
@@ -95,7 +95,7 @@ export function Projects() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
-  const [newProject, setNewProject] = useState({ name: '', description: '' });
+  const [newProject, setNewProject] = useState({ title: '', description: '' });
 
   const projectsQuery = useQuery({
     queryKey: ['projects', statusFilter !== 'all' ? statusFilter : undefined],
@@ -107,7 +107,7 @@ export function Projects() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       setDialogOpen(false);
-      setNewProject({ name: '', description: '' });
+      setNewProject({ title: '', description: '' });
       toast({ title: 'Project created', description: 'Your new project has been created.' });
     },
     onError: () => {
@@ -164,7 +164,7 @@ export function Projects() {
             </Card>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project, i) => (
+              {projects.map((project: Project, i: number) => (
                 <ProjectCard key={project.id} project={project} index={i} />
               ))}
             </div>
@@ -186,8 +186,8 @@ export function Projects() {
               <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Project Name</label>
               <Input
                 placeholder="e.g., Spring Collection 2026"
-                value={newProject.name}
-                onChange={(e) => setNewProject((p) => ({ ...p, name: e.target.value }))}
+                value={newProject.title}
+                onChange={(e) => setNewProject((prev) => ({ ...prev, title: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -195,7 +195,7 @@ export function Projects() {
               <Textarea
                 placeholder="Describe what you want to manufacture..."
                 value={newProject.description}
-                onChange={(e) => setNewProject((p) => ({ ...p, description: e.target.value }))}
+                onChange={(e) => setNewProject((prev) => ({ ...prev, description: e.target.value }))}
               />
             </div>
           </div>
@@ -205,7 +205,7 @@ export function Projects() {
             </Button>
             <Button
               onClick={() => createMutation.mutate(newProject)}
-              disabled={!newProject.name.trim() || createMutation.isPending}
+              disabled={!newProject.title.trim() || createMutation.isPending}
               className="rounded-lg"
             >
               {createMutation.isPending ? 'Creating...' : 'Create Project'}

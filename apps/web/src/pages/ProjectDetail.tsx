@@ -21,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DataTable, type ColumnDef } from '@/components/ui/data-table';
 import { ClipboardList } from 'lucide-react';
 import { projectsApi, communicationsApi, quotesApi, samplesApi, designAssetsApi } from '@/lib/api';
-import type { Communication, Quote, Sample, DesignAsset } from '@/lib/api';
+import type { Communication, Quote, Sample, DesignAsset, Project, Milestone } from '@/lib/api';
 import { TechPack } from '@/components/design/TechPack';
 import { formatDate, formatCurrency } from '@/lib/utils';
 
@@ -135,7 +135,7 @@ export function ProjectDetail() {
     const mfrMap = new Map<string, { id: string; name: string; hasComms: boolean; hasQuotes: boolean; hasSamples: boolean }>();
 
     for (const c of (commsQuery.data ?? [])) {
-      const existing = mfrMap.get(c.manufacturerId) ?? { id: c.manufacturerId, name: c.manufacturerName, hasComms: false, hasQuotes: false, hasSamples: false };
+      const existing = mfrMap.get(c.manufacturerId) ?? { id: c.manufacturerId, name: c.manufacturer?.name ?? 'Unknown', hasComms: false, hasQuotes: false, hasSamples: false };
       existing.hasComms = true;
       mfrMap.set(c.manufacturerId, existing);
     }
@@ -173,18 +173,18 @@ export function ProjectDetail() {
   }
 
   const commColumns: ColumnDef<Communication>[] = [
-    { key: 'manufacturerName', header: 'Manufacturer', sortable: true },
-    { key: 'subject', header: 'Subject' },
+    { key: 'manufacturerId', header: 'Manufacturer', sortable: true, render: (row) => <span>{row.manufacturer?.name ?? 'Unknown'}</span> },
+    { key: 'subject', header: 'Subject', render: (row) => <span>{row.subject ?? 'No subject'}</span> },
     {
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <Badge variant={row.status === 'reply_received' ? 'success' : row.status === 'follow_up_due' ? 'warning' : 'secondary'}>
+        <Badge variant={row.status === 'delivered' ? 'success' : row.status === 'failed' ? 'destructive' : 'secondary'}>
           {row.status.replace(/_/g, ' ')}
         </Badge>
       ),
     },
-    { key: 'lastMessageAt', header: 'Last Message', sortable: true, render: (row) => <span className="data-value">{formatDate(row.lastMessageAt)}</span> },
+    { key: 'sentAt', header: 'Last Message', sortable: true, render: (row) => <span className="data-value">{formatDate(row.sentAt ?? row.createdAt)}</span> },
   ];
 
   const quoteColumns: ColumnDef<Quote>[] = [
@@ -232,7 +232,7 @@ export function ProjectDetail() {
       {/* Title + status */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{project.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{project.title}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{project.description}</p>
         </div>
         <Badge variant="outline" className="w-fit px-3 py-1">
@@ -287,7 +287,7 @@ export function ProjectDetail() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-medium text-muted-foreground">Manufacturers</span>
-                  <span className="data-value">{project.manufacturerCount}</span>
+                  <span className="data-value">{projectManufacturers.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-medium text-muted-foreground">Created</span>
@@ -306,9 +306,9 @@ export function ProjectDetail() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {project.milestones && project.milestones.length > 0 ? (
+                {'milestones' in project && Array.isArray((project as any).milestones) && (project as any).milestones.length > 0 ? (
                   <div className="space-y-2.5">
-                    {project.milestones.map((m) => (
+                    {((project as any).milestones as Milestone[]).map((m: Milestone) => (
                       <div key={m.id} className="flex items-center gap-3">
                         {m.completed ? (
                           <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
@@ -392,13 +392,13 @@ export function ProjectDetail() {
                 </div>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {(assetsQuery.data ?? []).map((asset) => (
+                  {(assetsQuery.data ?? []).map((asset: DesignAsset) => (
                     <div key={asset.id} className="rounded-lg border p-3 hover:border-primary/30 transition-colors">
                       <div className="h-28 bg-muted rounded-md mb-2 flex items-center justify-center text-muted-foreground text-xs uppercase tracking-wider">
                         {asset.type}
                       </div>
-                      <p className="text-sm font-medium truncate">{asset.name}</p>
-                      <p className="text-xs text-muted-foreground data-value">{formatDate(asset.uploadedAt)}</p>
+                      <p className="text-sm font-medium truncate">{asset.fileName}</p>
+                      <p className="text-xs text-muted-foreground data-value">{formatDate(asset.createdAt)}</p>
                     </div>
                   ))}
                 </div>

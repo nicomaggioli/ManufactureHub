@@ -83,29 +83,24 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
         projectId,
         manufacturerId,
         subject,
-        content: draft,
+        body: draft,
+        direction: 'sent',
       }),
     onSuccess: () => {
       const now = new Date().toISOString();
       const newThreadId = `comm-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      const selectedManufacturer = manufacturers.find((m: any) => m.id === manufacturerId);
+      const selectedManufacturer = manufacturers.find((m: { id: string; name: string }) => m.id === manufacturerId);
       const newThread: Communication = {
         id: newThreadId,
         projectId,
         manufacturerId,
-        manufacturerName: selectedManufacturer?.name ?? 'Manufacturer',
         subject: subject || 'New Conversation',
-        messages: [
-          {
-            id: `msg-${Date.now()}`,
-            sender: 'user',
-            content: draft,
-            createdAt: now,
-          },
-        ],
-        status: 'awaiting_reply',
-        lastMessageAt: now,
+        body: draft,
+        direction: 'sent',
+        status: 'sent',
+        sentAt: now,
         createdAt: now,
+        manufacturer: selectedManufacturer ? { id: selectedManufacturer.id, name: selectedManufacturer.name } : undefined,
       };
       queryClient.setQueryData<Communication[]>(['communications'], (old) =>
         [newThread, ...(old ?? [])]
@@ -171,9 +166,9 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
                   {projectsQuery.isLoading ? (
                     <div className="p-2"><Skeleton className="h-6 w-full" /></div>
                   ) : (
-                    projects.map((p) => (
+                    projects.map((p: { id: string; title: string }) => (
                       <SelectItem key={p.id} value={p.id}>
-                        {p.name}
+                        {p.title}
                       </SelectItem>
                     ))
                   )}
@@ -191,7 +186,7 @@ export function MessageComposer({ onClose }: MessageComposerProps) {
                   {manufacturersQuery.isLoading ? (
                     <div className="p-2"><Skeleton className="h-6 w-full" /></div>
                   ) : (
-                    manufacturers.map((m) => (
+                    manufacturers.map((m: { id: string; name: string }) => (
                       <SelectItem key={m.id} value={m.id}>
                         {m.name}
                       </SelectItem>

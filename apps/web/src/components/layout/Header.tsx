@@ -116,7 +116,7 @@ export function Header() {
     if (!q) return null;
 
     const projects = ((projectsQuery.data as Project[]) ?? [])
-      .filter((p) => p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q))
+      .filter((p) => p.title.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q))
       .slice(0, 3);
 
     const mfrData = mfrsQuery.data;
@@ -125,7 +125,7 @@ export function Header() {
       .slice(0, 3);
 
     const communications = ((commsQuery.data as Communication[]) ?? [])
-      .filter((c) => c.manufacturerName.toLowerCase().includes(q) || c.subject.toLowerCase().includes(q))
+      .filter((c) => (c.manufacturer?.name ?? '').toLowerCase().includes(q) || (c.subject ?? '').toLowerCase().includes(q))
       .slice(0, 3);
 
     return { projects, manufacturers, communications };
@@ -185,7 +185,7 @@ export function Header() {
         icon: Clock,
         iconColor: 'text-amber-500 bg-amber-50',
         message: r.title,
-        timestamp: r.dueDate,
+        timestamp: r.dueAt,
         path: r.projectId ? `/projects/${r.projectId}` : '/',
       });
     }
@@ -196,7 +196,7 @@ export function Header() {
         id: `act-${a.id}`,
         icon: Activity,
         iconColor: 'text-blue-500 bg-blue-50',
-        message: a.message ?? a.description ?? '',
+        message: a.description ?? '',
         timestamp: a.timestamp,
         path: a.projectId ? `/projects/${a.projectId}` : '/',
       });
@@ -281,7 +281,7 @@ export function Header() {
                           onClick={() => handleSearchNav(`/projects/${p.id}`)}
                           className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
                         >
-                          <span className="truncate">{p.name}</span>
+                          <span className="truncate">{p.title}</span>
                           <span className="text-xs text-muted-foreground ml-auto shrink-0">{p.status}</span>
                         </button>
                       ))}
@@ -315,8 +315,8 @@ export function Header() {
                           onClick={() => handleSearchNav(`/communications/${c.id}`)}
                           className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
                         >
-                          <span className="truncate">{c.subject}</span>
-                          <span className="text-xs text-muted-foreground ml-auto shrink-0">{c.manufacturerName}</span>
+                          <span className="truncate">{c.subject ?? 'No subject'}</span>
+                          <span className="text-xs text-muted-foreground ml-auto shrink-0">{c.manufacturer?.name ?? 'Unknown'}</span>
                         </button>
                       ))}
                     </div>

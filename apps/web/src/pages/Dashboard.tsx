@@ -117,7 +117,7 @@ export function Dashboard() {
   const hasProjects = (stats?.activeProjects ?? 0) > 0;
 
   // Pipeline counts
-  const pipeline = stats?.pipelineCounts ?? stats?.pipeline ?? {};
+  const pipeline = stats?.pipeline ?? {};
   const maxPipelineCount = Math.max(...pipelineStages.map((s) => pipeline[s.key] ?? 0), 0);
 
   return (
@@ -288,15 +288,15 @@ export function Dashboard() {
                         <Activity className="h-3.5 w-3.5 text-muted-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm leading-snug">{item.message ?? item.description}</p>
+                        <p className="text-sm leading-snug">{item.description}</p>
                         <div className="flex items-center gap-2 mt-1.5">
                           <span className="text-xs text-muted-foreground data-value">
                             {formatRelativeDate(item.timestamp)}
                           </span>
-                          {item.projectName && (
+                          {item.project && (
                             <Link to={`/projects/${item.projectId}`}>
                               <Badge variant="outline" className="text-[11px] cursor-pointer hover:bg-muted">
-                                {item.projectName}
+                                {item.project}
                               </Badge>
                             </Link>
                           )}
@@ -341,7 +341,7 @@ export function Dashboard() {
                 <div className="space-y-1">
                   {reminders.slice(0, 8).map((reminder) => {
                     const dotColor = reminderTypeDot[reminder.type] ?? 'bg-gray-400';
-                    const isOverdue = new Date(reminder.dueDate) < new Date() && !reminder.completed;
+                    const isOverdue = new Date(reminder.dueAt) < new Date() && !reminder.completed;
                     return (
                       <div
                         key={reminder.id}
@@ -363,7 +363,7 @@ export function Dashboard() {
                           </div>
                           <div className="flex items-center gap-2 mt-1">
                             <span className={`text-xs ${isOverdue ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
-                              {formatDueDate(reminder.dueDate)}
+                              {formatDueDate(reminder.dueAt)}
                             </span>
                             {reminder.projectName && (
                               <Link to={`/projects/${reminder.projectId}`}>

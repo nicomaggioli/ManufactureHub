@@ -35,14 +35,15 @@ api.interceptors.response.use(
 // ── Project endpoints ──────────────────────────────────────────────────
 export interface Project {
   id: string;
-  name: string;
-  description: string;
+  title: string;
+  description?: string;
   status: string;
-  manufacturerCount: number;
+  targetLaunchDate?: string;
+  archived?: boolean;
   createdAt: string;
   updatedAt: string;
-  teamMembers?: string[];
-  milestones?: Milestone[];
+  _count?: { communications: number; quotes: number; samples: number; designAssets: number; reminders?: number };
+  teamMembers?: { id: string; user: { id: string; name: string; email: string }; role: string }[];
 }
 
 export interface Milestone {
@@ -53,7 +54,7 @@ export interface Milestone {
 }
 
 export interface CreateProjectPayload {
-  name: string;
+  title: string;
   description: string;
   status?: string;
 }
@@ -66,7 +67,7 @@ export const projectsApi = {
   create: (payload: CreateProjectPayload) =>
     DEMO_MODE ? mockApi.projectsCreate(payload) : api.post<{ data: Project }>('/projects', payload).then((r) => r.data.data),
   update: (id: string, payload: Partial<CreateProjectPayload>) =>
-    DEMO_MODE ? mockApi.projectsCreate(payload) : api.patch<{ data: Project }>(`/projects/${id}`, payload).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.projectsCreate(payload) : api.put<{ data: Project }>(`/projects/${id}`, payload).then((r) => r.data.data),
   delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/projects/${id}`),
 };
 
@@ -75,18 +76,19 @@ export interface Manufacturer {
   id: string;
   name: string;
   country: string;
+  city?: string;
   specialties: string[];
   certifications: string[];
   rating: number;
   verified: boolean;
   sustainabilityScore: number;
-  moqMin: number;
-  moqMax: number;
-  contactEmail: string;
-  contactPhone: string;
-  website: string;
-  description: string;
+  moq: number | null;
+  responseRate?: number;
+  source?: string;
+  externalId?: string;
+  contacts?: { id: string; name: string; email?: string; phone?: string; role?: string }[];
   createdAt: string;
+  _count?: { quotes: number; samples: number; communications: number };
 }
 
 export interface ManufacturerSearchParams {
@@ -121,28 +123,28 @@ export interface Communication {
   id: string;
   projectId: string;
   manufacturerId: string;
-  manufacturerName: string;
-  subject: string;
-  messages: Message[];
-  status: 'awaiting_reply' | 'reply_received' | 'follow_up_due';
-  lastMessageAt: string;
+  contactId?: string;
+  subject?: string;
+  body: string;
+  direction: 'sent' | 'received';
+  status: 'draft' | 'sent' | 'delivered' | 'failed' | 'archived';
+  sentAt?: string;
+  followUpDueAt?: string;
   createdAt: string;
-}
-
-export interface Message {
-  id: string;
-  sender: 'user' | 'manufacturer';
-  content: string;
-  createdAt: string;
-  attachments?: string[];
+  manufacturer?: { id: string; name: string; country?: string };
+  project?: { id: string; title: string };
 }
 
 export interface SendMessagePayload {
-  communicationId?: string;
   projectId: string;
   manufacturerId: string;
+  contactId?: string;
   subject?: string;
-  content: string;
+  body: string;
+  direction: 'sent' | 'received';
+  status?: string;
+  sentAt?: string;
+  followUpDueAt?: string;
 }
 
 export const communicationsApi = {
@@ -151,7 +153,7 @@ export const communicationsApi = {
   get: (id: string) =>
     DEMO_MODE ? mockApi.communicationsGet(id) : api.get<{ data: Communication }>(`/communications/${id}`).then((r) => r.data.data),
   send: (payload: SendMessagePayload) =>
-    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Communication }>('/communications/send', payload).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Communication }>('/communications', payload).then((r) => r.data.data),
 };
 
 // ── Reminder endpoints ─────────────────────────────────────────────────
@@ -159,11 +161,11 @@ export interface Reminder {
   id: string;
   title: string;
   description: string;
-  dueDate: string;
+  dueAt: string;
+  type: 'follow_up' | 'deadline' | 'task' | 'milestone' | 'inspection';
   projectId?: string;
   projectName?: string;
   completed: boolean;
-  type: string;
 }
 
 export const remindersApi = {
@@ -172,7 +174,7 @@ export const remindersApi = {
   create: (payload: Omit<Reminder, 'id'>) =>
     DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Reminder }>('/reminders', payload).then((r) => r.data.data),
   update: (id: string, payload: Partial<Reminder>) =>
-    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Reminder }>(`/reminders/${id}`, payload).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.put<{ data: Reminder }>(`/reminders/${id}`, payload).then((r) => r.data.data),
   delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/reminders/${id}`),
 };
 
@@ -180,22 +182,23 @@ export const remindersApi = {
 export interface DesignAsset {
   id: string;
   projectId: string;
-  name: string;
-  type: 'image' | 'document' | 'cad' | 'spec_sheet' | 'mood_board';
-  url: string;
+  fileName?: string;
+  type: 'sketch' | 'moodboard' | 'reference' | 'spec_sheet' | 'cad';
+  fileUrl: string;
   thumbnailUrl?: string;
-  uploadedAt: string;
-  fileSize: number;
+  tags?: string[];
+  version?: number;
+  createdAt: string;
 }
 
 export const designAssetsApi = {
   list: (params?: { projectId?: string; type?: string }) =>
-    DEMO_MODE ? mockApi.designAssetsList() : api.get('/design-assets', { params }).then((r) => r.data.data.data ?? r.data.data),
-  upload: (formData: FormData) =>
-    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: DesignAsset }>('/design-assets/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then((r) => r.data.data),
-  delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/design-assets/${id}`),
+    DEMO_MODE ? mockApi.designAssetsList() : api.get('/design/assets', { params }).then((r) => r.data.data.data ?? r.data.data),
+  create: (payload: { projectId: string; type: string; fileName?: string; fileUrl: string; thumbnailUrl?: string; tags?: string[] }) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.post('/design/assets', payload).then((r) => r.data.data),
+  update: (id: string, payload: Partial<{ type: string; fileName: string; fileUrl: string; thumbnailUrl: string; tags: string[] }>) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.put(`/design/assets/${id}`, payload).then((r) => r.data.data),
+  delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/design/assets/${id}`),
 };
 
 // ── Quote endpoints ────────────────────────────────────────────────────
@@ -210,20 +213,20 @@ export interface Quote {
   leadTimeDays: number;
   currency: string;
   status: 'pending' | 'accepted' | 'rejected' | 'expired';
-  validUntil: string;
+  validityDate: string;
   notes: string;
   createdAt: string;
 }
 
 export const quotesApi = {
-  list: (params?: { projectId?: string; status?: string }) =>
+  list: (params?: { projectId?: string; manufacturerId?: string; status?: string }) =>
     DEMO_MODE ? mockApi.quotesList() : api.get('/quotes', { params }).then((r) => r.data.data.data ?? r.data.data),
   get: (id: string) =>
     DEMO_MODE ? mockApi.quotesGet(id) : api.get<{ data: Quote }>(`/quotes/${id}`).then((r) => r.data.data),
   accept: (id: string) =>
-    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Quote }>(`/quotes/${id}/accept`).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Quote }>(`/quotes/${id}/accept`).then((r) => r.data.data),
   reject: (id: string) =>
-    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Quote }>(`/quotes/${id}/reject`).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Quote }>(`/quotes/${id}/reject`).then((r) => r.data.data),
 };
 
 // ── Sample endpoints ───────────────────────────────────────────────────
@@ -233,7 +236,7 @@ export interface Sample {
   projectName: string;
   manufacturerId: string;
   manufacturerName: string;
-  status: 'requested' | 'in_production' | 'shipped' | 'received' | 'approved' | 'rejected';
+  status: 'requested' | 'in_transit' | 'received' | 'approved' | 'rejected';
   trackingNumber?: string;
   photos: string[];
   notes: string;
@@ -242,12 +245,12 @@ export interface Sample {
 }
 
 export const samplesApi = {
-  list: (params?: { projectId?: string; status?: string }) =>
+  list: (params?: { projectId?: string; manufacturerId?: string; status?: string }) =>
     DEMO_MODE ? mockApi.samplesList(params) : api.get('/samples', { params }).then((r) => r.data.data.data ?? r.data.data),
   get: (id: string) =>
     DEMO_MODE ? Promise.resolve({} as any) : api.get<{ data: Sample }>(`/samples/${id}`).then((r) => r.data.data),
   updateStatus: (id: string, status: string) =>
-    DEMO_MODE ? Promise.resolve({} as any) : api.patch<{ data: Sample }>(`/samples/${id}/status`, { status }).then((r) => r.data.data),
+    DEMO_MODE ? Promise.resolve({} as any) : api.put<{ data: Sample }>(`/samples/${id}/status`, { status }).then((r) => r.data.data),
   uploadPhoto: (id: string, formData: FormData) =>
     DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Sample }>(`/samples/${id}/photos`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -286,13 +289,22 @@ export interface AIQuoteAnalysis {
 
 export const aiApi = {
   generateDraft: (payload: AIDraftPayload) =>
-    DEMO_MODE ? mockApi.aiGenerateDraft() : api.post<{ data: { draft: string } }>('/ai/draft-message', payload).then((r) => r.data.data),
-  vetManufacturer: (manufacturerId: string) =>
-    DEMO_MODE ? mockApi.aiVetManufacturer() : api.get<{ data: AIVettingReport }>(`/ai/vet-manufacturer/${manufacturerId}`).then((r) => r.data.data),
-  creativeInsights: (projectId: string) =>
-    DEMO_MODE ? Promise.resolve({ suggestions: ['Try organic dyes for eco-friendly appeal', 'Consider recycled polyester blends'], trendAnalysis: 'Sustainable materials are trending +34% YoY in your product category.', materialRecommendations: ['Organic Cotton', 'Recycled Nylon', 'Tencel'] }) : api.get<{ data: AICreativeInsight }>(`/ai/creative-insights/${projectId}`).then((r) => r.data.data),
-  analyzeQuote: (quoteId: string) =>
-    DEMO_MODE ? mockApi.aiAnalyzeQuote() : api.get<{ data: AIQuoteAnalysis }>(`/ai/analyze-quote/${quoteId}`).then((r) => r.data.data),
+    DEMO_MODE ? mockApi.aiGenerateDraft() : api.post('/ai/draft-message', {
+      type: payload.messageType,
+      projectContext: payload.context || {},
+      manufacturerData: {},
+      tone: payload.tone,
+    }).then((r) => r.data.data),
+  vetManufacturer: (manufacturerData: Record<string, unknown>) =>
+    DEMO_MODE ? mockApi.aiVetManufacturer() : api.post('/ai/vet-supplier', { manufacturerData }).then((r) => r.data.data),
+  analyzeDesign: (assetUrls: string[], moodboardData?: unknown, projectContext?: unknown) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.post('/ai/analyze-design', { assetUrls, moodboardData, projectContext }).then((r) => r.data.data),
+  extractSpec: (description: string) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.post('/ai/extract-spec', { description }).then((r) => r.data.data),
+  analyzeQuotes: (quotes: Record<string, unknown>[]) =>
+    DEMO_MODE ? mockApi.aiAnalyzeQuote() : api.post('/ai/analyze-quotes', { quotes }).then((r) => r.data.data),
+  generateFollowup: (conversationHistory: Record<string, unknown>[]) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.post('/ai/generate-followup', { conversationHistory }).then((r) => r.data.data),
 };
 
 // ── Dashboard stats ────────────────────────────────────────────────────
@@ -302,18 +314,15 @@ export interface DashboardStats {
   totalManufacturers?: number;
   pendingReplies: number;
   upcomingReminders: number;
-  pipelineCounts?: Record<string, number>;
   pipeline?: Record<string, number>;
 }
 
 export interface ActivityItem {
   id: string;
   type: string;
-  message?: string;
   description?: string;
   timestamp: string;
   projectId?: string;
-  projectName?: string;
   project?: string;
 }
 

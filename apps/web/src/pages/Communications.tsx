@@ -1,20 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
-import { MessageSquare, Send, Clock, CheckCircle2, AlertCircle, Plus, Inbox, ArrowUpRight } from 'lucide-react';
+import { MessageSquare, Send, Clock, CheckCircle2, CheckCircle, AlertCircle, Plus, Inbox, ArrowUpRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { communicationsApi, type Communication, type Message } from '@/lib/api';
+import { communicationsApi, type Communication } from '@/lib/api';
+
+// Local Message type for demo-mode thread UI (backend Communication model is flat)
+interface Message {
+  id: string;
+  sender: 'user' | 'manufacturer';
+  content: string;
+  createdAt: string;
+  attachments?: string[];
+}
 import { formatRelativeDate, formatDateTime, cn } from '@/lib/utils';
 import { MessageComposer } from './MessageComposer';
 
-const statusConfig = {
-  awaiting_reply: { label: 'Awaiting', icon: Clock, variant: 'warning' as const },
-  reply_received: { label: 'Received', icon: CheckCircle2, variant: 'success' as const },
-  follow_up_due: { label: 'Follow-up', icon: AlertCircle, variant: 'destructive' as const },
+const statusConfig: Record<string, { label: string; icon: typeof Clock; variant: string }> = {
+  draft: { label: 'Draft', icon: Clock, variant: 'outline' },
+  sent: { label: 'Sent', icon: ArrowUpRight, variant: 'warning' },
+  delivered: { label: 'Delivered', icon: CheckCircle, variant: 'default' },
+  failed: { label: 'Failed', icon: AlertCircle, variant: 'destructive' },
+  archived: { label: 'Archived', icon: CheckCircle, variant: 'secondary' },
 };
 
 // Map projectIds to names for breadcrumb context
@@ -37,7 +48,7 @@ function ThreadListItem({
   active: boolean;
   onClick: () => void;
 }) {
-  const config = statusConfig[thread.status];
+  const config = statusConfig[thread.status] ?? statusConfig.sent;
   const StatusIcon = config.icon;
   const projectName = projectNames[thread.projectId] ?? thread.projectId;
 
@@ -51,17 +62,17 @@ function ThreadListItem({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium truncate">{thread.manufacturerName}</p>
-          <p className="text-xs text-muted-foreground truncate mt-0.5">{thread.subject}</p>
+          <p className="text-sm font-medium truncate">{thread.manufacturer?.name ?? 'Unknown'}</p>
+          <p className="text-xs text-muted-foreground truncate mt-0.5">{thread.subject ?? 'No subject'}</p>
         </div>
         <StatusIcon className={cn('h-3.5 w-3.5 shrink-0 mt-0.5',
-          thread.status === 'reply_received' ? 'text-emerald-500' :
-          thread.status === 'follow_up_due' ? 'text-rose-500' : 'text-amber-500'
+          thread.status === 'delivered' ? 'text-emerald-500' :
+          thread.status === 'failed' ? 'text-rose-500' : 'text-amber-500'
         )} />
       </div>
       <div className="flex items-center gap-2 mt-1.5">
         <Badge variant="outline" className="text-[9px] px-1.5 py-0">{projectName}</Badge>
-        <span className="text-[11px] text-muted-foreground data-value">{formatRelativeDate(thread.lastMessageAt)}</span>
+        <span className="text-[11px] text-muted-foreground data-value">{formatRelativeDate(thread.sentAt ?? thread.createdAt)}</span>
       </div>
     </button>
   );
@@ -104,8 +115,8 @@ export function Communications() {
   const filteredThreads = searchTerm
     ? threads.filter(
         (t) =>
-          t.manufacturerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          t.subject.toLowerCase().includes(searchTerm.toLowerCase())
+          (t.manufacturer?.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (t.subject ?? '').toLowerCase().includes(searchTerm.toLowerCase())
       )
     : threads;
 
@@ -128,22 +139,25 @@ export function Communications() {
   // Scroll to bottom when thread changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [activeThread?.id, activeThread?.messages.length]);
+  }, [activeThread?.id]);
 
   const handleSendReply = () => {
     if (!replyText.trim() || !activeThread) return;
-    const newMessage: Message = {
-      id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      sender: 'user',
-      content: replyText.trim(),
-      createdAt: new Date().toISOString(),
+    const now = new Date().toISOString();
+    const newComm: Communication = {
+      id: `comm-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      projectId: activeThread.projectId,
+      manufacturerId: activeThread.manufacturerId,
+      subject: activeThread.subject,
+      body: replyText.trim(),
+      direction: 'sent',
+      status: 'sent',
+      sentAt: now,
+      createdAt: now,
+      manufacturer: activeThread.manufacturer,
     };
     queryClient.setQueryData<Communication[]>(['communications'], (old) =>
-      (old ?? []).map((thread) =>
-        thread.id === activeThread.id
-          ? { ...thread, messages: [...thread.messages, newMessage], lastMessageAt: newMessage.createdAt, status: 'awaiting_reply' as const }
-          : thread
-      )
+      [newComm, ...(old ?? [])]
     );
     setReplyText('');
   };
@@ -229,13 +243,13 @@ export function Communications() {
               <CardHeader className="border-b shrink-0 pb-3 pt-4 px-5">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-sm font-semibold">{activeThread.subject}</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{activeThread.subject ?? 'No subject'}</CardTitle>
                     <div className="flex items-center gap-2 mt-1.5">
                       <Link
                         to={`/manufacturers/${activeThread.manufacturerId}`}
                         className="text-xs text-primary hover:underline flex items-center gap-1"
                       >
-                        {activeThread.manufacturerName}
+                        {activeThread.manufacturer?.name ?? 'Unknown'}
                         <ArrowUpRight className="h-3 w-3" />
                       </Link>
                       <span className="text-muted-foreground">·</span>
@@ -247,17 +261,20 @@ export function Communications() {
                       </Link>
                     </div>
                   </div>
-                  <Badge variant={statusConfig[activeThread.status].variant}>
-                    {statusConfig[activeThread.status].label}
+                  <Badge variant={(statusConfig[activeThread.status]?.variant ?? 'secondary') as any}>
+                    {statusConfig[activeThread.status]?.label ?? activeThread.status}
                   </Badge>
                 </div>
               </CardHeader>
 
               {/* Messages */}
               <CardContent className="flex-1 overflow-y-auto p-5 space-y-3">
-                {activeThread.messages.map((msg) => (
-                  <MessageBubble key={msg.id} message={msg} />
-                ))}
+                {threads
+                  .filter((c) => c.manufacturerId === activeThread.manufacturerId && c.projectId === activeThread.projectId)
+                  .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+                  .map((c) => (
+                    <MessageBubble key={c.id} message={{ id: c.id, sender: c.direction === 'sent' ? 'user' : 'manufacturer', content: c.body, createdAt: c.sentAt ?? c.createdAt }} />
+                  ))}
                 <div ref={messagesEndRef} />
               </CardContent>
 

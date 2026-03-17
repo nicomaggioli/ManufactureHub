@@ -1,6 +1,7 @@
 import { Prisma, ProjectStatus } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { paginate, PaginatedResult, PaginationOptions } from "../utils/pagination";
+import { NotFoundError } from "../utils/errors";
 
 export interface CreateProjectInput {
   title: string;
@@ -135,12 +136,5 @@ export class ProjectService {
       where: { id },
       data: { archived: false },
     });
-  }
-}
-
-export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "NotFoundError";
   }
 }

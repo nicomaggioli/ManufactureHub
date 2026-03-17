@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft,
   BadgeCheck,
-  Globe,
   Mail,
   Phone,
   MapPin,
@@ -47,7 +46,7 @@ export function ManufacturerDetail() {
 
   const vettingQuery = useQuery({
     queryKey: ['ai', 'vet-manufacturer', id],
-    queryFn: () => aiApi.vetManufacturer(id),
+    queryFn: () => aiApi.vetManufacturer({ id }),
     enabled: !!id,
   });
 
@@ -59,13 +58,13 @@ export function ManufacturerDetail() {
 
   const quotesQuery = useQuery({
     queryKey: ['quotes', { manufacturerId: id }],
-    queryFn: () => quotesApi.list(),
+    queryFn: () => quotesApi.list({ manufacturerId: id }),
     enabled: !!id,
   });
 
   const samplesQuery = useQuery({
     queryKey: ['samples', { manufacturerId: id }],
-    queryFn: () => samplesApi.list(),
+    queryFn: () => samplesApi.list({ manufacturerId: id }),
     enabled: !!id,
   });
 
@@ -92,17 +91,17 @@ export function ManufacturerDetail() {
   }
 
   const commColumns: ColumnDef<Communication>[] = [
-    { key: 'subject', header: 'Subject' },
+    { key: 'subject', header: 'Subject', render: (row) => <span>{row.subject ?? 'No subject'}</span> },
     {
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <Badge variant={row.status === 'reply_received' ? 'success' : row.status === 'follow_up_due' ? 'warning' : 'secondary'}>
+        <Badge variant={row.status === 'delivered' ? 'success' : row.status === 'failed' ? 'destructive' : 'secondary'}>
           {row.status.replace(/_/g, ' ')}
         </Badge>
       ),
     },
-    { key: 'lastMessageAt', header: 'Last Message', render: (row) => <span className="data-value">{formatDate(row.lastMessageAt)}</span> },
+    { key: 'sentAt', header: 'Last Message', render: (row) => <span className="data-value">{formatDate(row.sentAt ?? row.createdAt)}</span> },
   ];
 
   return (
@@ -136,28 +135,25 @@ export function ManufacturerDetail() {
             <CardTitle className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Company Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground leading-relaxed">{manufacturer.description}</p>
             <div className="grid gap-2.5 sm:grid-cols-2">
               <div className="flex items-center gap-2.5 text-sm">
                 <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span>{manufacturer.country}</span>
+                <span>{manufacturer.city ? `${manufacturer.city}, ` : ''}{manufacturer.country}</span>
               </div>
-              <div className="flex items-center gap-2.5 text-sm">
-                <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
-                <a href={`mailto:${manufacturer.contactEmail}`} className="text-primary hover:underline truncate">
-                  {manufacturer.contactEmail}
-                </a>
-              </div>
-              <div className="flex items-center gap-2.5 text-sm">
-                <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
-                <span className="data-value">{manufacturer.contactPhone}</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-sm">
-                <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
-                <a href={manufacturer.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate">
-                  {manufacturer.website}
-                </a>
-              </div>
+              {manufacturer.contacts?.[0]?.email && (
+                <div className="flex items-center gap-2.5 text-sm">
+                  <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <a href={`mailto:${manufacturer.contacts[0].email}`} className="text-primary hover:underline truncate">
+                    {manufacturer.contacts[0].email}
+                  </a>
+                </div>
+              )}
+              {manufacturer.contacts?.[0]?.phone && (
+                <div className="flex items-center gap-2.5 text-sm">
+                  <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="data-value">{manufacturer.contacts[0].phone}</span>
+                </div>
+              )}
             </div>
 
             {/* Specialties */}
@@ -245,7 +241,7 @@ export function ManufacturerDetail() {
 
               {/* Categories */}
               <div className="grid gap-3 sm:grid-cols-2">
-                {vetting.categories.map((cat) => (
+                {vetting.categories.map((cat: { name: string; score: number; notes: string }) => (
                   <div key={cat.name} className="rounded-md border p-3">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-xs font-medium text-muted-foreground">{cat.name}</span>
@@ -264,7 +260,7 @@ export function ManufacturerDetail() {
                     <AlertTriangle className="h-3.5 w-3.5 text-warning" /> Risks
                   </h4>
                   <ul className="space-y-1">
-                    {vetting.risks.map((risk, i) => (
+                    {vetting.risks.map((risk: string, i: number) => (
                       <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
                         <span className="text-warning mt-1">-</span> {risk}
                       </li>
@@ -280,7 +276,7 @@ export function ManufacturerDetail() {
                     <ThumbsUp className="h-3.5 w-3.5 text-primary" /> Recommendations
                   </h4>
                   <ul className="space-y-1">
-                    {vetting.recommendations.map((rec, i) => (
+                    {vetting.recommendations.map((rec: string, i: number) => (
                       <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
                         <span className="text-primary mt-1">-</span> {rec}
                       </li>

@@ -1,7 +1,7 @@
 import { Prisma, QuoteStatus } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { paginate, PaginatedResult, PaginationOptions } from "../utils/pagination";
-import { NotFoundError } from "./ProjectService";
+import { NotFoundError, ValidationError } from "../utils/errors";
 
 export interface CreateQuoteInput {
   projectId: string;
@@ -157,7 +157,7 @@ export class QuoteService {
       throw new NotFoundError("Quote not found");
     }
     if (existing.status !== "pending") {
-      throw new Error("Only pending quotes can be accepted");
+      throw new ValidationError("Only pending quotes can be accepted");
     }
 
     return prisma.quote.update({
@@ -172,7 +172,7 @@ export class QuoteService {
       throw new NotFoundError("Quote not found");
     }
     if (existing.status !== "pending") {
-      throw new Error("Only pending quotes can be rejected");
+      throw new ValidationError("Only pending quotes can be rejected");
     }
 
     return prisma.quote.update({

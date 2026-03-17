@@ -67,8 +67,6 @@ export function Settings() {
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
     toast({ title: 'Settings saved', description: 'Your preferences have been updated.' });
-    // Reload to reflect name changes in header
-    window.location.reload();
   };
 
   return (

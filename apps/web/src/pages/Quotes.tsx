@@ -66,7 +66,10 @@ export function Quotes() {
   });
 
   const analyzeMutation = useMutation({
-    mutationFn: aiApi.analyzeQuote,
+    mutationFn: (quoteId: string) => {
+      const quote = quotes.find((q: Quote) => q.id === quoteId);
+      return aiApi.analyzeQuotes(quote ? [quote as unknown as Record<string, unknown>] : []);
+    },
     onSuccess: (data) => {
       setAnalysis(data);
       setAnalysisOpen(true);
@@ -76,7 +79,7 @@ export function Quotes() {
     },
   });
 
-  const quotes = quotesQuery.data ?? [];
+  const quotes: Quote[] = quotesQuery.data ?? [];
 
   const toggleCompare = (id: string) => {
     setCompareIds((prev) =>
@@ -84,7 +87,7 @@ export function Quotes() {
     );
   };
 
-  const compareQuotes = quotes.filter((q) => compareIds.includes(q.id));
+  const compareQuotes = quotes.filter((q: Quote) => compareIds.includes(q.id));
 
   const columns: ColumnDef<Quote>[] = [
     {
@@ -116,10 +119,10 @@ export function Quotes() {
       render: (row) => <span className="data-value">{row.leadTimeDays} days</span>,
     },
     {
-      key: 'validUntil',
+      key: 'validityDate',
       header: 'Valid Until',
       sortable: true,
-      render: (row) => <span className="data-value">{formatDate(row.validUntil)}</span>,
+      render: (row) => <span className="data-value">{formatDate(row.validityDate)}</span>,
     },
     {
       key: 'status',
@@ -264,7 +267,7 @@ export function Quotes() {
                 </tr>
                 <tr className="border-b">
                   <td className="p-2.5 text-xs font-medium text-muted-foreground">Valid Until</td>
-                  {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{formatDate(q.validUntil)}</td>)}
+                  {compareQuotes.map((q) => <td key={q.id} className="p-2.5 data-value">{formatDate(q.validityDate)}</td>)}
                 </tr>
                 <tr className="border-b">
                   <td className="p-2.5 text-xs font-medium text-muted-foreground">Status</td>

@@ -1,23 +1,27 @@
-import IORedis from 'ioredis';
+import Redis from "ioredis";
+import { config } from "../config";
+import { logger } from "../config/logger";
 
-const redisUrl = process.env.REDIS_URL;
+let client: Redis | null = null;
 
-const connection: IORedis | null = redisUrl
-  ? new IORedis(redisUrl, {
-      maxRetriesPerRequest: null,
-    })
-  : null;
-
-if (connection) {
-  connection.on('error', (err) => {
-    console.error('[Redis] Connection error:', err.message);
-  });
-
-  connection.on('connect', () => {
-    console.log('[Redis] Connected');
-  });
-} else {
-  console.log('[Redis] REDIS_URL not set – running without Redis');
+export function getRedisClient(): Redis | null {
+  if (!config.redis.enabled) return null;
+  if (!client) {
+    client = new Redis(config.redis.url!, {
+      maxRetriesPerRequest: 2,
+      enableReadyCheck: false,
+      lazyConnect: true,
+    });
+    client.on("error", (err) => {
+      logger.error("Redis connection error", { error: err.message });
+    });
+  }
+  return client;
 }
 
-export default connection;
+export async function disconnectRedis(): Promise<void> {
+  if (client) {
+    await client.quit();
+    client = null;
+  }
+}

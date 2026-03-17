@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { paginate, PaginatedResult, PaginationOptions } from "../utils/pagination";
-import { NotFoundError } from "./ProjectService";
+import { NotFoundError, ValidationError } from "../utils/errors";
 
 export interface CreateManufacturerInput {
   name: string;
@@ -142,10 +142,12 @@ export class ManufacturerService {
       paramIdx++;
     }
 
+    // For full-text search with rank ordering, use offset-based pagination
+    // since rank ordering doesn't have a stable cursor.
+    // The cursor contains the offset number as a string.
+    let offset = 0;
     if (pagination.cursor) {
-      whereClause += ` AND m.id > $${paramIdx}`;
-      params.push(pagination.cursor);
-      paramIdx++;
+      offset = parseInt(pagination.cursor, 10) || 0;
     }
 
     const sql = `
@@ -157,6 +159,7 @@ export class ManufacturerService {
       FROM manufacturers m
       ${whereClause}
       ORDER BY rank DESC, m."createdAt" DESC
+      OFFSET ${offset}
       LIMIT $2
     `;
 
@@ -164,7 +167,7 @@ export class ManufacturerService {
 
     const hasMore = rows.length > limit;
     const data = hasMore ? rows.slice(0, limit) : rows;
-    const nextCursor = hasMore ? data[data.length - 1].id : null;
+    const nextCursor = hasMore ? String(offset + limit) : null;
 
     return { data, nextCursor, hasMore };
   }
@@ -310,12 +313,5 @@ export class ManufacturerService {
         sustainabilityScore: true,
       },
     });
-  }
-}
-
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ValidationError";
   }
 }

@@ -6,9 +6,12 @@ import { config } from "./config";
 import { logger } from "./config/logger";
 import { correlationId } from "./middleware/correlationId";
 import { requestLogger } from "./middleware/requestLogger";
+import { rateLimiter } from "./middleware/rateLimiter";
 import { errorHandler } from "./middleware/errorHandler";
 import { cache } from "./utils/cache";
 import prisma from "./lib/prisma";
+import { initWorkers } from "./workers";
+import { disconnectRedis } from "./lib/redis";
 
 // ---------------------------------------------------------------------------
 // Express app
@@ -26,6 +29,7 @@ app.use(
 app.use(express.json({ limit: "5mb" }));
 app.use(correlationId);
 app.use(requestLogger);
+app.use(rateLimiter);
 
 // ---------------------------------------------------------------------------
 // Health check (no auth required)
@@ -96,6 +100,16 @@ async function main() {
     await prisma.$connect();
     logger.info("Connected to database");
 
+    // Initialize background workers (only if Redis is configured)
+    if (config.redis.enabled) {
+      try {
+        const workers = await initWorkers();
+        logger.info("Background workers initialized");
+      } catch (err) {
+        logger.warn("Failed to initialize workers — background jobs disabled", { error: err });
+      }
+    }
+
     const server = app.listen(config.app.port, () => {
       logger.info(`Server listening on port ${config.app.port}`, {
         env: config.env,
@@ -107,6 +121,7 @@ async function main() {
     const shutdown = async (signal: string) => {
       logger.info(`${signal} received – shutting down`);
       server.close(async () => {
+        await disconnectRedis();
         await prisma.$disconnect();
         logger.info("Server stopped");
         process.exit(0);

@@ -27,14 +27,13 @@ const statusConfig: Record<
   { label: string; icon: React.ElementType; variant: 'default' | 'secondary' | 'success' | 'destructive' | 'warning' | 'outline' }
 > = {
   requested: { label: 'Requested', icon: Clock, variant: 'secondary' },
-  in_production: { label: 'In Production', icon: Package, variant: 'default' },
-  shipped: { label: 'Shipped', icon: Truck, variant: 'warning' },
+  in_transit: { label: 'In Transit', icon: Truck, variant: 'default' },
   received: { label: 'Received', icon: Package, variant: 'outline' },
   approved: { label: 'Approved', icon: CheckCircle2, variant: 'success' },
   rejected: { label: 'Rejected', icon: XCircle, variant: 'destructive' },
 };
 
-const statusFlow = ['requested', 'in_production', 'shipped', 'received', 'approved'];
+const statusFlow = ['requested', 'in_transit', 'received', 'approved'];
 
 export function Samples() {
   const queryClient = useQueryClient();
@@ -73,7 +72,7 @@ export function Samples() {
     },
   });
 
-  const samples = samplesQuery.data ?? [];
+  const samples: Sample[] = samplesQuery.data ?? [];
 
   const getNextStatus = (current: string): string | null => {
     const idx = statusFlow.indexOf(current);

@@ -1,7 +1,7 @@
 import { Prisma, AssetType, MoodboardItemType } from "@prisma/client";
 import prisma from "../lib/prisma";
 import { paginate, PaginatedResult, PaginationOptions } from "../utils/pagination";
-import { NotFoundError } from "./ProjectService";
+import { NotFoundError } from "../utils/errors";
 
 export interface CreateDesignAssetInput {
   projectId: string;

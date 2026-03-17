@@ -1,9 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { DesignAssetService } from "../services/DesignAssetService";
 import { AuditService } from "../services/AuditService";
 import { requireAuth } from "../middleware/auth";
 import { validate } from "../middleware/validate";
-import { NotFoundError } from "../services/ProjectService";
+import { asyncHandler } from "../middleware/asyncHandler";
 import {
   createDesignAssetSchema,
   updateDesignAssetSchema,
@@ -21,201 +21,136 @@ router.use(requireAuth);
 // ─── Design Assets ───
 
 // GET /api/v1/design/assets
-router.get("/assets", validate(listDesignAssetsQuery, "query"), async (req: Request, res: Response) => {
-  try {
-    const result = await designAssetService.listAssets(
-      {
-        projectId: req.query.projectId as string | undefined,
-        userId: req.query.userId as string | undefined,
-        type: req.query.type as any,
-      },
-      {
-        cursor: req.query.cursor as string | undefined,
-        limit: (req.query.limit as unknown as number) ?? 20,
-      }
-    );
+router.get("/assets", validate(listDesignAssetsQuery, "query"), asyncHandler(async (req, res) => {
+  const result = await designAssetService.listAssets(
+    {
+      projectId: req.query.projectId as string | undefined,
+      userId: req.query.userId as string | undefined,
+      type: req.query.type as any,
+    },
+    {
+      cursor: req.query.cursor as string | undefined,
+      limit: (req.query.limit as unknown as number) ?? 20,
+    }
+  );
 
-    res.json({ success: true, data: result });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: result });
+}));
 
 // POST /api/v1/design/assets
-router.post("/assets", validate(createDesignAssetSchema), async (req: Request, res: Response) => {
-  try {
-    const asset = await designAssetService.createAsset(req.user!.id, req.body);
+router.post("/assets", validate(createDesignAssetSchema), asyncHandler(async (req, res) => {
+  const asset = await designAssetService.createAsset(req.user!.id, req.body);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "design_asset",
-      entityId: asset.id,
-      action: "create",
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "design_asset",
+    entityId: asset.id,
+    action: "create",
+  });
 
-    res.status(201).json({ success: true, data: asset });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.status(201).json({ success: true, data: asset });
+}));
 
 // GET /api/v1/design/assets/:id
-router.get("/assets/:id", async (req: Request, res: Response) => {
-  try {
-    const asset = await designAssetService.getAssetById(req.params.id as string);
-    res.json({ success: true, data: asset });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+router.get("/assets/:id", asyncHandler(async (req, res) => {
+  const asset = await designAssetService.getAssetById(req.params.id as string);
+  res.json({ success: true, data: asset });
+}));
 
 // PUT /api/v1/design/assets/:id
-router.put("/assets/:id", validate(updateDesignAssetSchema), async (req: Request, res: Response) => {
-  try {
-    const asset = await designAssetService.updateAsset(req.params.id as string, req.user!.id, req.body);
+router.put("/assets/:id", validate(updateDesignAssetSchema), asyncHandler(async (req, res) => {
+  const asset = await designAssetService.updateAsset(req.params.id as string, req.user!.id, req.body);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "design_asset",
-      entityId: asset.id,
-      action: "update",
-      diffJson: req.body,
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "design_asset",
+    entityId: asset.id,
+    action: "update",
+    diffJson: req.body,
+  });
 
-    res.json({ success: true, data: asset });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: asset });
+}));
 
 // DELETE /api/v1/design/assets/:id
-router.delete("/assets/:id", async (req: Request, res: Response) => {
-  try {
-    await designAssetService.deleteAsset(req.params.id as string, req.user!.id);
+router.delete("/assets/:id", asyncHandler(async (req, res) => {
+  await designAssetService.deleteAsset(req.params.id as string, req.user!.id);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "design_asset",
-      entityId: req.params.id as string,
-      action: "delete",
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "design_asset",
+    entityId: req.params.id as string,
+    action: "delete",
+  });
 
-    res.json({ success: true, data: null });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: null });
+}));
 
 // ─── Moodboard Items ───
 
-// GET /api/v1/design/moodboard/:designAssetId
-router.get("/moodboard/:designAssetId", async (req: Request, res: Response) => {
-  try {
-    const result = await designAssetService.listMoodboardItems(
-      req.params.designAssetId as string,
-      {
-        cursor: req.query.cursor as string | undefined,
-        limit: parseInt(req.query.limit as string) || 50,
-      }
-    );
-
-    res.json({ success: true, data: result });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
-
-// POST /api/v1/design/moodboard
-router.post("/moodboard", validate(createMoodboardItemSchema), async (req: Request, res: Response) => {
-  try {
-    const item = await designAssetService.createMoodboardItem(req.body);
-
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "moodboard_item",
-      entityId: item.id,
-      action: "create",
-    });
-
-    res.status(201).json({ success: true, data: item });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+// NOTE: /moodboard/item/:id routes MUST come before /moodboard/:designAssetId
+// to avoid Express matching "item" as a :designAssetId parameter.
 
 // GET /api/v1/design/moodboard/item/:id
-router.get("/moodboard/item/:id", async (req: Request, res: Response) => {
-  try {
-    const item = await designAssetService.getMoodboardItemById(req.params.id as string);
-    res.json({ success: true, data: item });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+router.get("/moodboard/item/:id", asyncHandler(async (req, res) => {
+  const item = await designAssetService.getMoodboardItemById(req.params.id as string);
+  res.json({ success: true, data: item });
+}));
 
 // PUT /api/v1/design/moodboard/item/:id
-router.put("/moodboard/item/:id", validate(updateMoodboardItemSchema), async (req: Request, res: Response) => {
-  try {
-    const item = await designAssetService.updateMoodboardItem(req.params.id as string, req.body);
+router.put("/moodboard/item/:id", validate(updateMoodboardItemSchema), asyncHandler(async (req, res) => {
+  const item = await designAssetService.updateMoodboardItem(req.params.id as string, req.body);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "moodboard_item",
-      entityId: item.id,
-      action: "update",
-      diffJson: req.body,
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "moodboard_item",
+    entityId: item.id,
+    action: "update",
+    diffJson: req.body,
+  });
 
-    res.json({ success: true, data: item });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
-    }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  res.json({ success: true, data: item });
+}));
 
 // DELETE /api/v1/design/moodboard/item/:id
-router.delete("/moodboard/item/:id", async (req: Request, res: Response) => {
-  try {
-    await designAssetService.deleteMoodboardItem(req.params.id as string);
+router.delete("/moodboard/item/:id", asyncHandler(async (req, res) => {
+  await designAssetService.deleteMoodboardItem(req.params.id as string);
 
-    await auditService.log({
-      userId: req.user!.id,
-      entityType: "moodboard_item",
-      entityId: req.params.id as string,
-      action: "delete",
-    });
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "moodboard_item",
+    entityId: req.params.id as string,
+    action: "delete",
+  });
 
-    res.json({ success: true, data: null });
-  } catch (err: any) {
-    if (err instanceof NotFoundError) {
-      res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: err.message } });
-      return;
+  res.json({ success: true, data: null });
+}));
+
+// GET /api/v1/design/moodboard/:designAssetId
+router.get("/moodboard/:designAssetId", asyncHandler(async (req, res) => {
+  const result = await designAssetService.listMoodboardItems(
+    req.params.designAssetId as string,
+    {
+      cursor: req.query.cursor as string | undefined,
+      limit: parseInt(req.query.limit as string) || 50,
     }
-    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: err.message } });
-  }
-});
+  );
+
+  res.json({ success: true, data: result });
+}));
+
+// POST /api/v1/design/moodboard
+router.post("/moodboard", validate(createMoodboardItemSchema), asyncHandler(async (req, res) => {
+  const item = await designAssetService.createMoodboardItem(req.body);
+
+  await auditService.log({
+    userId: req.user!.id,
+    entityType: "moodboard_item",
+    entityId: item.id,
+    action: "create",
+  });
+
+  res.status(201).json({ success: true, data: item });
+}));
 
 export default router;
