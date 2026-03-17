@@ -8,11 +8,11 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-white rounded-md hover:bg-primary/90 hover:shadow-[0_1px_3px_rgba(0,0,0,0.2),inset_0_0.5px_0_rgba(255,255,255,0.15)] shadow-[0_0.5px_1px_rgba(0,0,0,0.15),inset_0_0.5px_0_rgba(255,255,255,0.15)] active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)] [text-shadow:0_0.5px_1px_rgba(0,0,0,0.15)]',
-        destructive: 'bg-destructive text-white rounded-md hover:bg-destructive/90 hover:shadow-[0_1px_3px_rgba(0,0,0,0.2)] shadow-[0_0.5px_1px_rgba(0,0,0,0.15)] [text-shadow:0_0.5px_1px_rgba(0,0,0,0.15)]',
-        outline: 'border border-black/[0.12] bg-white rounded-md hover:bg-black/[0.03] hover:border-black/[0.16] shadow-[0_0.5px_1px_rgba(0,0,0,0.06)] active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)]',
-        secondary: 'bg-black/[0.05] text-foreground rounded-md hover:bg-black/[0.08]',
-        ghost: 'hover:bg-black/[0.04] rounded-md',
+        default: 'bg-primary text-white rounded-md hover:bg-primary/90 shadow-sm active:shadow-none',
+        destructive: 'bg-destructive text-white rounded-md hover:bg-destructive/90 shadow-sm',
+        outline: 'border border-border bg-card rounded-md hover:bg-muted/50 shadow-sm',
+        secondary: 'bg-muted text-foreground rounded-md hover:bg-muted/80',
+        ghost: 'hover:bg-muted/50 rounded-md',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {

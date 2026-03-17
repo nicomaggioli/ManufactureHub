@@ -12,10 +12,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['SF Pro Text', 'SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-        display: ['SF Pro Display', 'SF Pro Text', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-        serif: ['New York', 'Apple Garamond', 'Baskerville', 'Georgia', 'Times New Roman', 'serif'],
-        mono: ['SF Mono', 'JetBrains Mono', 'ui-monospace', 'monospace'],
+        sans: ['Source Sans 3', 'Source Sans Pro', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        display: ['Work Sans', 'Source Sans 3', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'Times New Roman', 'serif'],
+        mono: ['JetBrains Mono', 'SF Mono', 'ui-monospace', 'monospace'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -69,18 +69,17 @@ export default {
       },
       borderRadius: {
         sm: '4px',
-        md: '8px',
-        lg: '12px',
-        xl: '16px',
+        md: '6px',
+        lg: '10px',
+        xl: '14px',
         full: '9999px',
       },
       boxShadow: {
-        // macOS-style shadows — hue-shifted (slate-tinted, not pure black)
-        'card': '0 0.5px 0 0 rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.06)',
-        'card-hover': '0 0.5px 0 0 rgba(15,23,42,0.05), 0 3px 10px rgba(15,23,42,0.08)',
-        'elevated': '0 0.5px 0 0 rgba(15,23,42,0.04), 0 10px 30px rgba(15,23,42,0.1), 0 4px 10px rgba(15,23,42,0.05)',
-        'popover': '0 0.5px 0 0 rgba(15,23,42,0.06), 0 12px 40px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.06)',
-        'window': '0 0 0 0.5px rgba(15,23,42,0.08), 0 20px 60px rgba(15,23,42,0.15), 0 6px 20px rgba(15,23,42,0.08)',
+        'card': '0 1px 2px rgba(15,29,46,0.05)',
+        'card-hover': '0 2px 8px rgba(15,29,46,0.08)',
+        'elevated': '0 4px 16px rgba(15,29,46,0.12)',
+        'popover': '0 4px 16px rgba(15,29,46,0.12)',
+        'window': '0 8px 30px rgba(15,29,46,0.15)',
       },
       keyframes: {
         'accordion-down': {

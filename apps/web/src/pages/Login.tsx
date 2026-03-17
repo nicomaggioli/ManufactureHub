@@ -21,10 +21,7 @@ export function Login() {
       <div className="w-full max-w-[320px] space-y-5">
         {/* Logo + App Name */}
         <div className="text-center space-y-2">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-[inset_0_-1px_2px_rgba(0,0,0,0.15)] text-white text-2xl font-bold font-serif">
-            R
-          </div>
-          <h1 className="text-xl font-semibold font-display tracking-tight mt-3">Sign in to RAVI</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">RAVI</h1>
           <p className="text-sm text-muted-foreground">Manufacturing management platform</p>
         </div>
 

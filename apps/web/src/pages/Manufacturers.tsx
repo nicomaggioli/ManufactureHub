@@ -60,29 +60,6 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function SustainabilityBar({ score }: { score: number }) {
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-1 text-overline text-muted-foreground">
-          <Leaf className="h-3 w-3 text-emerald-500" />
-          Sustainability
-        </span>
-        <span className="text-overline font-medium data-value">{score}/100</span>
-      </div>
-      <div className="h-1.5 w-full rounded-full bg-muted-foreground/10 overflow-hidden">
-        <div
-          className={cn(
-            'h-full rounded-full transition-colors',
-            score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-rose-400'
-          )}
-          style={{ width: `${score}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
 function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
   manufacturer: Manufacturer;
   index: number;
@@ -91,7 +68,7 @@ function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
 }) {
   return (
     <Card
-      className="transition-shadow hover:shadow-md h-full animate-in relative group"
+      className="bg-card border rounded-md transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-md h-full relative group"
       style={{ animationDelay: `${index * 60}ms` }}
     >
       {/* Compare checkbox */}
@@ -109,30 +86,30 @@ function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
       </button>
 
       <Link to={`/manufacturers/${manufacturer.id}`}>
-        <CardHeader className="p-5 pb-3">
+        <CardHeader className="p-3 pb-2">
           {/* Name + verified */}
           <div className="flex items-start gap-2 pr-6">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Factory className="h-5 w-5 text-primary" />
+            <div className="h-9 w-9 rounded-md bg-muted flex items-center justify-center shrink-0">
+              <Factory className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <CardTitle className="text-sm font-semibold leading-tight truncate">
+                <CardTitle className="text-sm font-semibold font-display leading-tight truncate">
                   {manufacturer.name}
                 </CardTitle>
                 {manufacturer.verified && (
-                  <BadgeCheck className="h-4 w-4 text-primary shrink-0" />
+                  <Badge className="text-[10px] px-1.5 py-0 bg-blue-500 text-white border-0 rounded-full">Verified</Badge>
                 )}
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
                 <MapPin className="h-3 w-3" />
-                <span>{manufacturer.country}</span>
+                <span className="font-sans">{manufacturer.country}</span>
               </div>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-5 pt-0 space-y-4">
+        <CardContent className="p-3 pt-0 space-y-3">
           {/* Specialties */}
           <div className="flex flex-wrap gap-1.5">
             {manufacturer.specialties.slice(0, 3).map((s) => (
@@ -166,16 +143,20 @@ function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
             </div>
           )}
 
-          {/* Sustainability */}
+          {/* Sustainability - simple text */}
           {manufacturer.sustainabilityScore > 0 && (
-            <SustainabilityBar score={manufacturer.sustainabilityScore} />
+            <div className="flex items-center gap-1.5">
+              <Leaf className="h-3 w-3 text-emerald-500" />
+              <span className="text-xs text-muted-foreground font-sans">Sustainability:</span>
+              <span className="text-xs font-semibold data-value">{manufacturer.sustainabilityScore}%</span>
+            </div>
           )}
 
           {/* MOQ */}
           {manufacturer.moq !== null && manufacturer.moq !== undefined && (
             <div className="flex items-center gap-1.5 pt-2 border-t border-border/50">
               <Package className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">MOQ:</span>
+              <span className="text-xs text-muted-foreground font-sans">MOQ:</span>
               <span className="text-xs font-semibold data-value">{manufacturer.moq.toLocaleString()} units</span>
             </div>
           )}
@@ -187,25 +168,24 @@ function ManufacturerCard({ manufacturer, index, selected, onToggleCompare }: {
 
 function ManufacturersSkeleton() {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
         <Card key={i}>
-          <CardHeader className="p-5 pb-3">
+          <CardHeader className="p-3 pb-2">
             <div className="flex items-start gap-2">
-              <Skeleton className="h-10 w-10 rounded-xl" />
+              <Skeleton className="h-9 w-9 rounded-md" />
               <div className="flex-1 space-y-1.5">
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="h-3 w-20" />
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-5 pt-0 space-y-3">
+          <CardContent className="p-3 pt-0 space-y-3">
             <div className="flex gap-1.5">
               <Skeleton className="h-5 w-16 rounded-full" />
               <Skeleton className="h-5 w-20 rounded-full" />
             </div>
             <Skeleton className="h-3.5 w-28" />
-            <Skeleton className="h-1.5 w-full rounded-full" />
           </CardContent>
         </Card>
       ))}
@@ -262,22 +242,21 @@ export function Manufacturers() {
   const hasFilters = selectedCountries.length > 0 || selectedCerts.length > 0 || verifiedOnly;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Page header */}
       <div>
-        <p className="text-overline font-semibold uppercase tracking-widest text-muted-foreground mb-1">Discover</p>
-        <h1 className="text-2xl font-semibold tracking-tight">Manufacturers</h1>
-        <p className="text-sm text-muted-foreground mt-1">Browse and discover verified manufacturers worldwide.</p>
+        <h1 className="text-[17px] font-bold tracking-tight font-display">Manufacturers</h1>
+        <p className="text-sm text-muted-foreground font-sans mt-1">Browse and discover verified manufacturers worldwide.</p>
       </div>
 
-      {/* Search bar - prominent */}
+      {/* Search bar */}
       <div className="relative max-w-2xl">
         <label htmlFor="mfr-search" className="sr-only">Search manufacturers</label>
-        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           id="mfr-search"
           placeholder="Search by name, specialty, location..."
-          className="pl-12 h-12 text-base rounded-xl border-2 focus:border-primary/50"
+          className="pl-10 h-10 text-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -290,12 +269,12 @@ export function Manufacturers() {
             variant={filterOpen ? 'default' : 'outline'}
             size="sm"
             onClick={() => setFilterOpen(!filterOpen)}
-            className="rounded-full"
+            className="rounded-full text-xs"
           >
-            <SlidersHorizontal className="mr-2 h-3.5 w-3.5" />
+            <SlidersHorizontal className="mr-1.5 h-3.5 w-3.5" />
             Filters
             {hasFilters && (
-              <Badge className="ml-2 text-[10px]" variant="secondary">Active</Badge>
+              <Badge className="ml-1.5 text-[10px]" variant="secondary">Active</Badge>
             )}
           </Button>
 
@@ -305,7 +284,7 @@ export function Manufacturers() {
               key={c}
               onClick={() => toggleCountry(c)}
               className={cn(
-                'inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+                'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors',
                 selectedCountries.includes(c)
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -318,7 +297,7 @@ export function Manufacturers() {
           <button
             onClick={() => setVerifiedOnly(!verifiedOnly)}
             className={cn(
-              'inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors gap-1',
+              'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors gap-1',
               verifiedOnly
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -337,9 +316,9 @@ export function Manufacturers() {
 
         {/* Compare bar */}
         {compareIds.length > 0 && (
-          <div className="flex items-center gap-3 rounded-xl bg-primary/5 border border-primary/20 px-4 py-3 animate-in">
+          <Card className="flex items-center gap-3 px-4 py-3">
             <GitCompareArrows className="h-4 w-4 text-primary" />
-            <span className="text-sm">
+            <span className="text-sm font-sans">
               <span className="font-medium data-value">{compareIds.length}</span> of 4 selected for comparison
             </span>
             <div className="flex-1" />
@@ -357,16 +336,16 @@ export function Manufacturers() {
                 Compare Now
               </Button>
             )}
-          </div>
+          </Card>
         )}
       </div>
 
       <div className="flex gap-6">
         {/* Filter panel */}
         {filterOpen && (
-          <Card className="w-64 shrink-0 self-start animate-in">
+          <Card className="w-64 shrink-0 self-start">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-              <CardTitle className="text-overline font-semibold text-muted-foreground uppercase tracking-wider">Filters</CardTitle>
+              <CardTitle className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary">Filters</CardTitle>
               {hasFilters && (
                 <Button variant="ghost" size="sm" onClick={clearFilters} className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground">
                   Clear all
@@ -375,10 +354,10 @@ export function Manufacturers() {
             </CardHeader>
             <CardContent className="p-4 pt-0 space-y-5">
               <div>
-                <h4 className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-2">Country</h4>
+                <h4 className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-2">Country</h4>
                 <div className="space-y-1.5 max-h-40 overflow-y-auto">
                   {countries.map((c) => (
-                    <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
+                    <label key={c} className="flex items-center gap-2 text-sm font-sans cursor-pointer hover:text-foreground transition-colors">
                       <input
                         type="checkbox"
                         checked={selectedCountries.includes(c)}
@@ -392,10 +371,10 @@ export function Manufacturers() {
               </div>
 
               <div>
-                <h4 className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-2">Certifications</h4>
+                <h4 className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-2">Certifications</h4>
                 <div className="space-y-1.5">
                   {certificationOptions.map((c) => (
-                    <label key={c} className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
+                    <label key={c} className="flex items-center gap-2 text-sm font-sans cursor-pointer hover:text-foreground transition-colors">
                       <input
                         type="checkbox"
                         checked={selectedCerts.includes(c)}
@@ -409,7 +388,7 @@ export function Manufacturers() {
               </div>
 
               <div>
-                <h4 className="text-overline font-medium text-muted-foreground uppercase tracking-wider mb-2">MOQ Range</h4>
+                <h4 className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary mb-2">MOQ Range</h4>
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
@@ -430,7 +409,7 @@ export function Manufacturers() {
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors">
+                <label className="flex items-center gap-2 text-sm font-sans cursor-pointer hover:text-foreground transition-colors">
                   <input
                     type="checkbox"
                     checked={verifiedOnly}
@@ -457,14 +436,11 @@ export function Manufacturers() {
             </Card>
           ) : manufacturers.length === 0 ? (
             <Card className="border-dashed">
-              <CardContent className="flex flex-col items-center py-20 text-muted-foreground">
-                <div className="rounded-2xl bg-muted p-5 mb-5">
-                  <Search className="h-10 w-10 text-muted-foreground/40" />
-                </div>
-                <p className="text-base font-medium mb-1">No manufacturers found</p>
-                <p className="text-sm text-muted-foreground/70 mb-5">Try adjusting your search or filters.</p>
+              <CardContent className="flex flex-col items-center py-16 text-muted-foreground">
+                <p className="text-sm font-semibold font-display mb-1">No manufacturers found</p>
+                <p className="text-sm text-muted-foreground/70 mb-5 font-sans">Try adjusting your search or filters.</p>
                 {hasFilters && (
-                  <Button variant="outline" size="sm" onClick={clearFilters} className="rounded-full">
+                  <Button variant="outline" size="sm" onClick={clearFilters} className="rounded-full text-xs">
                     <X className="mr-2 h-3.5 w-3.5" /> Clear Filters
                   </Button>
                 )}
@@ -472,10 +448,10 @@ export function Manufacturers() {
             </Card>
           ) : (
             <>
-              <p className="text-xs text-muted-foreground mb-5">
+              <p className="text-xs text-muted-foreground mb-4 font-sans">
                 Showing <span className="data-value font-medium">{manufacturers.length}</span> manufacturers
               </p>
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {manufacturers.map((m, i) => (
                   <ManufacturerCard
                     key={m.id}

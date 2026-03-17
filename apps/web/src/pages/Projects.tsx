@@ -39,15 +39,7 @@ const statusTabs = [
   { value: 'shipped', label: 'Shipped' },
 ];
 
-const statusBadgeVariant: Record<string, 'default' | 'secondary' | 'outline' | 'success' | 'warning'> = {
-  ideation: 'secondary',
-  sourcing: 'default',
-  sampling: 'warning',
-  production: 'outline',
-  shipped: 'success',
-};
-
-const statusColors: Record<string, string> = {
+const statusDotColors: Record<string, string> = {
   ideation: 'bg-slate-400',
   sourcing: 'bg-blue-500',
   sampling: 'bg-amber-500',
@@ -66,7 +58,7 @@ function PipelineIndicator({ status }: { status: string }) {
           key={stage}
           className={cn(
             'h-1.5 flex-1 rounded-full transition-colors',
-            idx <= currentIdx ? (statusColors[status] ?? 'bg-muted-foreground/20') : 'bg-muted-foreground/10'
+            idx <= currentIdx ? (statusDotColors[status] ?? 'bg-muted-foreground/20') : 'bg-muted-foreground/10'
           )}
           title={stage.charAt(0).toUpperCase() + stage.slice(1)}
         />
@@ -79,28 +71,29 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
     <Link to={`/projects/${project.id}`}>
       <Card
-        className="cursor-pointer transition-shadow hover:shadow-md hover:border-border/80 h-full animate-in"
+        className="cursor-pointer bg-card border rounded-md p-0 transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-md h-full"
         style={{ animationDelay: `${index * 80}ms` }}
       >
-        <CardHeader className="p-5 pb-3">
+        <CardHeader className="p-3 pb-2">
           <div className="flex items-start justify-between gap-3">
-            <CardTitle className="text-base font-semibold leading-tight">
+            <CardTitle className="text-sm font-semibold font-display leading-tight">
               {project.title}
             </CardTitle>
-            <Badge variant={statusBadgeVariant[project.status] ?? 'outline'} className="shrink-0 text-overline uppercase tracking-wider">
-              {project.status}
-            </Badge>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className={cn('h-2 w-2 rounded-full', statusDotColors[project.status] ?? 'bg-muted-foreground')} />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{project.status}</span>
+            </div>
           </div>
           {project.description && (
-            <CardDescription className="line-clamp-2 text-sm mt-1.5 leading-relaxed">
+            <CardDescription className="line-clamp-2 text-sm font-sans mt-1.5 leading-relaxed">
               {project.description}
             </CardDescription>
           )}
         </CardHeader>
-        <CardContent className="p-5 pt-0 space-y-4">
+        <CardContent className="p-3 pt-0 space-y-3">
           {/* Pipeline progress */}
           <div className="space-y-1.5">
-            <p className="text-overline font-medium text-muted-foreground uppercase tracking-wider">Pipeline</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary">Pipeline</p>
             <PipelineIndicator status={project.status} />
           </div>
 
@@ -135,10 +128,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
 function ProjectsSkeleton() {
   return (
-    <div className="grid gap-5 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-2">
       {Array.from({ length: 4 }).map((_, i) => (
         <Card key={i}>
-          <CardHeader className="p-5 pb-3">
+          <CardHeader className="p-3 pb-2">
             <div className="flex items-start justify-between">
               <Skeleton className="h-5 w-40" />
               <Skeleton className="h-5 w-20" />
@@ -146,7 +139,7 @@ function ProjectsSkeleton() {
             <Skeleton className="h-4 w-full mt-2" />
             <Skeleton className="h-4 w-3/4 mt-1" />
           </CardHeader>
-          <CardContent className="p-5 pt-0 space-y-3">
+          <CardContent className="p-3 pt-0 space-y-3">
             <Skeleton className="h-1.5 w-full rounded-full" />
             <div className="flex gap-4">
               <Skeleton className="h-4 w-12" />
@@ -195,21 +188,21 @@ export function Projects() {
     : allProjects;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage your manufacturing projects from ideation to shipment.</p>
+          <h1 className="text-[17px] font-bold tracking-tight font-display">Projects</h1>
+          <p className="text-sm text-muted-foreground font-sans mt-1">Manage your manufacturing projects from ideation to shipment.</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} size="lg" className="rounded-lg shadow-sm">
-          <Plus className="mr-2 h-5 w-5" />
+        <Button onClick={() => setDialogOpen(true)} size="sm" variant="outline" className="rounded-md">
+          <Plus className="mr-2 h-4 w-4" />
           New Project
         </Button>
       </div>
 
       {/* Search + filter pills */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="relative max-w-md">
           <label htmlFor="project-search" className="sr-only">Search projects</label>
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -229,14 +222,14 @@ export function Projects() {
               key={tab.value}
               onClick={() => setStatusFilter(tab.value)}
               className={cn(
-                'inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+                'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors',
                 statusFilter === tab.value
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
             >
               {tab.value !== 'all' && (
-                <span className={cn('mr-2 h-2 w-2 rounded-full', statusColors[tab.value] ?? 'bg-muted-foreground')} />
+                <span className={cn('mr-1.5 h-2 w-2 rounded-full', statusDotColors[tab.value] ?? 'bg-muted-foreground')} />
               )}
               {tab.label}
             </button>
@@ -255,22 +248,19 @@ export function Projects() {
         </Card>
       ) : projects.length === 0 ? (
         <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center py-20">
-            <div className="rounded-2xl bg-muted/60 p-5 mb-5">
-              <FolderKanban className="h-10 w-10 text-muted-foreground/60" />
-            </div>
-            <p className="text-base font-medium text-muted-foreground mb-1">No projects yet</p>
-            <p className="text-sm text-muted-foreground/70 mb-6 max-w-xs text-center">
-              Create your first project to get started. Track everything from quotes to shipments.
+          <CardContent className="flex flex-col items-center py-16">
+            <p className="text-sm font-semibold font-display text-muted-foreground mb-1">No projects yet</p>
+            <p className="text-sm text-muted-foreground/70 mb-5 max-w-xs text-center font-sans">
+              Create your first project to get started.
             </p>
-            <Button onClick={() => setDialogOpen(true)} className="rounded-lg">
+            <Button onClick={() => setDialogOpen(true)} size="sm" variant="outline" className="rounded-md">
               <Plus className="mr-2 h-4 w-4" />
               Create Your First Project
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {projects.map((project: Project, i: number) => (
             <ProjectCard key={project.id} project={project} index={i} />
           ))}
@@ -281,14 +271,14 @@ export function Projects() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Project</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="font-display">Create New Project</DialogTitle>
+            <DialogDescription className="font-sans">
               Start a new manufacturing project. You can add details later.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <label htmlFor="new-project-title" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Project Name</label>
+              <label htmlFor="new-project-title" className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary">Project Name</label>
               <Input
                 id="new-project-title"
                 placeholder="e.g., Spring Collection 2026"
@@ -297,7 +287,7 @@ export function Projects() {
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="new-project-description" className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</label>
+              <label htmlFor="new-project-description" className="text-[11px] font-bold uppercase tracking-[0.08em] text-primary">Description</label>
               <Textarea
                 id="new-project-description"
                 placeholder="Describe what you want to manufacture..."
@@ -307,13 +297,13 @@ export function Projects() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-lg">
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-md">
               Cancel
             </Button>
             <Button
               onClick={() => createMutation.mutate(newProject)}
               disabled={!newProject.title.trim() || createMutation.isPending}
-              className="rounded-lg"
+              className="rounded-md"
             >
               {createMutation.isPending ? 'Creating...' : 'Create Project'}
             </Button>

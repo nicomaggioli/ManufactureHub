@@ -1,94 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&family=Source+Sans+3:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* macOS-inspired color system — hue-shifted warm neutrals (220°) */
-    --background: 220 3% 96%;
-    --foreground: 220 5% 13%;
+    --background: 216 15% 96%;     /* #f0f2f5 warm gray */
+    --foreground: 215 40% 12%;     /* #0f1d2e navy-black */
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 5% 13%;
+    --card: 0 0% 100%;             /* white */
+    --card-foreground: 215 40% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 5% 13%;
+    --popover-foreground: 215 40% 12%;
 
-    /* macOS blue accent */
-    --primary: 211 100% 50%;
+    --primary: 211 61% 47%;        /* #2e6fbf blue accent */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 3% 94%;
-    --secondary-foreground: 220 5% 13%;
+    --secondary: 216 15% 94%;      /* light warm gray */
+    --secondary-foreground: 215 40% 12%;
 
-    --muted: 220 3% 94%;
-    --muted-foreground: 220 4% 44%;
+    --muted: 216 15% 94%;
+    --muted-foreground: 215 8% 47%;  /* #6b7280 gray */
 
-    --accent: 220 3% 94%;
-    --accent-foreground: 220 5% 13%;
+    --accent: 211 61% 47%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 86% 57%;
+    --destructive: 0 72% 51%;      /* #dc2626 */
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 71% 42%;
+    --success: 160 84% 30%;        /* #059669 */
     --success-foreground: 0 0% 100%;
 
-    --warning: 36 100% 50%;
-    --warning-foreground: 220 5% 13%;
+    --warning: 36 77% 44%;         /* #d97706 */
+    --warning-foreground: 0 0% 100%;
 
-    --border: 220 3% 87%;
-    --input: 220 3% 87%;
-    --ring: 211 100% 50%;
-    --radius: 8px;
+    --border: 216 14% 89%;         /* #e0e4ea */
+    --input: 216 14% 89%;
+    --ring: 211 61% 47%;
+    --radius: 6px;
 
-    /* macOS sidebar — translucent / vibrancy */
-    --sidebar: 220 3% 97%;
-    --sidebar-foreground: 220 4% 33%;
-    --sidebar-accent: 211 100% 50%;
-    --sidebar-muted: 220 3% 93%;
-    --sidebar-border: 220 3% 85%;
+    --sidebar: 0 0% 100%;          /* white sidebar */
+    --sidebar-foreground: 215 25% 40%;  /* #4a6580 steel */
+    --sidebar-accent: 211 61% 47%;
+    --sidebar-muted: 216 20% 97%;  /* #f7f8fa warm white */
+    --sidebar-border: 216 14% 89%;
   }
 
   .dark {
-    --background: 220 6% 10%;
-    --foreground: 220 3% 90%;
-
-    --card: 220 5% 13%;
-    --card-foreground: 220 3% 90%;
-
-    --popover: 220 5% 13%;
-    --popover-foreground: 220 3% 90%;
-
-    --primary: 211 100% 55%;
+    --background: 215 30% 10%;
+    --foreground: 216 15% 90%;
+    --card: 215 25% 14%;
+    --card-foreground: 216 15% 90%;
+    --popover: 215 25% 14%;
+    --popover-foreground: 216 15% 90%;
+    --primary: 211 70% 55%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 5% 18%;
-    --secondary-foreground: 220 3% 90%;
-
-    --muted: 220 5% 18%;
-    --muted-foreground: 220 4% 60%;
-
-    --accent: 220 5% 18%;
-    --accent-foreground: 220 3% 90%;
-
-    --destructive: 0 72% 55%;
+    --secondary: 215 20% 18%;
+    --secondary-foreground: 216 15% 90%;
+    --muted: 215 20% 18%;
+    --muted-foreground: 216 8% 60%;
+    --accent: 215 20% 18%;
+    --accent-foreground: 216 15% 90%;
+    --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 100%;
-
-    --success: 142 60% 45%;
+    --success: 160 70% 38%;
     --success-foreground: 0 0% 100%;
-
-    --warning: 36 90% 55%;
-    --warning-foreground: 220 5% 10%;
-
-    --border: 220 5% 20%;
-    --input: 220 5% 20%;
-    --ring: 211 100% 55%;
-
-    --sidebar: 220 6% 11%;
-    --sidebar-foreground: 220 4% 65%;
-    --sidebar-accent: 211 100% 55%;
-    --sidebar-muted: 220 5% 15%;
-    --sidebar-border: 220 5% 18%;
+    --warning: 36 70% 50%;
+    --warning-foreground: 215 30% 10%;
+    --border: 215 20% 20%;
+    --input: 215 20% 20%;
+    --ring: 211 70% 55%;
+    --sidebar: 215 28% 12%;
+    --sidebar-foreground: 216 8% 60%;
+    --sidebar-accent: 211 70% 55%;
+    --sidebar-muted: 215 25% 16%;
+    --sidebar-border: 215 20% 20%;
   }
 }
 
@@ -141,37 +129,16 @@
 
 @layer components {
   .data-value {
-    font-family: 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
     @apply tabular-nums tracking-tight;
   }
 
-  /* macOS frosted glass effect */
-  .glass {
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-  }
-  .dark .glass {
-    background: rgba(30, 32, 38, 0.75);
-  }
-
-  .glass-subtle {
-    background: rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(12px) saturate(150%);
-    -webkit-backdrop-filter: blur(12px) saturate(150%);
-  }
-  .dark .glass-subtle {
-    background: rgba(30, 32, 38, 0.55);
-  }
-
-  /* macOS window toolbar style */
-  .toolbar {
-    background: rgba(246, 246, 246, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-  }
-  .dark .toolbar {
-    background: rgba(25, 27, 32, 0.85);
+  .section-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: hsl(var(--primary));
   }
 
   /* Type scale — consistent typography utilities */
@@ -220,11 +187,11 @@
   }
 
   .animate-slide-up {
-    animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.2s cubic-bezier(0.32, 0.72, 0, 1) both;
+    animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .animate-fade-in {
@@ -232,7 +199,7 @@
   }
 
   .animate-slide-in-from-left {
-    animation: slide-in-from-left 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+    animation: slide-in-from-left 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .animate-float {
@@ -245,7 +212,7 @@
   .stagger-4 { animation-delay: 160ms; }
 }
 
-/* macOS-style spring animations */
+/* Alares-style animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -267,7 +234,7 @@
 }
 
 .animate-slide-in-left {
-  animation: slideInLeft 0.25s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: slideInLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes slideInRight {
@@ -276,7 +243,7 @@
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 0.25s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Additional animation keyframes */
