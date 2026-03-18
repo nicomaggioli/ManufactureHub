@@ -235,7 +235,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between h-[52px] px-5 border-b border-black/[0.08] toolbar sticky top-0 z-30">
+    <header className="flex items-center justify-between h-[60px] px-6 border-b border-border/40 bg-white sticky top-0 z-30">
       {/* Breadcrumbs + Search */}
       <div className="flex items-center gap-4 flex-1">
         <Breadcrumbs />
@@ -256,15 +256,15 @@ export function Header() {
                 searchInputRef.current?.blur();
               }
             }}
-            className="w-full h-[30px] pl-9 pr-3 text-[13px] bg-black/[0.04] border border-black/[0.08] rounded-md text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/30 focus:bg-white transition-all"
+            className="w-full h-9 pl-9 pr-3 text-sm bg-muted/50 border border-border/60 rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 focus:bg-white transition-all"
           />
-          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/50 font-mono bg-white/60 px-1 py-px rounded border border-black/[0.08] hidden sm:inline">
+          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/50 font-mono bg-white/60 px-1 py-px rounded border border-border/60 hidden sm:inline">
             /
           </kbd>
 
           {/* Search results dropdown */}
           {searchFocused && searchTerm.trim() && searchResults && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border/60 rounded-xl shadow-popover z-50 overflow-hidden">
               {!hasResults ? (
                 <div className="px-4 py-8 text-center">
                   <Search className="mx-auto h-5 w-5 text-muted-foreground/30 mb-2" />
@@ -353,9 +353,9 @@ export function Header() {
               role="dialog"
               aria-label="Notifications"
               onKeyDown={(e) => { if (e.key === 'Escape') setNotificationsOpen(false); }}
-              className="absolute right-0 top-full mt-1 w-80 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover z-50 animate-scale-in"
+              className="absolute right-0 top-full mt-1 w-80 bg-white border border-border/60 rounded-xl shadow-popover z-50 animate-scale-in"
             >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-black/[0.06]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
                 <span className="text-sm font-semibold">Notifications</span>
                 {unreadCount > 0 && (
                   <button
@@ -381,7 +381,7 @@ export function Header() {
                         key={notif.id}
                         to={notif.path}
                         onClick={() => setNotificationsOpen(false)}
-                        className={`flex items-start gap-3 px-4 py-3 hover:bg-black/[0.03] transition-colors border-b border-black/[0.04] last:border-0 ${isUnread ? '' : 'opacity-60'}`}
+                        className={`flex items-start gap-3 px-4 py-3 hover:bg-muted/40 transition-colors border-b border-border/30 last:border-0 ${isUnread ? '' : 'opacity-60'}`}
                       >
                         <div className={`flex h-7 w-7 items-center justify-center rounded-full shrink-0 mt-0.5 ${notif.iconColor}`}>
                           <Icon className="h-3.5 w-3.5" />
@@ -412,7 +412,7 @@ export function Header() {
             onClick={() => { setMenuOpen(!menuOpen); setNotificationsOpen(false); }}
             className="flex items-center gap-2.5 ml-2 pl-3 pr-2 py-1.5 rounded-lg hover:bg-muted transition-colors"
           >
-            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
               <span className="text-xs font-semibold text-primary">
                 {user?.firstName?.[0] ?? 'U'}
               </span>
@@ -423,10 +423,10 @@ export function Header() {
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-white/95 backdrop-blur-xl border border-black/[0.08] rounded-lg shadow-popover py-1 z-50 animate-scale-in">
+            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-border/60 rounded-xl shadow-popover py-1 z-50 animate-scale-in">
               <Link
                 to="/settings"
-                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-black/[0.04] rounded-md mx-1 transition-colors"
+                className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-muted/60 rounded-md mx-1 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 <Settings className="w-4 h-4 text-muted-foreground" />

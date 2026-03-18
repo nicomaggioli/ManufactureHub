@@ -4,49 +4,49 @@
 
 @layer base {
   :root {
-    /* Refined manufacturing platform — sophisticated warm neutrals */
-    --background: 30 6% 96%;
-    --foreground: 220 15% 13%;
+    /* Verdant — sage green SaaS palette */
+    --background: 40 20% 98%;
+    --foreground: 210 11% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 13%;
+    --card-foreground: 210 11% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 13%;
+    --popover-foreground: 210 11% 15%;
 
-    /* Deep navy accent — professional, premium feel */
-    --primary: 222 47% 25%;
+    /* Sage green primary — earthy, premium */
+    --primary: 153 40% 28%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 3% 94%;
-    --secondary-foreground: 220 5% 13%;
+    --secondary: 40 10% 95%;
+    --secondary-foreground: 210 11% 15%;
 
-    --muted: 220 3% 94%;
-    --muted-foreground: 220 4% 44%;
+    --muted: 40 10% 95%;
+    --muted-foreground: 210 5% 50%;
 
-    --accent: 220 3% 94%;
-    --accent-foreground: 220 5% 13%;
+    --accent: 153 20% 94%;
+    --accent-foreground: 153 40% 22%;
 
-    --destructive: 0 86% 57%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 71% 42%;
+    --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 36 100% 50%;
-    --warning-foreground: 220 5% 13%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 210 11% 15%;
 
-    --border: 220 3% 87%;
-    --input: 220 3% 87%;
-    --ring: 222 47% 25%;
-    --radius: 8px;
+    --border: 40 10% 90%;
+    --input: 40 10% 88%;
+    --ring: 153 40% 28%;
+    --radius: 12px;
 
-    /* macOS sidebar — translucent / vibrancy */
-    --sidebar: 220 3% 97%;
-    --sidebar-foreground: 220 4% 33%;
-    --sidebar-accent: 222 47% 25%;
-    --sidebar-muted: 220 3% 93%;
-    --sidebar-border: 220 3% 85%;
+    /* Sidebar — clean white with green accent */
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 210 5% 42%;
+    --sidebar-accent: 153 40% 28%;
+    --sidebar-muted: 40 10% 96%;
+    --sidebar-border: 40 10% 92%;
   }
 }
 
@@ -61,23 +61,20 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* macOS-style thin scrollbar */
+  /* Thin scrollbar */
   ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.12);
     border-radius: 10px;
-    border: 2px solid transparent;
-    background-clip: content-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
-    background-clip: content-box;
+    background: rgba(0, 0, 0, 0.25);
   }
 
   .tabular-nums {
@@ -90,22 +87,22 @@
     @apply tabular-nums tracking-tight;
   }
 
-  /* macOS frosted glass effect */
+  /* Clean glass effect */
   .glass {
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
 
   .glass-subtle {
-    background: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
   }
 
-  /* macOS window toolbar style */
+  /* Toolbar */
   .toolbar {
-    background: rgba(246, 246, 246, 0.85);
+    background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
@@ -113,36 +110,35 @@
 
 @layer utilities {
   .animate-in {
-    animation: fadeIn 0.2s ease-out both;
+    animation: fadeIn 0.25s ease-out both;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+    animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.2s cubic-bezier(0.32, 0.72, 0, 1) both;
+    animation: scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  .stagger-1 { animation-delay: 40ms; }
-  .stagger-2 { animation-delay: 80ms; }
-  .stagger-3 { animation-delay: 120ms; }
-  .stagger-4 { animation-delay: 160ms; }
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
 }
 
-/* macOS-style spring animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
@@ -152,7 +148,7 @@
 }
 
 .animate-slide-in-left {
-  animation: slideInLeft 0.25s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: slideInLeft 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes slideInRight {
@@ -161,7 +157,7 @@
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 0.25s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: slideInRight 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {

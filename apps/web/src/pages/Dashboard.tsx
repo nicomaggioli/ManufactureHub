@@ -13,6 +13,7 @@ import {
   ClipboardCheck,
   Truck,
   Users,
+  TrendingUp,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,12 +22,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { dashboardApi, remindersApi } from '@/lib/api';
 import type { Reminder } from '@/lib/api';
 import { formatRelativeDate } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 const statCards = [
-  { key: 'projects', title: 'Active Projects', icon: FolderKanban, color: 'text-indigo-500 bg-indigo-50', getValue: (s: any) => s?.activeProjects ?? 0 },
-  { key: 'mfrs', title: 'Manufacturers', icon: Factory, color: 'text-emerald-500 bg-emerald-50', getValue: (s: any) => s?.manufacturersContacted ?? s?.totalManufacturers ?? 0 },
-  { key: 'approvals', title: 'Awaiting Approval', icon: ClipboardCheck, color: 'text-amber-500 bg-amber-50', getValue: (s: any) => s?.pendingApprovals ?? 0 },
-  { key: 'shipping', title: 'In Transit', icon: Truck, color: 'text-blue-500 bg-blue-50', getValue: (s: any) => s?.shipmentsInTransit ?? 0 },
+  { key: 'projects', title: 'Active Projects', icon: FolderKanban, color: 'text-primary bg-primary/8', getValue: (s: any) => s?.activeProjects ?? 0 },
+  { key: 'mfrs', title: 'Manufacturers', icon: Factory, color: 'text-emerald-600 bg-emerald-50', getValue: (s: any) => s?.manufacturersContacted ?? s?.totalManufacturers ?? 0 },
+  { key: 'approvals', title: 'Awaiting Approval', icon: ClipboardCheck, color: 'text-amber-600 bg-amber-50', getValue: (s: any) => s?.pendingApprovals ?? 0 },
+  { key: 'shipping', title: 'In Transit', icon: Truck, color: 'text-blue-600 bg-blue-50', getValue: (s: any) => s?.shipmentsInTransit ?? 0 },
 ] as const;
 
 const pipelineStages = [
@@ -41,22 +43,22 @@ const reminderTypeDot: Record<string, string> = {
   follow_up: 'bg-blue-500',
   deadline: 'bg-red-500',
   task: 'bg-amber-500',
-  milestone: 'bg-indigo-500',
+  milestone: 'bg-primary',
   inspection: 'bg-emerald-500',
 };
 
 function StatsSkeleton() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {Array.from({ length: 4 }).map((_, i) => (
         <Card key={i}>
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-20 rounded" />
-                <Skeleton className="h-8 w-14 rounded" />
+              <div className="space-y-3">
+                <Skeleton className="h-3 w-24 rounded" />
+                <Skeleton className="h-9 w-16 rounded" />
               </div>
-              <Skeleton className="h-10 w-10 rounded-xl" />
+              <Skeleton className="h-12 w-12 rounded-xl" />
             </div>
           </CardContent>
         </Card>
@@ -68,15 +70,15 @@ function StatsSkeleton() {
 function PipelineSkeleton() {
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <Skeleton className="h-5 w-36 rounded" />
+      <CardHeader>
+        <Skeleton className="h-5 w-40 rounded" />
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-0">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex-1 text-center py-3 border border-border first:rounded-l-lg last:rounded-r-lg -ml-px first:ml-0">
-              <Skeleton className="h-7 w-8 mx-auto rounded" />
-              <Skeleton className="h-3 w-16 mx-auto mt-1.5 rounded" />
+            <div key={i} className="flex-1 text-center py-4 border border-border first:rounded-l-xl last:rounded-r-xl -ml-px first:ml-0">
+              <Skeleton className="h-8 w-10 mx-auto rounded" />
+              <Skeleton className="h-3 w-16 mx-auto mt-2 rounded" />
             </div>
           ))}
         </div>
@@ -99,6 +101,8 @@ function formatDueDate(dateStr: string) {
 }
 
 export function Dashboard() {
+  const { user } = useAuth();
+
   const statsQuery = useQuery({
     queryKey: ['dashboard', 'stats'],
     queryFn: dashboardApi.stats,
@@ -119,17 +123,18 @@ export function Dashboard() {
   const reminders: Reminder[] = remindersQuery.data ?? [];
   const hasProjects = (stats?.activeProjects ?? 0) > 0;
 
-  // Pipeline counts
   const pipeline = stats?.pipeline ?? {};
   const maxPipelineCount = Math.max(...pipelineStages.map((s) => pipeline[s.key] ?? 0), 0);
 
   return (
-    <div className="space-y-6">
-      {/* Page header */}
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Overview of your manufacturing pipeline.
+    <div className="space-y-8">
+      {/* Welcome header */}
+      <div className="animate-slide-up">
+        <h1 className="text-2xl font-bold font-heading tracking-tight">
+          Welcome Back, {user?.firstName || 'there'}
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Here's what's happening across your manufacturing pipeline.
         </p>
       </div>
 
@@ -143,16 +148,16 @@ export function Dashboard() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {statCards.map((sc, idx) => (
-            <Card key={sc.key} className="animate-slide-up" style={{ animationDelay: `${idx * 50}ms` }}>
+            <Card key={sc.key} className="animate-slide-up hover:shadow-card-hover transition-shadow" style={{ animationDelay: `${idx * 60}ms` }}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-xs font-medium text-muted-foreground">{sc.title}</p>
-                    <p className="text-3xl font-semibold tracking-tight mt-2 data-value">{sc.getValue(stats)}</p>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{sc.title}</p>
+                    <p className="text-3xl font-bold font-heading tracking-tight mt-3 data-value">{sc.getValue(stats)}</p>
                   </div>
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${sc.color}`}>
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${sc.color}`}>
                     <sc.icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
                 </div>
@@ -166,9 +171,12 @@ export function Dashboard() {
       {statsQuery.isLoading ? (
         <PipelineSkeleton />
       ) : !statsQuery.isError && (
-        <Card className="animate-scale-in" style={{ animationDelay: '200ms' }}>
-          <CardHeader className="pb-3">
-            <CardTitle>Pipeline Overview</CardTitle>
+        <Card className="animate-scale-in" style={{ animationDelay: '250ms' }}>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-primary" />
+              <CardTitle>Pipeline Overview</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-0">
@@ -178,10 +186,10 @@ export function Dashboard() {
                 return (
                   <div
                     key={stage.key}
-                    className={`flex-1 text-center py-3 border border-border first:rounded-l-lg last:rounded-r-lg -ml-px first:ml-0 ${isMax ? 'bg-primary/5' : ''}`}
+                    className={`flex-1 text-center py-4 border border-border/60 first:rounded-l-xl last:rounded-r-xl -ml-px first:ml-0 transition-colors ${isMax ? 'bg-primary/5' : ''}`}
                   >
-                    <p className="text-2xl font-semibold data-value">{count}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{stage.label}</p>
+                    <p className="text-2xl font-bold font-heading data-value">{count}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{stage.label}</p>
                   </div>
                 );
               })}
@@ -192,16 +200,16 @@ export function Dashboard() {
 
       {/* Empty state */}
       {!statsQuery.isLoading && !hasProjects && (
-        <Card className="animate-in border-dashed" style={{ animationDelay: '250ms' }}>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mb-4">
-              <Pencil className="h-6 w-6 text-primary" />
+        <Card className="animate-in border-dashed border-2" style={{ animationDelay: '300ms' }}>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 mb-5">
+              <Pencil className="h-7 w-7 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Create Your First Mockup</h3>
-            <p className="text-sm text-muted-foreground mt-1.5 max-w-md">
+            <h3 className="font-bold font-heading text-lg">Create Your First Mockup</h3>
+            <p className="text-sm text-muted-foreground mt-2 max-w-md">
               Start by designing a product mockup. From there you can find manufacturers, get quotes, and track production.
             </p>
-            <Button className="mt-5" asChild>
+            <Button className="mt-6" asChild>
               <Link to="/design">
                 <Pencil className="h-4 w-4" />
                 Open Mockup Generator
@@ -211,71 +219,71 @@ export function Dashboard() {
         </Card>
       )}
 
-      {/* Two-column layout: main content + sidebar */}
+      {/* Two-column layout */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left column (2/3) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Quick actions */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up" style={{ animationDelay: '300ms' }}>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up" style={{ animationDelay: '350ms' }}>
             <Link
               to="/design"
-              className="group relative flex items-center gap-3 p-3 rounded-lg border-2 border-primary/20 bg-primary/[0.03] transition-all duration-150 hover:border-primary/40 hover:bg-primary/[0.06]"
+              className="group relative flex items-center gap-3 p-4 rounded-xl border-2 border-primary/20 bg-primary/[0.03] transition-all duration-150 hover:border-primary/40 hover:bg-primary/[0.06]"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 shrink-0">
                 <Pencil className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-semibold text-sm">Create Mockup</h2>
               </div>
-              <ArrowRight className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
 
             <Link
               to="/approvals"
-              className="group flex items-center gap-3 p-3 rounded-lg border border-border bg-card transition-all duration-150 hover:shadow-card-hover"
+              className="group flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-white transition-all duration-150 hover:shadow-card-hover"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 shrink-0">
-                <ClipboardCheck className="h-4 w-4 text-amber-500" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 shrink-0">
+                <ClipboardCheck className="h-4 w-4 text-amber-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-semibold text-sm">Approvals</h2>
-                <p className="text-[11px] text-muted-foreground">{stats?.pendingApprovals ?? 0} pending</p>
+                <p className="text-xs text-muted-foreground">{stats?.pendingApprovals ?? 0} pending</p>
               </div>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
 
             <Link
               to="/shipping"
-              className="group flex items-center gap-3 p-3 rounded-lg border border-border bg-card transition-all duration-150 hover:shadow-card-hover"
+              className="group flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-white transition-all duration-150 hover:shadow-card-hover"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 shrink-0">
-                <Truck className="h-4 w-4 text-blue-500" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 shrink-0">
+                <Truck className="h-4 w-4 text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-semibold text-sm">Shipping</h2>
-                <p className="text-[11px] text-muted-foreground">{stats?.shipmentsInTransit ?? 0} in transit</p>
+                <p className="text-xs text-muted-foreground">{stats?.shipmentsInTransit ?? 0} in transit</p>
               </div>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
 
             <Link
               to="/client"
-              className="group flex items-center gap-3 p-3 rounded-lg border border-border bg-card transition-all duration-150 hover:shadow-card-hover"
+              className="group flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-white transition-all duration-150 hover:shadow-card-hover"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 shrink-0">
-                <Users className="h-4 w-4 text-violet-500" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-50 shrink-0">
+                <Users className="h-4 w-4 text-violet-600" />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-semibold text-sm">Client Portal</h2>
-                <p className="text-[11px] text-muted-foreground">Preview</p>
+                <p className="text-xs text-muted-foreground">Preview</p>
               </div>
-              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
           </div>
 
           {/* Recent Activity */}
-          <Card className="animate-slide-up" style={{ animationDelay: '350ms' }}>
-            <CardHeader className="pb-3">
+          <Card className="animate-slide-up" style={{ animationDelay: '400ms' }}>
+            <CardHeader>
               <div className="flex items-center gap-2">
                 <Activity className="h-4 w-4 text-muted-foreground" />
                 <CardTitle>Recent Activity</CardTitle>
@@ -286,7 +294,7 @@ export function Dashboard() {
                 <div className="space-y-4">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="flex gap-3">
-                      <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+                      <Skeleton className="h-9 w-9 rounded-full shrink-0" />
                       <div className="flex-1 space-y-2">
                         <Skeleton className="h-4 w-3/4 rounded" />
                         <Skeleton className="h-3 w-1/4 rounded" />
@@ -295,16 +303,16 @@ export function Dashboard() {
                   ))}
                 </div>
               ) : activity.length === 0 ? (
-                <div className="py-10 text-center">
+                <div className="py-12 text-center">
                   <Activity className="mx-auto h-8 w-8 text-muted-foreground/30 mb-2" />
                   <p className="text-sm text-muted-foreground">No recent activity</p>
                 </div>
               ) : (
                 <div className="space-y-0.5">
                   {activity.slice(0, 5).map((item) => (
-                    <div key={item.id} className="flex items-start gap-3 py-3 border-b border-border/50 last:border-0">
-                      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                        <Activity className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div key={item.id} className="flex items-start gap-3 py-3.5 border-b border-border/40 last:border-0">
+                      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
+                        <Activity className="h-4 w-4 text-muted-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm leading-snug">{item.description}</p>
@@ -314,7 +322,7 @@ export function Dashboard() {
                           </span>
                           {item.project && (
                             <Link to={`/projects/${item.projectId}`}>
-                              <Badge variant="outline" className="text-[11px] cursor-pointer hover:bg-muted">
+                              <Badge variant="outline" className="cursor-pointer hover:bg-muted">
                                 {item.project}
                               </Badge>
                             </Link>
@@ -331,8 +339,8 @@ export function Dashboard() {
 
         {/* Right column (1/3) — Upcoming Tasks */}
         <div className="lg:col-span-1">
-          <Card className="animate-slide-up" style={{ animationDelay: '400ms' }}>
-            <CardHeader className="pb-3">
+          <Card className="animate-slide-up" style={{ animationDelay: '450ms' }}>
+            <CardHeader>
               <div className="flex items-center gap-2">
                 <Bell className="h-4 w-4 text-muted-foreground" />
                 <CardTitle>Upcoming Tasks</CardTitle>
@@ -352,7 +360,7 @@ export function Dashboard() {
                   ))}
                 </div>
               ) : reminders.length === 0 ? (
-                <div className="py-8 text-center">
+                <div className="py-10 text-center">
                   <CheckCircle2 className="mx-auto h-8 w-8 text-muted-foreground/30 mb-2" />
                   <p className="text-sm text-muted-foreground">No upcoming tasks</p>
                 </div>
@@ -364,7 +372,7 @@ export function Dashboard() {
                     return (
                       <div
                         key={reminder.id}
-                        className={`flex items-start gap-2.5 py-2.5 border-b border-border/50 last:border-0 ${reminder.completed ? 'opacity-50' : ''}`}
+                        className={`flex items-start gap-2.5 py-3 border-b border-border/40 last:border-0 ${reminder.completed ? 'opacity-50' : ''}`}
                       >
                         <div className="mt-1.5 shrink-0">
                           {reminder.completed ? (
@@ -386,7 +394,7 @@ export function Dashboard() {
                             </span>
                             {reminder.projectName && (
                               <Link to={`/projects/${reminder.projectId}`}>
-                                <Badge variant="outline" className="text-[11px] cursor-pointer hover:bg-muted">
+                                <Badge variant="outline" className="cursor-pointer hover:bg-muted">
                                   {reminder.projectName}
                                 </Badge>
                               </Link>

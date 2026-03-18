@@ -69,18 +69,18 @@ function NavLink({
     <Link
       to={item.to}
       className={cn(
-        'flex items-center gap-2.5 px-2.5 py-[6px] text-[13px] rounded-md transition-all duration-100',
+        'flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-150',
         active
-          ? 'bg-black/[0.06] text-foreground font-medium shadow-[0_0.5px_1px_rgba(0,0,0,0.04)]'
-          : 'text-muted-foreground hover:text-foreground hover:bg-black/[0.04]',
+          ? 'bg-primary/8 text-primary font-medium'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted/60',
         collapsed && 'justify-center px-2'
       )}
       title={collapsed ? item.label : undefined}
     >
       <item.icon
         className={cn(
-          'w-[16px] h-[16px] shrink-0',
-          active ? 'text-primary' : 'opacity-70'
+          'w-[18px] h-[18px] shrink-0',
+          active ? 'text-primary' : ''
         )}
         strokeWidth={active ? 2 : 1.5}
       />
@@ -103,18 +103,18 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col h-screen glass-subtle border-r border-black/[0.08] transition-all duration-200',
-        collapsed ? 'w-[60px]' : 'w-[220px]'
+        'flex flex-col h-screen bg-white border-r border-border/60 transition-all duration-200',
+        collapsed ? 'w-[64px]' : 'w-[240px]'
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 h-[52px] shrink-0">
-        <Link to="/" className="flex items-center gap-2 min-w-0">
-          <div className="flex items-center justify-center w-[26px] h-[26px] rounded-lg bg-gradient-to-b from-[hsl(222,47%,25%)] to-[hsl(222,47%,18%)] text-white shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
-            <span className="text-[11px] font-bold font-heading">S</span>
+      <div className="flex items-center gap-3 px-5 h-[60px] shrink-0 border-b border-border/40">
+        <Link to="/" className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary text-white shrink-0">
+            <span className="text-xs font-bold font-heading">S</span>
           </div>
           {!collapsed && (
-            <span className="font-semibold font-heading text-[14px] text-foreground tracking-tight truncate">
+            <span className="font-bold font-heading text-base text-foreground tracking-tight truncate">
               Sical
             </span>
           )}
@@ -122,15 +122,15 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-1 px-2.5 overflow-y-auto">
+      <nav className="flex-1 py-3 px-3 overflow-y-auto">
         {navSections.map((section, idx) => (
-          <div key={section.label ?? idx}>
+          <div key={section.label ?? idx} className={idx > 0 ? 'mt-5' : ''}>
             {section.label && !collapsed && (
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground/70 font-semibold px-2.5 pt-4 pb-1">
+              <div className="text-[11px] uppercase tracking-widest text-muted-foreground/60 font-semibold px-3 pb-2">
                 {section.label}
               </div>
             )}
-            <div className="space-y-[2px]">
+            <div className="space-y-0.5">
               {section.items.map((item) => (
                 <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
               ))}
@@ -140,16 +140,16 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className="px-2.5 pb-2.5 space-y-[2px] border-t border-black/[0.06] pt-2">
+      <div className="px-3 pb-3 space-y-0.5 border-t border-border/40 pt-3">
         {bottomItems.map((item) => (
           <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
         ))}
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-1.5 text-muted-foreground/60 hover:text-muted-foreground rounded-md transition-colors duration-100 hover:bg-black/[0.04]"
+          className="flex items-center justify-center w-full py-2 text-muted-foreground/50 hover:text-muted-foreground rounded-lg transition-colors duration-150 hover:bg-muted/40"
         >
-          {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
       </div>
     </aside>

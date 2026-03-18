@@ -18,20 +18,20 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-[320px] space-y-5">
+      <div className="w-full max-w-[360px] space-y-6">
         {/* Logo + App Name */}
-        <div className="text-center space-y-2">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-b from-[hsl(222,47%,25%)] to-[hsl(222,47%,18%)] text-white text-2xl font-bold font-heading shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
+        <div className="text-center space-y-3">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white text-2xl font-bold font-heading shadow-lg">
             S
           </div>
-          <h1 className="text-[20px] font-semibold font-heading tracking-tight mt-3">Sign in to Sical</h1>
-          <p className="text-[13px] text-muted-foreground">Manufacturing management platform</p>
+          <h1 className="text-xl font-bold font-heading tracking-tight mt-4">Sign in to Sical</h1>
+          <p className="text-sm text-muted-foreground">Manufacturing management platform</p>
         </div>
 
-        <div className="bg-white border border-black/[0.08] rounded-xl p-5 shadow-elevated">
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            <div className="space-y-1">
-              <label className="text-[12px] font-medium text-muted-foreground">Email</label>
+        <div className="bg-white border border-border/60 rounded-2xl p-6 shadow-elevated">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Email</label>
               <Input
                 type="email"
                 value={email}
@@ -40,8 +40,8 @@ export function Login() {
                 required
               />
             </div>
-            <div className="space-y-1">
-              <label className="text-[12px] font-medium text-muted-foreground">Password</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Password</label>
               <Input
                 type="password"
                 value={password}
@@ -55,7 +55,7 @@ export function Login() {
           </form>
         </div>
 
-        <p className="text-center text-[11px] text-muted-foreground/60">
+        <p className="text-center text-xs text-muted-foreground/50">
           Demo Mode &mdash; any credentials work
         </p>
       </div>
