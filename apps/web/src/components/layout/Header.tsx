@@ -23,6 +23,9 @@ const routeLabels: Record<string, string> = {
   communications: 'Messages',
   quotes: 'Quotes',
   samples: 'Samples',
+  approvals: 'Approvals',
+  shipping: 'Shipping',
+  client: 'Client Portal',
   settings: 'Settings',
 };
 

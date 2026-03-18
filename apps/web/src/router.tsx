@@ -11,6 +11,9 @@ import { Quotes } from '@/pages/Quotes';
 import { Samples } from '@/pages/Samples';
 import { Settings } from '@/pages/Settings';
 import { Login } from '@/pages/Login';
+import { ClientPortal } from '@/pages/ClientPortal';
+import { Approvals } from '@/pages/Approvals';
+import { Shipping } from '@/pages/Shipping';
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
 
@@ -45,6 +48,9 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
       { path: 'design', element: <DesignHub /> },
       { path: 'quotes', element: <Quotes /> },
       { path: 'samples', element: <Samples /> },
+      { path: 'approvals', element: <Approvals /> },
+      { path: 'shipping', element: <Shipping /> },
+      { path: 'client', element: <ClientPortal /> },
       { path: 'settings', element: <Settings /> },
     ],
   },

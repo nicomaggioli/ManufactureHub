@@ -11,6 +11,9 @@ import {
   ChevronRight,
   FileText,
   Package,
+  ClipboardCheck,
+  Truck,
+  Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -36,7 +39,15 @@ const navSections: NavSection[] = [
     items: [
       { to: '/quotes', label: 'Quotes', icon: FileText },
       { to: '/samples', label: 'Samples', icon: Package },
+      { to: '/approvals', label: 'Approvals', icon: ClipboardCheck },
+      { to: '/shipping', label: 'Shipping', icon: Truck },
       { to: '/communications', label: 'Messages', icon: MessageSquare },
+    ],
+  },
+  {
+    label: 'Client',
+    items: [
+      { to: '/client', label: 'Client Portal', icon: Users },
     ],
   },
 ];
@@ -99,7 +110,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 h-[52px] shrink-0">
         <Link to="/" className="flex items-center gap-2 min-w-0">
-          <div className="flex items-center justify-center w-[26px] h-[26px] rounded-lg bg-gradient-to-b from-primary to-blue-600 text-white shrink-0 shadow-[0_1px_2px_rgba(0,0,0,0.15)]">
+          <div className="flex items-center justify-center w-[26px] h-[26px] rounded-lg bg-gradient-to-b from-[hsl(222,47%,25%)] to-[hsl(222,47%,18%)] text-white shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
             <span className="text-[11px] font-bold font-heading">S</span>
           </div>
           {!collapsed && (

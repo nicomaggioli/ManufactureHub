@@ -10,6 +10,9 @@ import {
   Pencil,
   CheckCircle2,
   Circle,
+  ClipboardCheck,
+  Truck,
+  Users,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,8 +25,8 @@ import { formatRelativeDate } from '@/lib/utils';
 const statCards = [
   { key: 'projects', title: 'Active Projects', icon: FolderKanban, color: 'text-indigo-500 bg-indigo-50', getValue: (s: any) => s?.activeProjects ?? 0 },
   { key: 'mfrs', title: 'Manufacturers', icon: Factory, color: 'text-emerald-500 bg-emerald-50', getValue: (s: any) => s?.manufacturersContacted ?? s?.totalManufacturers ?? 0 },
-  { key: 'pending', title: 'Pending Replies', icon: Clock, color: 'text-amber-500 bg-amber-50', getValue: (s: any) => s?.pendingReplies ?? 0 },
-  { key: 'reminders', title: 'Reminders', icon: Bell, color: 'text-rose-500 bg-rose-50', getValue: (s: any) => s?.upcomingReminders ?? 0 },
+  { key: 'approvals', title: 'Awaiting Approval', icon: ClipboardCheck, color: 'text-amber-500 bg-amber-50', getValue: () => 4 },
+  { key: 'shipping', title: 'In Transit', icon: Truck, color: 'text-blue-500 bg-blue-50', getValue: () => 3 },
 ] as const;
 
 const pipelineStages = [
@@ -212,8 +215,8 @@ export function Dashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left column (2/3) */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Quick actions — compact horizontal */}
-          <div className="grid gap-3 sm:grid-cols-3 animate-slide-up" style={{ animationDelay: '300ms' }}>
+          {/* Quick actions */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up" style={{ animationDelay: '300ms' }}>
             <Link
               to="/design"
               className="group relative flex items-center gap-3 p-3 rounded-lg border-2 border-primary/20 bg-primary/[0.03] transition-all duration-150 hover:border-primary/40 hover:bg-primary/[0.06]"
@@ -228,27 +231,43 @@ export function Dashboard() {
             </Link>
 
             <Link
-              to="/manufacturers"
+              to="/approvals"
               className="group flex items-center gap-3 p-3 rounded-lg border border-border bg-card transition-all duration-150 hover:shadow-card-hover"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 shrink-0">
-                <Factory className="h-4 w-4 text-emerald-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 shrink-0">
+                <ClipboardCheck className="h-4 w-4 text-amber-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="font-semibold text-sm">Find Manufacturers</h2>
+                <h2 className="font-semibold text-sm">Approvals</h2>
+                <p className="text-[11px] text-muted-foreground">4 pending</p>
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
 
             <Link
-              to="/projects"
+              to="/shipping"
               className="group flex items-center gap-3 p-3 rounded-lg border border-border bg-card transition-all duration-150 hover:shadow-card-hover"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 shrink-0">
-                <FolderKanban className="h-4 w-4 text-indigo-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 shrink-0">
+                <Truck className="h-4 w-4 text-blue-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="font-semibold text-sm">View Projects</h2>
+                <h2 className="font-semibold text-sm">Shipping</h2>
+                <p className="text-[11px] text-muted-foreground">3 in transit</p>
+              </div>
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            </Link>
+
+            <Link
+              to="/client"
+              className="group flex items-center gap-3 p-3 rounded-lg border border-border bg-card transition-all duration-150 hover:shadow-card-hover"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 shrink-0">
+                <Users className="h-4 w-4 text-violet-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="font-semibold text-sm">Client Portal</h2>
+                <p className="text-[11px] text-muted-foreground">Preview</p>
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>

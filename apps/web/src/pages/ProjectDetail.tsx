@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -12,6 +13,11 @@ import {
   Package,
   Users,
   Calendar,
+  Truck,
+  ClipboardCheck,
+  Send,
+  Clock,
+  MapPin,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -218,6 +224,33 @@ export function ProjectDetail() {
     { key: 'trackingNumber', header: 'Tracking', render: (row) => <span className="data-value">{row.trackingNumber ?? '--'}</span> },
   ];
 
+  // Mock shipping data for this project
+  const projectShipments = useMemo(() => {
+    const allShipments = [
+      { id: 'sh1', projectId: 'p1', item: 'Organic Cotton Swatches', courier: 'DHL', trackingNumber: 'DHL-8847562910', status: 'delivered', shipDate: '2026-03-03', estimatedDelivery: '2026-03-08', actualDelivery: '2026-03-08', manufacturer: 'Jiangyin Longma Textile' },
+      { id: 'sh2', projectId: 'p2', item: '14oz Raw Selvedge Sample', courier: 'FedEx', trackingNumber: 'FEDEX-4423891057', status: 'in_transit', shipDate: '2026-03-10', estimatedDelivery: '2026-03-18', manufacturer: 'Nisha Texport Pvt. Ltd.' },
+      { id: 'sh3', projectId: 'p6', item: 'Leather Wallet Samples', courier: 'UPS', trackingNumber: 'UPS-7756120384', status: 'delivered', shipDate: '2026-02-22', estimatedDelivery: '2026-02-28', actualDelivery: '2026-02-28', manufacturer: 'Guangzhou Boton Leather' },
+      { id: 'sh4', projectId: 'p3', item: 'Hoodie Colorway Samples', courier: 'DHL', trackingNumber: 'DHL-9912340056', status: 'label_created', shipDate: '2026-03-15', estimatedDelivery: '2026-03-22', manufacturer: 'Guangzhou Shang Ding' },
+      { id: 'sh5', projectId: 'p1', item: 'Cashmere Blend Fabric Cuts', courier: 'DHL', trackingNumber: 'DHL-5567891234', status: 'in_transit', shipDate: '2026-03-11', estimatedDelivery: '2026-03-17', manufacturer: 'Lanificio Fratelli Cerruti' },
+      { id: 'sh6', projectId: 'p6', item: 'Production Run: Wallets (200 units)', courier: 'Sea Freight', trackingNumber: 'COSCO-BL884712', status: 'in_transit', shipDate: '2026-03-01', estimatedDelivery: '2026-04-05', manufacturer: 'Guangzhou Boton Leather' },
+    ];
+    return allShipments.filter(s => s.projectId === id);
+  }, [id]);
+
+  // Mock approval data for this project
+  const projectApprovals = useMemo(() => {
+    const allApprovals = [
+      { id: 'ap1', projectId: 'p1', deliverable: 'Heritage Wool Overcoat Tech Pack', type: 'Tech Pack', clientName: 'Marcus Chen', sentDate: '2026-03-12', status: 'pending', description: 'Complete tech pack with materials, measurements, and construction specs for the FW26 overcoat.' },
+      { id: 'ap2', projectId: 'p1', deliverable: 'Spring Linen Blazer Mockup', type: 'Mockup', clientName: 'Marcus Chen', sentDate: '2026-03-08', status: 'approved', description: 'Color mockup of the structured linen blazer in Sand and Dusty Blue colorways.' },
+      { id: 'ap3', projectId: 'p1', deliverable: 'Organic Cotton Swatch Selection', type: 'Fabric Swatch', clientName: 'Marcus Chen', sentDate: '2026-03-10', status: 'changes_requested', description: 'Pastel colorway swatches for spring collection.', feedback: 'Prefer a warmer tone on the pastel rose. Can we get something closer to blush?' },
+      { id: 'ap4', projectId: 'p2', deliverable: 'Denim Wash Specification', type: 'Tech Pack', clientName: 'Sarah Kim', sentDate: '2026-03-13', status: 'pending', description: 'Raw selvedge denim wash and distressing specifications.' },
+      { id: 'ap5', projectId: 'p3', deliverable: 'Athleisure Hoodie Color Mockup', type: 'Mockup', clientName: 'Jake Torres', sentDate: '2026-03-14', status: 'changes_requested', description: 'Hoodie mockup in 3 Pantone-matched colorways.', feedback: 'Navy is too dark — try a lighter shade. Other colors look great.' },
+      { id: 'ap6', projectId: 'p6', deliverable: 'Leather Wallet Production Sample', type: 'Sample', clientName: 'Marcus Chen', sentDate: '2026-02-25', status: 'approved', description: 'Full-grain leather bifold wallet with custom debossed logo.' },
+      { id: 'ap7', projectId: 'p7', deliverable: 'Block Print Pattern Selection', type: 'Fabric Swatch', clientName: 'Emily Park', sentDate: '2026-03-11', status: 'pending', description: 'Natural indigo and turmeric dye block print patterns for kids line.' },
+    ];
+    return allApprovals.filter(a => a.projectId === id);
+  }, [id]);
+
   return (
     <div className="space-y-5">
       {/* Breadcrumb */}
@@ -268,6 +301,12 @@ export function ProjectDetail() {
           </TabsTrigger>
           <TabsTrigger value="techpacks">
             <ClipboardList className="mr-1 h-4 w-4" /> Tech Packs
+          </TabsTrigger>
+          <TabsTrigger value="shipping">
+            <Truck className="mr-1 h-4 w-4" /> Shipping
+          </TabsTrigger>
+          <TabsTrigger value="approvals">
+            <ClipboardCheck className="mr-1 h-4 w-4" /> Approvals
           </TabsTrigger>
         </TabsList>
 
@@ -439,7 +478,255 @@ export function ProjectDetail() {
         <TabsContent value="techpacks" className="mt-4">
           <TechPack />
         </TabsContent>
+
+        {/* Shipping */}
+        <TabsContent value="shipping" className="mt-4">
+          <ShippingTab projectId={id} />
+        </TabsContent>
+
+        {/* Approvals */}
+        <TabsContent value="approvals" className="mt-4">
+          <ApprovalsTab projectId={id} />
+        </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+// ── Shipping Tab ─────────────────────────────────────────────────────────
+
+const shippingSteps = ['label_created', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered'] as const;
+const shippingStepLabels: Record<string, string> = {
+  label_created: 'Label Created',
+  picked_up: 'Picked Up',
+  in_transit: 'In Transit',
+  out_for_delivery: 'Out for Delivery',
+  delivered: 'Delivered',
+};
+
+const courierColors: Record<string, string> = {
+  DHL: 'bg-amber-100 text-amber-700',
+  FedEx: 'bg-purple-100 text-purple-700',
+  UPS: 'bg-amber-900/10 text-amber-900',
+  USPS: 'bg-blue-100 text-blue-700',
+  'Sea Freight': 'bg-teal-100 text-teal-700',
+};
+
+function ShippingTimeline({ currentStatus }: { currentStatus: string }) {
+  const currentIdx = shippingSteps.indexOf(currentStatus as any);
+  return (
+    <div className="flex items-center gap-0.5 mt-3">
+      {shippingSteps.map((step, idx) => {
+        const completed = idx < currentIdx;
+        const active = idx === currentIdx;
+        return (
+          <div key={step} className="flex items-center">
+            <div className="flex flex-col items-center">
+              <div className={`flex h-5 w-5 items-center justify-center rounded-full border-[1.5px] transition-colors ${
+                completed ? 'border-primary bg-primary text-primary-foreground' : active ? 'border-primary bg-primary/10 text-primary' : 'border-muted-foreground/20 text-muted-foreground/30'
+              }`}>
+                {completed ? <CheckCircle2 className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
+              </div>
+              <span className={`mt-1 text-[10px] font-medium ${active ? 'text-primary' : completed ? 'text-foreground' : 'text-muted-foreground/50'}`}>
+                {shippingStepLabels[step]}
+              </span>
+            </div>
+            {idx < shippingSteps.length - 1 && (
+              <div className={`mx-0.5 h-[1.5px] w-4 sm:w-6 rounded-full ${idx < currentIdx ? 'bg-primary' : 'bg-muted-foreground/15'}`} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function ShippingTab({ projectId }: { projectId: string }) {
+  // Use the parent's projectShipments - for now inline mock
+  const shipments = [
+    { id: 'sh1', projectId: 'p1', item: 'Organic Cotton Swatches', courier: 'DHL', trackingNumber: 'DHL-8847562910', status: 'delivered', shipDate: '2026-03-03', estimatedDelivery: '2026-03-08', actualDelivery: '2026-03-08', manufacturer: 'Jiangyin Longma Textile' },
+    { id: 'sh2', projectId: 'p2', item: '14oz Raw Selvedge Sample', courier: 'FedEx', trackingNumber: 'FEDEX-4423891057', status: 'in_transit', shipDate: '2026-03-10', estimatedDelivery: '2026-03-18', manufacturer: 'Nisha Texport Pvt. Ltd.' },
+    { id: 'sh3', projectId: 'p6', item: 'Leather Wallet Samples', courier: 'UPS', trackingNumber: 'UPS-7756120384', status: 'delivered', shipDate: '2026-02-22', estimatedDelivery: '2026-02-28', actualDelivery: '2026-02-28', manufacturer: 'Guangzhou Boton Leather' },
+    { id: 'sh4', projectId: 'p3', item: 'Hoodie Colorway Samples', courier: 'DHL', trackingNumber: 'DHL-9912340056', status: 'label_created', shipDate: '2026-03-15', estimatedDelivery: '2026-03-22', manufacturer: 'Guangzhou Shang Ding' },
+    { id: 'sh5', projectId: 'p1', item: 'Cashmere Blend Fabric Cuts', courier: 'DHL', trackingNumber: 'DHL-5567891234', status: 'in_transit', shipDate: '2026-03-11', estimatedDelivery: '2026-03-17', manufacturer: 'Lanificio Fratelli Cerruti' },
+    { id: 'sh6', projectId: 'p6', item: 'Production Run: Wallets (200 units)', courier: 'Sea Freight', trackingNumber: 'COSCO-BL884712', status: 'in_transit', shipDate: '2026-03-01', estimatedDelivery: '2026-04-05', manufacturer: 'Guangzhou Boton Leather' },
+  ].filter(s => s.projectId === projectId);
+
+  if (shipments.length === 0) {
+    return (
+      <Card className="animate-in">
+        <CardContent className="py-8 text-center text-muted-foreground">
+          <Truck className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+          <p className="text-sm">No shipments tracked for this project yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {shipments.map((shipment) => (
+        <Card key={shipment.id} className="animate-in">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-sm">{shipment.item}</h3>
+                  <Badge className={cn('text-[11px]', courierColors[shipment.courier] ?? 'bg-gray-100 text-gray-700')}>
+                    {shipment.courier}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mb-2">{shipment.manufacturer}</p>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Package className="h-3 w-3" />
+                    <span className="font-mono text-foreground">{shipment.trackingNumber}</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    Shipped {formatDate(shipment.shipDate)}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    {shipment.status === 'delivered'
+                      ? `Delivered ${formatDate(shipment.actualDelivery!)}`
+                      : `Est. ${formatDate(shipment.estimatedDelivery)}`}
+                  </span>
+                </div>
+              </div>
+              <Badge variant={shipment.status === 'delivered' ? 'success' : shipment.status === 'in_transit' ? 'secondary' : 'outline'}>
+                {shippingStepLabels[shipment.status] ?? shipment.status}
+              </Badge>
+            </div>
+            <ShippingTimeline currentStatus={shipment.status} />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// ── Approvals Tab ────────────────────────────────────────────────────────
+
+const approvalTypeColors: Record<string, string> = {
+  'Tech Pack': 'bg-indigo-100 text-indigo-700',
+  'Mockup': 'bg-violet-100 text-violet-700',
+  'Sample': 'bg-emerald-100 text-emerald-700',
+  'Fabric Swatch': 'bg-amber-100 text-amber-700',
+  'Production Proof': 'bg-rose-100 text-rose-700',
+};
+
+function ApprovalsTab({ projectId }: { projectId: string }) {
+  const [localApprovals, setLocalApprovals] = useState(() => {
+    const allApprovals = [
+      { id: 'ap1', projectId: 'p1', deliverable: 'Heritage Wool Overcoat Tech Pack', type: 'Tech Pack', clientName: 'Marcus Chen', sentDate: '2026-03-12', status: 'pending', description: 'Complete tech pack with materials, measurements, and construction specs for the FW26 overcoat.', feedback: '' },
+      { id: 'ap2', projectId: 'p1', deliverable: 'Spring Linen Blazer Mockup', type: 'Mockup', clientName: 'Marcus Chen', sentDate: '2026-03-08', status: 'approved', description: 'Color mockup of the structured linen blazer in Sand and Dusty Blue colorways.', feedback: '' },
+      { id: 'ap3', projectId: 'p1', deliverable: 'Organic Cotton Swatch Selection', type: 'Fabric Swatch', clientName: 'Marcus Chen', sentDate: '2026-03-10', status: 'changes_requested', description: 'Pastel colorway swatches for spring collection.', feedback: 'Prefer a warmer tone on the pastel rose. Can we get something closer to blush?' },
+      { id: 'ap4', projectId: 'p2', deliverable: 'Denim Wash Specification', type: 'Tech Pack', clientName: 'Sarah Kim', sentDate: '2026-03-13', status: 'pending', description: 'Raw selvedge denim wash and distressing specifications.', feedback: '' },
+      { id: 'ap5', projectId: 'p3', deliverable: 'Athleisure Hoodie Color Mockup', type: 'Mockup', clientName: 'Jake Torres', sentDate: '2026-03-14', status: 'changes_requested', description: 'Hoodie mockup in 3 Pantone-matched colorways.', feedback: 'Navy is too dark — try a lighter shade. Other colors look great.' },
+      { id: 'ap6', projectId: 'p6', deliverable: 'Leather Wallet Production Sample', type: 'Sample', clientName: 'Marcus Chen', sentDate: '2026-02-25', status: 'approved', description: 'Full-grain leather bifold wallet with custom debossed logo.', feedback: '' },
+      { id: 'ap7', projectId: 'p7', deliverable: 'Block Print Pattern Selection', type: 'Fabric Swatch', clientName: 'Emily Park', sentDate: '2026-03-11', status: 'pending', description: 'Natural indigo and turmeric dye block print patterns for kids line.', feedback: '' },
+    ];
+    return allApprovals.filter(a => a.projectId === projectId);
+  });
+
+  const handleStatusChange = useCallback((approvalId: string, newStatus: string) => {
+    setLocalApprovals(prev => prev.map(a => a.id === approvalId ? { ...a, status: newStatus } : a));
+  }, []);
+
+  if (localApprovals.length === 0) {
+    return (
+      <Card className="animate-in">
+        <CardContent className="py-8 text-center text-muted-foreground">
+          <ClipboardCheck className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+          <p className="text-sm">No approval requests for this project yet.</p>
+          <Button variant="outline" className="mt-4">
+            <Send className="mr-2 h-4 w-4" /> Send for Approval
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const pendingCount = localApprovals.filter(a => a.status === 'pending').length;
+  const approvedCount = localApprovals.filter(a => a.status === 'approved').length;
+  const changesCount = localApprovals.filter(a => a.status === 'changes_requested').length;
+
+  return (
+    <div className="space-y-4">
+      {/* Summary */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="rounded-lg border bg-amber-50/50 border-amber-200/50 p-3 text-center">
+          <p className="text-xl font-semibold text-amber-700 data-value">{pendingCount}</p>
+          <p className="text-xs text-amber-600">Pending</p>
+        </div>
+        <div className="rounded-lg border bg-emerald-50/50 border-emerald-200/50 p-3 text-center">
+          <p className="text-xl font-semibold text-emerald-700 data-value">{approvedCount}</p>
+          <p className="text-xs text-emerald-600">Approved</p>
+        </div>
+        <div className="rounded-lg border bg-rose-50/50 border-rose-200/50 p-3 text-center">
+          <p className="text-xl font-semibold text-rose-700 data-value">{changesCount}</p>
+          <p className="text-xs text-rose-600">Changes Requested</p>
+        </div>
+      </div>
+
+      {/* Approval cards */}
+      {localApprovals.map((approval) => (
+        <Card key={approval.id} className="animate-in">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-sm">{approval.deliverable}</h3>
+                  <Badge className={cn('text-[11px]', approvalTypeColors[approval.type] ?? 'bg-gray-100 text-gray-700')}>
+                    {approval.type}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mb-2">{approval.description}</p>
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>Client: <span className="text-foreground font-medium">{approval.clientName}</span></span>
+                  <span>Sent {formatDate(approval.sentDate)}</span>
+                  {approval.status === 'pending' && (
+                    <span className="text-amber-600 font-medium">
+                      {Math.ceil((Date.now() - new Date(approval.sentDate).getTime()) / (1000 * 60 * 60 * 24))}d waiting
+                    </span>
+                  )}
+                </div>
+                {approval.feedback && (
+                  <div className="mt-3 p-2.5 rounded-md bg-rose-50 border border-rose-200/50">
+                    <p className="text-xs font-medium text-rose-700 mb-0.5">Client Feedback:</p>
+                    <p className="text-xs text-rose-600">{approval.feedback}</p>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <Badge variant={
+                  approval.status === 'approved' ? 'success'
+                  : approval.status === 'changes_requested' ? 'destructive'
+                  : 'secondary'
+                }>
+                  {approval.status === 'changes_requested' ? 'Changes Requested' : approval.status}
+                </Badge>
+                {approval.status === 'pending' && (
+                  <div className="flex gap-1.5">
+                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handleStatusChange(approval.id, 'changes_requested')}>
+                      Request Changes
+                    </Button>
+                    <Button size="sm" className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700" onClick={() => handleStatusChange(approval.id, 'approved')}>
+                      Approve
+                    </Button>
+                  </div>
+                )}
+                {approval.status === 'changes_requested' && (
+                  <Button size="sm" variant="outline" className="h-7 text-xs">
+                    <Send className="mr-1 h-3 w-3" /> Resend
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

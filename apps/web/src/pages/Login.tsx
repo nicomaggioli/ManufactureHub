@@ -21,7 +21,7 @@ export function Login() {
       <div className="w-full max-w-[320px] space-y-5">
         {/* Logo + App Name */}
         <div className="text-center space-y-2">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-b from-primary to-blue-600 text-white text-2xl font-bold font-heading shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-b from-[hsl(222,47%,25%)] to-[hsl(222,47%,18%)] text-white text-2xl font-bold font-heading shadow-[0_2px_8px_rgba(0,0,0,0.2)]">
             S
           </div>
           <h1 className="text-[20px] font-semibold font-heading tracking-tight mt-3">Sign in to Sical</h1>

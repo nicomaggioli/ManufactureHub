@@ -4,18 +4,18 @@
 
 @layer base {
   :root {
-    /* macOS-inspired color system — hue-shifted warm neutrals (220°) */
-    --background: 220 3% 96%;
-    --foreground: 220 5% 13%;
+    /* Refined manufacturing platform — sophisticated warm neutrals */
+    --background: 30 6% 96%;
+    --foreground: 220 15% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 5% 13%;
+    --card-foreground: 220 15% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 5% 13%;
+    --popover-foreground: 220 15% 13%;
 
-    /* macOS blue accent */
-    --primary: 211 100% 50%;
+    /* Deep navy accent — professional, premium feel */
+    --primary: 222 47% 25%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 3% 94%;
@@ -38,13 +38,13 @@
 
     --border: 220 3% 87%;
     --input: 220 3% 87%;
-    --ring: 211 100% 50%;
+    --ring: 222 47% 25%;
     --radius: 8px;
 
     /* macOS sidebar — translucent / vibrancy */
     --sidebar: 220 3% 97%;
     --sidebar-foreground: 220 4% 33%;
-    --sidebar-accent: 211 100% 50%;
+    --sidebar-accent: 222 47% 25%;
     --sidebar-muted: 220 3% 93%;
     --sidebar-border: 220 3% 85%;
   }
