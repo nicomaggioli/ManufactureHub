@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/toast';
-import { designAssetsApi, type DesignAsset } from '@/lib/api';
+import { designAssetsApi, projectsApi, type DesignAsset, type Project } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 import { MockupGenerator } from '@/components/design/MockupGenerator';
 
@@ -26,6 +26,13 @@ function getAssetIcon(type: string) {
 export function DesignHub() {
   const queryClient = useQueryClient();
   const [assetsEnabled, setAssetsEnabled] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+
+  const projectsQuery = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => projectsApi.list(),
+    staleTime: 60_000,
+  });
 
   const assetsQuery = useQuery({
     queryKey: ['design-assets'],
@@ -34,12 +41,12 @@ export function DesignHub() {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: (files: FileList) => {
-      const formData = new FormData();
-      Array.from(files).forEach((file) => formData.append('files', file));
-      // Upload files via presigned URL flow, then create asset records
+    mutationFn: async (files: FileList) => {
       const file = Array.from(files)[0];
-      return designAssetsApi.create({ projectId: '', type: 'reference', fileName: file.name, fileUrl: '' });
+      const projectId = selectedProjectId || (Array.isArray(projectsQuery.data) && projectsQuery.data[0]?.id) || '';
+      // In production, this would use presigned URL upload first
+      const fileUrl = URL.createObjectURL(file);
+      return designAssetsApi.create({ projectId, type: 'reference', fileName: file.name, fileUrl });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['design-assets'] });

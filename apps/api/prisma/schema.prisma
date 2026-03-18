@@ -137,6 +137,8 @@ model Project {
   samples          Sample[]
   teamMembers      TeamMember[]
   techPacks        TechPack[]
+  approvals        Approval[]
+  shipments        Shipment[]
 
   @@index([userId])
   @@index([status])
@@ -164,6 +166,7 @@ model Manufacturer {
   communications     Communication[]
   quotes             Quote[]
   samples            Sample[]
+  shipments          Shipment[]
 
   @@index([country])
   @@index([name])
@@ -208,6 +211,7 @@ model Communication {
   @@index([projectId])
   @@index([manufacturerId])
   @@index([followUpDueAt])
+  @@index([status])
   @@map("communications")
 }
 
@@ -228,6 +232,7 @@ model Reminder {
 
   @@index([userId, dueAt])
   @@index([projectId])
+  @@index([completed])
   @@map("reminders")
 }
 
@@ -305,6 +310,7 @@ model Quote {
 
   @@index([projectId])
   @@index([manufacturerId])
+  @@index([status])
   @@map("quotes")
 }
 
@@ -326,6 +332,7 @@ model Sample {
 
   @@index([projectId])
   @@index([manufacturerId])
+  @@index([status])
   @@map("samples")
 }
 
@@ -463,4 +470,74 @@ model TechPackLabel {
 
   @@index([techPackId])
   @@map("tech_pack_labels")
+}
+
+// ── Approval workflow ─────────────────────────────────────────────────
+
+enum ApprovalStatus {
+  pending
+  approved
+  changes_requested
+}
+
+enum DeliverableType {
+  tech_pack
+  mockup
+  sample
+  fabric_swatch
+  production_proof
+}
+
+model Approval {
+  id               String           @id @default(uuid())
+  projectId        String
+  deliverableName  String
+  type             DeliverableType
+  status           ApprovalStatus   @default(pending)
+  clientName       String?
+  feedback         String?
+  sentAt           DateTime         @default(now())
+  respondedAt      DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  project          Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+  @@map("approvals")
+}
+
+// ── Shipping ──────────────────────────────────────────────────────────
+
+enum ShippingStatus {
+  label_created
+  picked_up
+  in_transit
+  out_for_delivery
+  delivered
+}
+
+model Shipment {
+  id                String         @id @default(uuid())
+  projectId         String
+  sampleId          String?
+  itemName          String
+  manufacturerId    String
+  courier           String         // DHL, FedEx, UPS, USPS, Sea Freight
+  trackingNumber    String
+  status            ShippingStatus @default(label_created)
+  shipDate          DateTime
+  estimatedDelivery DateTime?
+  actualDelivery    DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  project           Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  manufacturer      Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([manufacturerId])
+  @@index([status])
+  @@map("shipments")
 }

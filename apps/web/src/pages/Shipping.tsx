@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn, formatDate } from '@/lib/utils';
+import { DEMO_MODE } from '@/lib/mock-data';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -216,7 +217,10 @@ export function Shipping() {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Shipping</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight">Shipping</h1>
+          {DEMO_MODE && <Badge variant="outline" className="text-[11px]">Demo</Badge>}
+        </div>
         <p className="text-sm text-muted-foreground mt-0.5">
           Track shipments across all projects — samples, production runs, and materials.
         </p>

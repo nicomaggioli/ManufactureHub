@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { MessageSquare, Send, CheckCircle2, Plus, Inbox, ArrowUpRight, Archive, XCircle, FileEdit, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { communicationsApi, type Communication } from '@/lib/api';
+import { communicationsApi, manufacturersApi, projectsApi, type Communication } from '@/lib/api';
 import { formatRelativeDate, formatDateTime, cn } from '@/lib/utils';
 
 const statusConfig: Record<string, { label: string; icon: React.ElementType; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -105,21 +105,49 @@ function ThreadListItem({
 }
 
 function ComposeView({ onClose }: { onClose: () => void }) {
-  const [to, setTo] = useState('');
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
+  const [selectedManufacturerId, setSelectedManufacturerId] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const queryClient = useQueryClient();
+
+  const mfrsQuery = useQuery({
+    queryKey: ['manufacturers'],
+    queryFn: () => manufacturersApi.list(),
+    staleTime: 60_000,
+  });
+
+  const projectsQuery = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => projectsApi.list(),
+    staleTime: 60_000,
+  });
+
+  const manufacturers = (mfrsQuery.data as any)?.data ?? (Array.isArray(mfrsQuery.data) ? mfrsQuery.data : []);
+  const projects = Array.isArray(projectsQuery.data) ? projectsQuery.data : [];
 
   const handleSend = async () => {
-    if (!body.trim()) return;
-    await communicationsApi.send({
-      projectId: 'p1',
-      manufacturerId: 'm1',
-      subject,
-      body,
-      direction: 'sent',
-      status: 'sent',
-    });
-    onClose();
+    if (!body.trim() || !selectedManufacturerId || !selectedProjectId) return;
+    setSending(true);
+    setError('');
+    try {
+      await communicationsApi.send({
+        projectId: selectedProjectId,
+        manufacturerId: selectedManufacturerId,
+        subject,
+        body,
+        direction: 'sent',
+        status: 'sent',
+      });
+      queryClient.invalidateQueries({ queryKey: ['communications'] });
+      onClose();
+    } catch {
+      setError('Failed to send message. Please try again.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -132,9 +160,33 @@ function ComposeView({ onClose }: { onClose: () => void }) {
       </div>
       <Card>
         <CardContent className="pt-5 space-y-4">
-          <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">To</label>
-            <Input placeholder="Manufacturer name or email..." value={to} onChange={(e) => setTo(e.target.value)} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Manufacturer</label>
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={selectedManufacturerId}
+                onChange={(e) => setSelectedManufacturerId(e.target.value)}
+              >
+                <option value="">Select manufacturer...</option>
+                {manufacturers.map((m: any) => (
+                  <option key={m.id} value={m.id}>{m.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Project</label>
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+              >
+                <option value="">Select project...</option>
+                {projects.map((p: any) => (
+                  <option key={p.id} value={p.id}>{p.title}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">Subject</label>
@@ -149,10 +201,11 @@ function ComposeView({ onClose }: { onClose: () => void }) {
               onChange={(e) => setBody(e.target.value)}
             />
           </div>
+          {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button onClick={handleSend} disabled={!body.trim()}>
-              <Send className="mr-2 h-4 w-4" /> Send
+            <Button onClick={handleSend} disabled={!body.trim() || !selectedManufacturerId || !selectedProjectId || sending}>
+              <Send className="mr-2 h-4 w-4" /> {sending ? 'Sending...' : 'Send'}
             </Button>
           </div>
         </CardContent>
@@ -215,7 +268,7 @@ export function Communications() {
         </Button>
       </div>
 
-      <div className="flex gap-4 h-[calc(100vh-220px)]">
+      <div className="flex gap-4 h-[calc(100vh-220px)] min-h-[400px]">
         {/* Thread list sidebar */}
         <Card className="w-80 shrink-0 flex flex-col overflow-hidden animate-in">
           <CardHeader className="pb-2.5 shrink-0 px-3 pt-3">

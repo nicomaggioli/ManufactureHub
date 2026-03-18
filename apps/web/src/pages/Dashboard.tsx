@@ -25,8 +25,8 @@ import { formatRelativeDate } from '@/lib/utils';
 const statCards = [
   { key: 'projects', title: 'Active Projects', icon: FolderKanban, color: 'text-indigo-500 bg-indigo-50', getValue: (s: any) => s?.activeProjects ?? 0 },
   { key: 'mfrs', title: 'Manufacturers', icon: Factory, color: 'text-emerald-500 bg-emerald-50', getValue: (s: any) => s?.manufacturersContacted ?? s?.totalManufacturers ?? 0 },
-  { key: 'approvals', title: 'Awaiting Approval', icon: ClipboardCheck, color: 'text-amber-500 bg-amber-50', getValue: () => 4 },
-  { key: 'shipping', title: 'In Transit', icon: Truck, color: 'text-blue-500 bg-blue-50', getValue: () => 3 },
+  { key: 'approvals', title: 'Awaiting Approval', icon: ClipboardCheck, color: 'text-amber-500 bg-amber-50', getValue: (s: any) => s?.pendingApprovals ?? 0 },
+  { key: 'shipping', title: 'In Transit', icon: Truck, color: 'text-blue-500 bg-blue-50', getValue: (s: any) => s?.shipmentsInTransit ?? 0 },
 ] as const;
 
 const pipelineStages = [
@@ -239,7 +239,7 @@ export function Dashboard() {
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-semibold text-sm">Approvals</h2>
-                <p className="text-[11px] text-muted-foreground">4 pending</p>
+                <p className="text-[11px] text-muted-foreground">{stats?.pendingApprovals ?? 0} pending</p>
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
@@ -253,7 +253,7 @@ export function Dashboard() {
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-semibold text-sm">Shipping</h2>
-                <p className="text-[11px] text-muted-foreground">3 in transit</p>
+                <p className="text-[11px] text-muted-foreground">{stats?.shipmentsInTransit ?? 0} in transit</p>
               </div>
               <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>

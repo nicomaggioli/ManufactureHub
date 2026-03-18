@@ -391,6 +391,63 @@ export const uploadsApi = {
       : api.post('/uploads/presigned-url', { fileName, contentType, folder }).then(r => r.data.data),
 };
 
+// ── Approval endpoints ─────────────────────────────────────────────────
+export interface Approval {
+  id: string;
+  projectId: string;
+  projectName: string;
+  deliverableName: string;
+  type: 'tech_pack' | 'mockup' | 'sample' | 'fabric_swatch' | 'production_proof';
+  status: 'pending' | 'approved' | 'changes_requested';
+  clientName?: string;
+  feedback?: string;
+  sentAt: string;
+  respondedAt?: string;
+  createdAt: string;
+}
+
+export const approvalsApi = {
+  list: (params?: { projectId?: string; status?: string }) =>
+    DEMO_MODE ? Promise.resolve([]) : api.get('/approvals', { params }).then((r) => r.data.data.data ?? r.data.data),
+  get: (id: string) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.get<{ data: Approval }>(`/approvals/${id}`).then((r) => r.data.data),
+  create: (payload: { projectId: string; deliverableName: string; type: string; clientName?: string }) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Approval }>('/approvals', payload).then((r) => r.data.data),
+  updateStatus: (id: string, status: string, feedback?: string) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.put<{ data: Approval }>(`/approvals/${id}/status`, { status, feedback }).then((r) => r.data.data),
+  delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/approvals/${id}`),
+};
+
+// ── Shipment endpoints ────────────────────────────────────────────────
+export interface Shipment {
+  id: string;
+  projectId: string;
+  projectName: string;
+  manufacturerId: string;
+  manufacturerName: string;
+  sampleId?: string;
+  itemName: string;
+  courier: string;
+  trackingNumber: string;
+  status: 'label_created' | 'picked_up' | 'in_transit' | 'out_for_delivery' | 'delivered';
+  shipDate: string;
+  estimatedDelivery?: string;
+  actualDelivery?: string;
+  createdAt: string;
+}
+
+export const shipmentsApi = {
+  list: (params?: { projectId?: string; manufacturerId?: string; status?: string }) =>
+    DEMO_MODE ? Promise.resolve([]) : api.get('/shipments', { params }).then((r) => r.data.data.data ?? r.data.data),
+  get: (id: string) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.get<{ data: Shipment }>(`/shipments/${id}`).then((r) => r.data.data),
+  create: (payload: { projectId: string; manufacturerId: string; itemName: string; courier: string; trackingNumber: string; shipDate: string; estimatedDelivery?: string; sampleId?: string }) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.post<{ data: Shipment }>('/shipments', payload).then((r) => r.data.data),
+  updateStatus: (id: string, status: string, actualDelivery?: string) =>
+    DEMO_MODE ? Promise.resolve({} as any) : api.put<{ data: Shipment }>(`/shipments/${id}/status`, { status, actualDelivery }).then((r) => r.data.data),
+  delete: (id: string) => DEMO_MODE ? Promise.resolve() : api.delete(`/shipments/${id}`),
+};
+
 // ── Dashboard stats ────────────────────────────────────────────────────
 export interface DashboardStats {
   activeProjects: number;
@@ -398,6 +455,8 @@ export interface DashboardStats {
   totalManufacturers?: number;
   pendingReplies: number;
   upcomingReminders: number;
+  pendingApprovals?: number;
+  shipmentsInTransit?: number;
   pipeline?: Record<string, number>;
 }
 

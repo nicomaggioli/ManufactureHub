@@ -59,13 +59,13 @@ export function ManufacturerDetail() {
 
   const quotesQuery = useQuery({
     queryKey: ['quotes', { manufacturerId: id }],
-    queryFn: () => quotesApi.list(),
+    queryFn: () => quotesApi.list({ manufacturerId: id }),
     enabled: !!id,
   });
 
   const samplesQuery = useQuery({
     queryKey: ['samples', { manufacturerId: id }],
-    queryFn: () => samplesApi.list(),
+    queryFn: () => samplesApi.list({ manufacturerId: id }),
     enabled: !!id,
   });
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
   Star,
@@ -130,6 +130,7 @@ function ManufacturersSkeleton({ view }: { view: 'grid' | 'table' }) {
 }
 
 export function Manufacturers() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [view, setView] = useState<'grid' | 'table'>('grid');
   const [filterOpen, setFilterOpen] = useState(false);
@@ -393,7 +394,7 @@ export function Manufacturers() {
                     data={manufacturers}
                     keyExtractor={(r) => r.id}
                     onRowClick={(r) => {
-                      window.location.href = `/manufacturers/${r.id}`;
+                      navigate(`/manufacturers/${r.id}`);
                     }}
                   />
                 </CardContent>

@@ -29,7 +29,7 @@ import { ClipboardList } from 'lucide-react';
 import { projectsApi, communicationsApi, quotesApi, samplesApi, designAssetsApi } from '@/lib/api';
 import type { Project, Communication, Quote, Sample, DesignAsset, Milestone } from '@/lib/api';
 import { TechPack } from '@/components/design/TechPack';
-import { formatDate, formatCurrency } from '@/lib/utils';
+import { formatDate, formatCurrency, cn } from '@/lib/utils';
 
 const pipelineSteps = ['ideation', 'sourcing', 'sampling', 'production', 'shipped'] as const;
 const stepLabels: Record<string, string> = {

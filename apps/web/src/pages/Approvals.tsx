@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn, formatDate } from '@/lib/utils';
+import { DEMO_MODE } from '@/lib/mock-data';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -246,7 +247,10 @@ export function Approvals() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Approvals</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight">Approvals</h1>
+          {DEMO_MODE && <Badge variant="outline" className="text-[11px]">Demo</Badge>}
+        </div>
         <p className="text-sm text-muted-foreground mt-1">
           Track deliverables sent to clients and their approval status.
         </p>

@@ -10,6 +10,8 @@ import aiRoutes from "./ai";
 import dashboardRoutes from "./dashboard";
 import uploadRoutes from "./uploads";
 import techpackRoutes from "./techpacks";
+import approvalRoutes from "./approvals";
+import shipmentRoutes from "./shipments";
 
 const router = Router();
 
@@ -24,6 +26,8 @@ router.use("/samples", sampleRoutes);
 router.use("/ai", aiRoutes);
 router.use("/uploads", uploadRoutes);
 router.use("/techpacks", techpackRoutes);
+router.use("/approvals", approvalRoutes);
+router.use("/shipments", shipmentRoutes);
 
 // Health check
 router.get("/health", (_req, res) => {

@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { formatDate, cn } from '@/lib/utils';
+import { DEMO_MODE } from '@/lib/mock-data';
 
 // ---------------------------------------------------------------------------
 // Mock data
@@ -294,7 +295,10 @@ export function ClientPortal() {
             <p className="text-[11px] text-muted-foreground/60">Client Portal</p>
           </div>
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back, {CLIENT_NAME}</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-semibold tracking-tight">Welcome back, {CLIENT_NAME}</h1>
+          {DEMO_MODE && <Badge variant="outline" className="text-[11px]">Demo</Badge>}
+        </div>
         <p className="text-sm text-muted-foreground mt-1">
           Here is the latest on your projects. Review pending items, track shipments, and stay up to date.
         </p>

@@ -440,3 +440,55 @@ export const updateTechPackSchema = z.object({
 export const duplicateTechPackSchema = z.object({
   name: z.string().min(1, "name is required").max(500),
 });
+
+// ---------------------------------------------------------------------------
+// Approvals
+// ---------------------------------------------------------------------------
+
+const approvalStatusEnum = z.enum(["pending", "approved", "changes_requested"]);
+const deliverableTypeEnum = z.enum(["tech_pack", "mockup", "sample", "fabric_swatch", "production_proof"]);
+
+export const createApprovalSchema = z.object({
+  projectId: z.string().uuid("projectId must be a valid UUID"),
+  deliverableName: z.string().min(1, "deliverableName is required").max(500),
+  type: deliverableTypeEnum,
+  clientName: z.string().max(200).optional(),
+});
+
+export const updateApprovalStatusSchema = z.object({
+  status: z.enum(["approved", "changes_requested"]),
+  feedback: z.string().max(5000).optional(),
+});
+
+export const listApprovalsQuery = paginationQuery.extend({
+  projectId: z.string().uuid().optional(),
+  status: approvalStatusEnum.optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Shipments
+// ---------------------------------------------------------------------------
+
+const shippingStatusEnum = z.enum(["label_created", "picked_up", "in_transit", "out_for_delivery", "delivered"]);
+
+export const createShipmentSchema = z.object({
+  projectId: z.string().uuid("projectId must be a valid UUID"),
+  manufacturerId: z.string().uuid("manufacturerId must be a valid UUID"),
+  sampleId: z.string().uuid().optional(),
+  itemName: z.string().min(1, "itemName is required").max(500),
+  courier: z.string().min(1, "courier is required").max(100),
+  trackingNumber: z.string().min(1, "trackingNumber is required").max(200),
+  shipDate: z.coerce.date(),
+  estimatedDelivery: z.coerce.date().optional(),
+});
+
+export const updateShipmentStatusSchema = z.object({
+  status: shippingStatusEnum,
+  actualDelivery: z.coerce.date().optional(),
+});
+
+export const listShipmentsQuery = paginationQuery.extend({
+  projectId: z.string().uuid().optional(),
+  manufacturerId: z.string().uuid().optional(),
+  status: shippingStatusEnum.optional(),
+});

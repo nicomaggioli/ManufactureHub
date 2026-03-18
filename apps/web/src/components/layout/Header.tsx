@@ -122,8 +122,8 @@ export function Header() {
       .filter((p) => p.title.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q))
       .slice(0, 3);
 
-    const mfrData = mfrsQuery.data;
-    const manufacturers = (Array.isArray(mfrData) ? mfrData : (mfrData as any)?.data ?? [])
+    const mfrData = mfrsQuery.data as Manufacturer[] | { data: Manufacturer[] } | undefined;
+    const manufacturers = (Array.isArray(mfrData) ? mfrData : mfrData?.data ?? [])
       .filter((m: Manufacturer) => m.name.toLowerCase().includes(q) || m.country?.toLowerCase().includes(q))
       .slice(0, 3);
 
