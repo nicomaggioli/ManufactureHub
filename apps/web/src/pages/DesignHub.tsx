@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/toast';
 import { designAssetsApi, projectsApi, type DesignAsset, type Project } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
-import { MockupGenerator } from '@/components/design/MockupGenerator';
+import { TechPackBuilder } from '@/components/design/TechPackBuilder';
 
 function getAssetIcon(type: string) {
   switch (type) {
@@ -69,7 +69,7 @@ export function DesignHub() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Design Studio</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Create mockups and manage design assets.
+          Build tech packs from your designs and manage assets.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ export function DesignHub() {
         <TabsList>
           <TabsTrigger value="mockup">
             <PenTool className="h-3.5 w-3.5 mr-1.5" />
-            Mockup Studio
+            Tech Pack Builder
           </TabsTrigger>
           <TabsTrigger value="assets">
             <Image className="h-3.5 w-3.5 mr-1.5" />
@@ -89,7 +89,7 @@ export function DesignHub() {
         </TabsList>
 
         <TabsContent value="mockup">
-          <MockupGenerator />
+          <TechPackBuilder />
         </TabsContent>
 
         <TabsContent value="assets">

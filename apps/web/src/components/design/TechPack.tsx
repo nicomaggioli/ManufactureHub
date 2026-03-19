@@ -11,7 +11,7 @@ import { Download } from 'lucide-react';
 // Types
 // ---------------------------------------------------------------------------
 
-interface MaterialRow {
+export interface MaterialRow {
   name: string;
   type: string;
   color: string;
@@ -20,7 +20,7 @@ interface MaterialRow {
   usagePerUnit: string;
 }
 
-interface MeasurementRow {
+export interface MeasurementRow {
   label: string;
   xs: number;
   s: number;
@@ -29,25 +29,25 @@ interface MeasurementRow {
   xl: number;
 }
 
-interface ConstructionDetail {
+export interface ConstructionDetail {
   label: string;
   value: string;
 }
 
-interface Colorway {
+export interface Colorway {
   name: string;
   hex: string;
   pantone: string;
   status: 'approved' | 'pending' | 'rejected';
 }
 
-interface LabelSpec {
+export interface LabelSpec {
   type: string;
   placement: string;
   content: string;
 }
 
-interface TechPackData {
+export interface TechPackData {
   id: string;
   productName: string;
   sku: string;
