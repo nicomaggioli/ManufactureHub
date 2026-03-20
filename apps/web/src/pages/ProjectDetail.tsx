@@ -6,18 +6,13 @@ import {
   ArrowLeft,
   CheckCircle2,
   Circle,
-  Factory,
-  MessageSquare,
-  Palette,
-  FileText,
   Package,
-  Users,
-  Calendar,
   Truck,
   ClipboardCheck,
   Send,
   Clock,
   MapPin,
+  Palette,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +20,6 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DataTable, type ColumnDef } from '@/components/ui/data-table';
-import { ClipboardList } from 'lucide-react';
 import { projectsApi, communicationsApi, quotesApi, samplesApi, designAssetsApi } from '@/lib/api';
 import type { Project, Communication, Quote, Sample, DesignAsset, Milestone } from '@/lib/api';
 import { TechPack } from '@/components/design/TechPack';
@@ -252,7 +246,7 @@ export function ProjectDetail() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-8">
       {/* Breadcrumb */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild>
@@ -262,97 +256,68 @@ export function ProjectDetail() {
         </Button>
       </div>
 
-      {/* Title + status */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{project.title}</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{project.description ?? ''}</p>
+      {/* Title + status + timeline */}
+      <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">{project.title}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{project.description ?? ''}</p>
+          </div>
+          <Badge variant="outline" className="w-fit px-3 py-1">
+            {project.status}
+          </Badge>
         </div>
-        <Badge variant="outline" className="w-fit px-3 py-1">
-          {project.status}
-        </Badge>
-      </div>
-
-      {/* Status timeline */}
-      <Card className="animate-in">
-        <CardContent className="flex justify-center py-5 overflow-x-auto">
+        <div className="flex justify-center py-5 mt-4 overflow-x-auto">
           <StatusTimeline currentStatus={project.status} />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Tabs */}
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="manufacturers">
-            <Factory className="mr-1 h-4 w-4" /> Manufacturers
-          </TabsTrigger>
-          <TabsTrigger value="communications">
-            <MessageSquare className="mr-1 h-4 w-4" /> Communications
-          </TabsTrigger>
-          <TabsTrigger value="assets">
-            <Palette className="mr-1 h-4 w-4" /> Design Assets
-          </TabsTrigger>
-          <TabsTrigger value="quotes">
-            <FileText className="mr-1 h-4 w-4" /> Quotes
-          </TabsTrigger>
-          <TabsTrigger value="samples">
-            <Package className="mr-1 h-4 w-4" /> Samples
-          </TabsTrigger>
-          <TabsTrigger value="techpacks">
-            <ClipboardList className="mr-1 h-4 w-4" /> Tech Packs
-          </TabsTrigger>
-          <TabsTrigger value="shipping">
-            <Truck className="mr-1 h-4 w-4" /> Shipping
-          </TabsTrigger>
-          <TabsTrigger value="approvals">
-            <ClipboardCheck className="mr-1 h-4 w-4" /> Approvals
-          </TabsTrigger>
+          <TabsTrigger value="communications">Messages</TabsTrigger>
+          <TabsTrigger value="assets">Design</TabsTrigger>
+          <TabsTrigger value="quotes">Quotes</TabsTrigger>
+          <TabsTrigger value="samples">Samples</TabsTrigger>
+          <TabsTrigger value="techpacks">Tech Packs</TabsTrigger>
+          <TabsTrigger value="shipping">Shipping</TabsTrigger>
+          <TabsTrigger value="approvals">Approvals</TabsTrigger>
         </TabsList>
 
         {/* Overview */}
-        <TabsContent value="overview" className="space-y-4 mt-4">
-          <div className="grid gap-4 md:grid-cols-2">
+        <TabsContent value="overview" className="space-y-6 mt-6">
+          <div className="grid gap-6 md:grid-cols-2">
             <Card className="animate-in">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                  <Users className="h-4 w-4" /> Project Info
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2.5 text-sm">
+              <CardContent className="p-5 space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-medium text-muted-foreground">Status</span>
+                  <span className="text-muted-foreground">Status</span>
                   <Badge variant="outline">{project.status}</Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-medium text-muted-foreground">Manufacturers</span>
-                  <span className="data-value">{project._count?.quotes ?? 0}</span>
+                  <span className="text-muted-foreground">Manufacturers</span>
+                  <span className="data-value">{projectManufacturers.length}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-medium text-muted-foreground">Created</span>
+                  <span className="text-muted-foreground">Created</span>
                   <span className="data-value">{formatDate(project.createdAt)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-medium text-muted-foreground">Last Updated</span>
+                  <span className="text-muted-foreground">Last Updated</span>
                   <span className="data-value">{formatDate(project.updatedAt)}</span>
                 </div>
               </CardContent>
             </Card>
             <Card className="animate-in">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                  <Calendar className="h-4 w-4" /> Milestones
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-5">
                 {((project as any).milestones as Milestone[] | undefined)?.length ? (
-                  <div className="space-y-2.5">
+                  <div className="space-y-3">
                     {((project as any).milestones as Milestone[]).map((m: Milestone) => (
                       <div key={m.id} className="flex items-center gap-3">
                         {m.completed ? (
                           <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
                         ) : (
-                          <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
                           <p className={`text-sm ${m.completed ? 'line-through text-muted-foreground' : ''}`}>
@@ -369,42 +334,28 @@ export function ProjectDetail() {
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
 
-        {/* Manufacturers */}
-        <TabsContent value="manufacturers" className="mt-4">
-          {projectManufacturers.length === 0 ? (
-            <Card className="animate-in">
-              <CardContent className="py-8 text-center text-muted-foreground">
-                <Factory className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
-                <p className="text-sm">No manufacturers linked yet.</p>
-                <Button variant="outline" className="mt-4" asChild>
-                  <Link to="/manufacturers">Browse Manufacturers</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {projectManufacturers.map((mfr) => (
-                <Link key={mfr.id} to={`/manufacturers/${mfr.id}`}>
-                  <Card className="h-full hover:shadow-card-hover transition-all cursor-pointer animate-in">
-                    <CardContent className="p-5">
-                      <p className="font-semibold text-sm">{mfr.name}</p>
-                      <div className="flex flex-wrap gap-1.5 mt-3">
-                        {mfr.hasComms && <Badge variant="secondary" className="text-[11px]">Messages</Badge>}
-                        {mfr.hasQuotes && <Badge variant="secondary" className="text-[11px]">Quotes</Badge>}
-                        {mfr.hasSamples && <Badge variant="secondary" className="text-[11px]">Samples</Badge>}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+          {/* Manufacturers inline */}
+          {projectManufacturers.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">Manufacturers</h3>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {projectManufacturers.map((mfr) => (
+                  <Link key={mfr.id} to={`/manufacturers/${mfr.id}`}>
+                    <Card className="h-full hover:shadow-card-hover transition-all cursor-pointer">
+                      <CardContent className="p-4">
+                        <p className="font-medium text-sm">{mfr.name}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </TabsContent>
 
         {/* Communications */}
-        <TabsContent value="communications" className="mt-4">
+        <TabsContent value="communications" className="mt-6">
           <Card className="animate-in">
             <CardContent className="pt-5">
               <DataTable
@@ -418,7 +369,7 @@ export function ProjectDetail() {
         </TabsContent>
 
         {/* Design Assets */}
-        <TabsContent value="assets" className="mt-4">
+        <TabsContent value="assets" className="mt-6">
           <Card className="animate-in">
             <CardContent className="pt-5">
               {(assetsQuery.data ?? []).length === 0 ? (
@@ -447,7 +398,7 @@ export function ProjectDetail() {
         </TabsContent>
 
         {/* Quotes */}
-        <TabsContent value="quotes" className="mt-4">
+        <TabsContent value="quotes" className="mt-6">
           <Card className="animate-in">
             <CardContent className="pt-5">
               <DataTable
@@ -461,7 +412,7 @@ export function ProjectDetail() {
         </TabsContent>
 
         {/* Samples */}
-        <TabsContent value="samples" className="mt-4">
+        <TabsContent value="samples" className="mt-6">
           <Card className="animate-in">
             <CardContent className="pt-5">
               <DataTable
@@ -475,17 +426,17 @@ export function ProjectDetail() {
         </TabsContent>
 
         {/* Tech Packs */}
-        <TabsContent value="techpacks" className="mt-4">
+        <TabsContent value="techpacks" className="mt-6">
           <TechPack />
         </TabsContent>
 
         {/* Shipping */}
-        <TabsContent value="shipping" className="mt-4">
+        <TabsContent value="shipping" className="mt-6">
           <ShippingTab projectId={id} />
         </TabsContent>
 
         {/* Approvals */}
-        <TabsContent value="approvals" className="mt-4">
+        <TabsContent value="approvals" className="mt-6">
           <ApprovalsTab projectId={id} />
         </TabsContent>
       </Tabs>

@@ -9,50 +9,22 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  FileText,
-  Package,
-  ClipboardCheck,
-  Truck,
   Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type NavItem = { to: string; label: string; icon: React.ElementType };
-type NavSection = { label?: string; items: NavItem[] };
 
-const navSections: NavSection[] = [
-  {
-    items: [
-      { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    ],
-  },
-  {
-    label: 'Workflow',
-    items: [
-      { to: '/design', label: 'Design Studio', icon: Wand2 },
-      { to: '/projects', label: 'Projects', icon: FolderKanban },
-      { to: '/manufacturers', label: 'Manufacturers', icon: Factory },
-    ],
-  },
-  {
-    label: 'Pipeline',
-    items: [
-      { to: '/quotes', label: 'Quotes', icon: FileText },
-      { to: '/samples', label: 'Samples', icon: Package },
-      { to: '/approvals', label: 'Approvals', icon: ClipboardCheck },
-      { to: '/shipping', label: 'Shipping', icon: Truck },
-      { to: '/communications', label: 'Messages', icon: MessageSquare },
-    ],
-  },
-  {
-    label: 'Client',
-    items: [
-      { to: '/client', label: 'Client Portal', icon: Users },
-    ],
-  },
+const mainItems: NavItem[] = [
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/projects', label: 'Projects', icon: FolderKanban },
+  { to: '/design', label: 'Design Studio', icon: Wand2 },
+  { to: '/manufacturers', label: 'Manufacturers', icon: Factory },
+  { to: '/communications', label: 'Messages', icon: MessageSquare },
 ];
 
-const bottomItems = [
+const bottomItems: NavItem[] = [
+  { to: '/client', label: 'Client Portal', icon: Users },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -122,25 +94,16 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-3 px-3 overflow-y-auto">
-        {navSections.map((section, idx) => (
-          <div key={section.label ?? idx} className={idx > 0 ? 'mt-5' : ''}>
-            {section.label && !collapsed && (
-              <div className="text-[11px] uppercase tracking-widest text-muted-foreground/60 font-semibold px-3 pb-2">
-                {section.label}
-              </div>
-            )}
-            <div className="space-y-0.5">
-              {section.items.map((item) => (
-                <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
-              ))}
-            </div>
-          </div>
-        ))}
+      <nav className="flex-1 py-4 px-3 overflow-y-auto">
+        <div className="space-y-1">
+          {mainItems.map((item) => (
+            <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
+          ))}
+        </div>
       </nav>
 
       {/* Bottom section */}
-      <div className="px-3 pb-3 space-y-0.5 border-t border-border/40 pt-3">
+      <div className="px-3 pb-3 space-y-1 border-t border-border/40 pt-3">
         {bottomItems.map((item) => (
           <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
         ))}

@@ -8,7 +8,6 @@ import {
   LayoutGrid,
   List,
   MapPin,
-  Leaf,
   SlidersHorizontal,
   X,
 } from 'lucide-react';
@@ -54,47 +53,30 @@ function ManufacturerCard({ manufacturer, index }: { manufacturer: Manufacturer;
         className="cursor-pointer transition-all hover:shadow-card-hover h-full animate-in"
         style={{ animationDelay: `${index * 50}ms` }}
       >
-        <CardHeader className="p-5 pb-3">
+        <CardContent className="p-5 space-y-3">
           <div className="flex items-start justify-between gap-2">
-            <CardTitle className="text-sm font-semibold leading-tight">
-              {manufacturer.name}
-            </CardTitle>
+            <div>
+              <p className="text-sm font-semibold leading-tight">{manufacturer.name}</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <MapPin className="h-3 w-3" />
+                {manufacturer.country}
+              </div>
+            </div>
             {manufacturer.verified && (
-              <BadgeCheck className="h-4 w-4 text-primary shrink-0" />
+              <BadgeCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             )}
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="h-3 w-3" />
-            {manufacturer.country}
-          </div>
-        </CardHeader>
-        <CardContent className="p-5 pt-0 space-y-3">
           <div className="flex flex-wrap gap-1.5">
-            {manufacturer.specialties.slice(0, 3).map((s) => (
+            {manufacturer.specialties.slice(0, 2).map((s) => (
               <Badge key={s} variant="secondary" className="text-[11px] px-2 py-0.5">
                 {s}
               </Badge>
             ))}
-            {manufacturer.specialties.length > 3 && (
-              <Badge variant="outline" className="text-[11px] px-2 py-0.5">
-                +{manufacturer.specialties.length - 3}
-              </Badge>
+            {manufacturer.specialties.length > 2 && (
+              <span className="text-[11px] text-muted-foreground">+{manufacturer.specialties.length - 2}</span>
             )}
           </div>
           <StarRating rating={manufacturer.rating} />
-          <div className="flex flex-wrap gap-1.5">
-            {manufacturer.certifications.slice(0, 2).map((c) => (
-              <Badge key={c} variant="outline" className="text-[11px] px-2 py-0.5">
-                {c}
-              </Badge>
-            ))}
-          </div>
-          {manufacturer.sustainabilityScore > 0 && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Leaf className="h-3 w-3 text-emerald-500" />
-              Sustainability: <span className="data-value font-medium">{manufacturer.sustainabilityScore}</span>/100
-            </div>
-          )}
         </CardContent>
       </Card>
     </Link>
@@ -193,7 +175,7 @@ export function Manufacturers() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Manufacturers</h1>
         <p className="text-sm text-muted-foreground mt-1">Search and discover manufacturers worldwide</p>
@@ -402,15 +384,6 @@ export function Manufacturers() {
             </>
           )}
 
-          <div className="mt-6">
-            <h3 className="text-xs font-medium text-muted-foreground mb-2">Map View</h3>
-            <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 text-muted-foreground">
-              <div className="text-center">
-                <MapPin className="mx-auto mb-2 h-6 w-6 text-muted-foreground/40" />
-                <p className="text-xs">Manufacturer locations will appear here</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -118,11 +118,11 @@ export function Projects() {
   const projects = projectsQuery.data ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-          <p className="text-sm text-muted-foreground">Manage your manufacturing projects</p>
+          <p className="text-sm text-muted-foreground mt-1">Manage your manufacturing projects</p>
         </div>
         <Button onClick={() => setDialogOpen(true)} className="rounded-lg">
           <Plus className="mr-2 h-4 w-4" />
