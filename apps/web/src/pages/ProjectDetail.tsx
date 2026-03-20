@@ -159,25 +159,6 @@ export function ProjectDetail() {
     return Array.from(mfrMap.values());
   }, [commsQuery.data, quotesQuery.data, samplesQuery.data]);
 
-  if (projectQuery.isLoading) return <DetailSkeleton />;
-
-  if (projectQuery.isError || !project) {
-    return (
-      <div className="space-y-4">
-        <Button variant="ghost" asChild>
-          <Link to="/projects">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Projects
-          </Link>
-        </Button>
-        <Card>
-          <CardContent className="py-12 text-center text-destructive">
-            Project not found or failed to load.
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   const commColumns: ColumnDef<Communication>[] = [
     { key: 'manufacturerId', header: 'Manufacturer', sortable: true, render: (row) => <span>{row.manufacturer?.name ?? 'Unknown'}</span> },
     { key: 'subject', header: 'Subject' },
@@ -250,6 +231,25 @@ export function ProjectDetail() {
     ];
     return allApprovals.filter(a => a.projectId === id);
   }, [id]);
+
+  if (projectQuery.isLoading) return <DetailSkeleton />;
+
+  if (projectQuery.isError || !project) {
+    return (
+      <div className="space-y-4">
+        <Button variant="ghost" asChild>
+          <Link to="/projects">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Projects
+          </Link>
+        </Button>
+        <Card>
+          <CardContent className="py-12 text-center text-destructive">
+            Project not found or failed to load.
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
