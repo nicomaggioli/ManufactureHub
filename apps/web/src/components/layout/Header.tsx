@@ -235,7 +235,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between h-[60px] px-6 border-b border-border/50 bg-white sticky top-0 z-30">
+    <header className="flex items-center justify-between h-[60px] px-8 sticky top-0 z-30 bg-background">
       {/* Breadcrumbs + Search */}
       <div className="flex items-center gap-4 flex-1">
         <Breadcrumbs />
