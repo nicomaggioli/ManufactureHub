@@ -235,7 +235,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between h-[60px] px-6 border-b border-border/40 bg-white sticky top-0 z-30">
+    <header className="flex items-center justify-between h-[60px] px-6 border-b border-border/50 bg-white sticky top-0 z-30">
       {/* Breadcrumbs + Search */}
       <div className="flex items-center gap-4 flex-1">
         <Breadcrumbs />
@@ -256,7 +256,7 @@ export function Header() {
                 searchInputRef.current?.blur();
               }
             }}
-            className="w-full h-9 pl-9 pr-3 text-sm bg-muted/50 border border-border/60 rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 focus:bg-white transition-all"
+            className="w-full h-9 pl-9 pr-3 text-sm bg-muted/40 border border-border/50 rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 focus:bg-white transition-all"
           />
           <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground/50 font-mono bg-white/60 px-1 py-px rounded border border-border/60 hidden sm:inline">
             /

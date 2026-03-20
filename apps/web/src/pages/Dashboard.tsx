@@ -23,10 +23,10 @@ import { formatRelativeDate } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
 const statCards = [
-  { key: 'projects', title: 'Active Projects', icon: FolderKanban, color: 'text-primary bg-primary/8', getValue: (s: any) => s?.activeProjects ?? 0 },
-  { key: 'mfrs', title: 'Manufacturers', icon: Factory, color: 'text-emerald-600 bg-emerald-50', getValue: (s: any) => s?.manufacturersContacted ?? s?.totalManufacturers ?? 0 },
-  { key: 'approvals', title: 'Awaiting Approval', icon: ClipboardCheck, color: 'text-amber-600 bg-amber-50', getValue: (s: any) => s?.pendingApprovals ?? 0 },
-  { key: 'shipping', title: 'In Transit', icon: Truck, color: 'text-blue-600 bg-blue-50', getValue: (s: any) => s?.shipmentsInTransit ?? 0 },
+  { key: 'projects', title: 'Active Projects', icon: FolderKanban, color: 'text-primary bg-primary/10', getValue: (s: any) => s?.activeProjects ?? 0 },
+  { key: 'mfrs', title: 'Manufacturers', icon: Factory, color: 'text-primary bg-primary/10', getValue: (s: any) => s?.manufacturersContacted ?? s?.totalManufacturers ?? 0 },
+  { key: 'approvals', title: 'Awaiting Approval', icon: ClipboardCheck, color: 'text-amber-600 bg-amber-100', getValue: (s: any) => s?.pendingApprovals ?? 0 },
+  { key: 'shipping', title: 'In Transit', icon: Truck, color: 'text-primary bg-primary/10', getValue: (s: any) => s?.shipmentsInTransit ?? 0 },
 ] as const;
 
 const pipelineStages = [

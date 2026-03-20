@@ -12,9 +12,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['"DM Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        heading: ['"Plus Jakarta Sans"', '"DM Sans"', 'system-ui', 'sans-serif'],
-        body: ['"DM Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['Poppins', 'system-ui', 'sans-serif'],
+        body: ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
@@ -75,11 +75,11 @@ export default {
         '2xl': 'calc(var(--radius) + 8px)',
       },
       boxShadow: {
-        'card': '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
-        'card-hover': '0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
-        'elevated': '0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
-        'popover': '0 10px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
-        'window': '0 16px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
+        'card': '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.03)',
+        'card-hover': '0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)',
+        'elevated': '0 8px 24px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.05)',
+        'popover': '0 10px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+        'window': '0 16px 48px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.08)',
       },
       keyframes: {
         'accordion-down': {

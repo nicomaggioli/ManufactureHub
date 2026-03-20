@@ -41,19 +41,16 @@ function NavLink({
     <Link
       to={item.to}
       className={cn(
-        'flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-150',
+        'flex items-center gap-3 px-3 py-2.5 text-[13px] rounded-lg transition-all duration-150',
         active
-          ? 'bg-primary/8 text-primary font-medium'
+          ? 'bg-primary text-white font-medium shadow-sm'
           : 'text-muted-foreground hover:text-foreground hover:bg-muted/60',
         collapsed && 'justify-center px-2'
       )}
       title={collapsed ? item.label : undefined}
     >
       <item.icon
-        className={cn(
-          'w-[18px] h-[18px] shrink-0',
-          active ? 'text-primary' : ''
-        )}
+        className="w-[18px] h-[18px] shrink-0"
         strokeWidth={active ? 2 : 1.5}
       />
       {!collapsed && (
@@ -75,18 +72,18 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col h-screen bg-white border-r border-border/60 transition-all duration-200',
-        collapsed ? 'w-[64px]' : 'w-[240px]'
+        'flex flex-col h-screen bg-white border-r border-border/50 transition-all duration-200',
+        collapsed ? 'w-[64px]' : 'w-[230px]'
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 h-[60px] shrink-0 border-b border-border/40">
+      <div className="flex items-center gap-3 px-5 h-[60px] shrink-0">
         <Link to="/" className="flex items-center gap-2.5 min-w-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary text-white shrink-0">
-            <span className="text-xs font-bold font-heading">S</span>
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-white shrink-0">
+            <span className="text-xs font-bold">S</span>
           </div>
           {!collapsed && (
-            <span className="font-bold font-heading text-base text-foreground tracking-tight truncate">
+            <span className="font-semibold text-[15px] text-foreground tracking-tight truncate">
               Sical
             </span>
           )}

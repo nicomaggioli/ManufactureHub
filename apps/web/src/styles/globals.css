@@ -4,49 +4,49 @@
 
 @layer base {
   :root {
-    /* Verdant — sage green SaaS palette */
-    --background: 40 20% 98%;
-    --foreground: 210 11% 15%;
+    /* Emerald — vibrant green clinical palette */
+    --background: 228 20% 96%;
+    --foreground: 220 15% 18%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 11% 15%;
+    --card-foreground: 220 15% 18%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 15%;
+    --popover-foreground: 220 15% 18%;
 
-    /* Sage green primary — earthy, premium */
-    --primary: 153 40% 28%;
+    /* Vibrant emerald primary */
+    --primary: 160 100% 34%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 10% 95%;
-    --secondary-foreground: 210 11% 15%;
+    --secondary: 225 14% 93%;
+    --secondary-foreground: 220 15% 18%;
 
-    --muted: 40 10% 95%;
-    --muted-foreground: 210 5% 50%;
+    --muted: 225 14% 93%;
+    --muted-foreground: 220 8% 52%;
 
-    --accent: 153 20% 94%;
-    --accent-foreground: 153 40% 22%;
+    --accent: 160 40% 94%;
+    --accent-foreground: 160 100% 26%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 60% 40%;
+    --success: 160 100% 34%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
-    --warning-foreground: 210 11% 15%;
+    --warning-foreground: 220 15% 18%;
 
-    --border: 40 10% 90%;
-    --input: 40 10% 88%;
-    --ring: 153 40% 28%;
-    --radius: 12px;
+    --border: 225 14% 90%;
+    --input: 225 14% 88%;
+    --ring: 160 100% 34%;
+    --radius: 10px;
 
-    /* Sidebar — clean white with green accent */
+    /* Sidebar */
     --sidebar: 0 0% 100%;
-    --sidebar-foreground: 210 5% 42%;
-    --sidebar-accent: 153 40% 28%;
-    --sidebar-muted: 40 10% 96%;
-    --sidebar-border: 40 10% 92%;
+    --sidebar-foreground: 220 8% 46%;
+    --sidebar-accent: 160 100% 34%;
+    --sidebar-muted: 225 14% 96%;
+    --sidebar-border: 225 14% 92%;
   }
 }
 
