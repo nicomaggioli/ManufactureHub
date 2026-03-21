@@ -41,11 +41,11 @@ function NavLink({
     <Link
       to={item.to}
       className={cn(
-        'flex items-center gap-3 px-3 py-2.5 text-[13px] rounded-lg transition-all duration-150',
+        'flex items-center gap-3 py-2.5 text-[13px] transition-all duration-200',
         active
-          ? 'bg-primary text-white font-medium shadow-sm'
-          : 'text-muted-foreground hover:text-foreground hover:bg-muted/60',
-        collapsed && 'justify-center px-2'
+          ? 'sidebar-goo text-white font-medium pl-3 pr-4'
+          : 'text-white/60 hover:text-white hover:bg-white/10 rounded-lg px-3 mr-3',
+        collapsed && 'justify-center px-2 mr-0'
       )}
       title={collapsed ? item.label : undefined}
     >
@@ -72,18 +72,18 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col h-full bg-white shrink-0 transition-all duration-200',
+        'flex flex-col h-full bg-primary shrink-0 transition-all duration-200',
         collapsed ? 'w-[64px]' : 'w-[230px]'
       )}
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 h-[64px] shrink-0">
         <Link to="/" className="flex items-center gap-2.5 min-w-0">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary text-white shrink-0">
+          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/20 text-white shrink-0">
             <span className="text-sm font-bold">S</span>
           </div>
           {!collapsed && (
-            <span className="font-semibold text-[15px] text-foreground tracking-tight truncate">
+            <span className="font-semibold text-[15px] text-white tracking-tight truncate">
               Sical
             </span>
           )}
@@ -91,7 +91,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-2 px-3 overflow-y-auto">
+      <nav className="flex-1 py-2 pl-3">
         <div className="space-y-1">
           {mainItems.map((item) => (
             <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
@@ -100,14 +100,14 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className="px-3 pb-4 space-y-1 pt-3">
+      <div className="pl-3 pb-4 space-y-1 pt-3">
         {bottomItems.map((item) => (
           <NavLink key={item.to} item={item} active={isActive(item.to)} collapsed={collapsed} />
         ))}
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-2 mt-1 text-muted-foreground/40 hover:text-muted-foreground rounded-lg transition-colors duration-150 hover:bg-muted/40"
+          className="flex items-center justify-center w-full py-2 mt-1 text-white/30 hover:text-white/60 rounded-lg transition-colors duration-150 hover:bg-white/10 mr-3"
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>

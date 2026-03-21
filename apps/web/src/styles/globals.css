@@ -106,6 +106,43 @@
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
+
+  /* Gooey metaball active nav item */
+  .sidebar-goo {
+    position: relative;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 14px 0 0 14px;
+  }
+
+  .sidebar-goo::before,
+  .sidebar-goo::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+  }
+
+  /* Inverted corner above — curves into the active blob */
+  .sidebar-goo::before {
+    bottom: 100%;
+    background: radial-gradient(
+      circle at 0% 100%,
+      transparent 20px,
+      rgba(255, 255, 255, 0.18) 20.5px
+    );
+  }
+
+  /* Inverted corner below */
+  .sidebar-goo::after {
+    top: 100%;
+    background: radial-gradient(
+      circle at 0% 0%,
+      transparent 20px,
+      rgba(255, 255, 255, 0.18) 20.5px
+    );
+  }
 }
 
 @layer utilities {
