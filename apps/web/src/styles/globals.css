@@ -110,7 +110,8 @@
   /* Gooey metaball active nav item */
   .sidebar-goo {
     position: relative;
-    background: rgba(255, 255, 255, 0.18);
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 14px 0 0 14px;
   }
 
@@ -119,28 +120,28 @@
     content: '';
     position: absolute;
     right: 0;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     pointer-events: none;
   }
 
   /* Inverted corner above — curves into the active blob */
   .sidebar-goo::before {
-    bottom: 100%;
+    top: -18px;
     background: radial-gradient(
       circle at 0% 100%,
-      transparent 20px,
-      rgba(255, 255, 255, 0.18) 20.5px
+      transparent 17px,
+      rgba(255, 255, 255, 0.2) 18px
     );
   }
 
   /* Inverted corner below */
   .sidebar-goo::after {
-    top: 100%;
+    bottom: -18px;
     background: radial-gradient(
       circle at 0% 0%,
-      transparent 20px,
-      rgba(255, 255, 255, 0.18) 20.5px
+      transparent 17px,
+      rgba(255, 255, 255, 0.2) 18px
     );
   }
 }
